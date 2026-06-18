@@ -621,3 +621,13 @@ section#aws.aws .eyebrow {
   font-size: 0.78rem;
   line-height: 1.2;
 }
+/* Make Deployment label match the other section labels */
+section#aws p.eyebrow {
+  color: var(--blue) !important;
+  font-size: 0.78rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.12em !important;
+  line-height: 1.2 !important;
+  text-transform: uppercase !important;
+  margin: 0 0 12px !important;
+}

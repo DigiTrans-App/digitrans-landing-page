@@ -631,3 +631,14 @@ section#aws p.eyebrow {
   text-transform: uppercase !important;
   margin: 0 0 12px !important;
 }
+/* Make Deployment match the dark gray section labels */
+#aws p.eyebrow {
+  color: #475569 !important;
+  font-size: 0.78rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.14em !important;
+  line-height: 1.2 !important;
+  text-transform: uppercase !important;
+  margin: 0 0 12px !important;
+  max-width: none !important;
+}

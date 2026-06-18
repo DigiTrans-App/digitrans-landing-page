@@ -612,4 +612,77 @@ textarea:focus {
   margin-top: 1.25rem;
   margin-bottom: 0;
 }
+/* DigiTrust layout fixes */
+#aws {
+  padding-top: 2.5rem !important;
+  padding-bottom: 2.5rem !important;
+}
 
+#aws .aws-content {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+#aws .eyebrow {
+  color: #7dd3fc !important;
+  font-size: 0.78rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  line-height: 1.2 !important;
+}
+
+#aws h2 {
+  margin-top: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+#aws p {
+  max-width: 760px;
+}
+
+.deployment-proof {
+  margin-top: 1.25rem !important;
+  margin-bottom: 0 !important;
+}
+
+.deployment-proof summary {
+  cursor: pointer;
+  list-style: none;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+}
+
+.deployment-proof summary::-webkit-details-marker {
+  display: none;
+}
+
+.deployment-proof-panel {
+  margin-top: 1.25rem !important;
+  margin-bottom: 0 !important;
+}
+
+.deployment-proof-panel .aws-grid {
+  margin-top: 1rem;
+}
+
+/* Tighten spacing around nearby sections */
+#buyers {
+  padding-bottom: 2.5rem !important;
+}
+
+#readiness-score {
+  padding-top: 2.5rem !important;
+}
+
+/* Make comparison tables disappear if the old section was hidden incorrectly */
+#comparison {
+  display: none !important;
+}
+
+/* Prevent empty columns from old split layout */
+#aws .split {
+  display: block !important;
+}

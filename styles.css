@@ -580,3 +580,35 @@ textarea:focus {
     grid-template-columns: 1fr;
   }
 }
+/* Tighten spacing between Buyers, Deployment, and Readiness sections */
+#buyers {
+  padding-bottom: 3rem;
+}
+
+#aws {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+#readiness-score {
+  padding-top: 3rem;
+}
+
+#buyers .grid {
+  margin-bottom: 0;
+}
+
+#aws .aws-content,
+#aws .split {
+  margin-bottom: 0;
+}
+
+.deployment-proof {
+  margin-top: 1.25rem;
+  margin-bottom: 0;
+}
+
+.deployment-proof-panel {
+  margin-top: 1.25rem;
+  margin-bottom: 0;
+}

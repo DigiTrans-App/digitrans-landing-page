@@ -582,3 +582,15 @@ section#aws.aws .eyebrow {
   line-height: 1.2 !important;
   text-transform: uppercase !important;
 }
+/* Restore only the DigiTrust hero badge */
+.hero p.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+}

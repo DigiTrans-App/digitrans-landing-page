@@ -610,3 +610,14 @@ section#aws.aws .eyebrow {
   font-weight: 900;
   line-height: 1;
 }
+/* Match Deployment label to Trust-to-Evidence Workflow */
+#aws p.eyebrow,
+#aws .split p.eyebrow {
+  margin: 0 0 12px;
+  color: var(--blue);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 800;
+  font-size: 0.78rem;
+  line-height: 1.2;
+}

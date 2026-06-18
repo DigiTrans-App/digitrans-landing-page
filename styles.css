@@ -553,3 +553,22 @@ textarea:focus {
     grid-template-columns: 1fr;
   }
 }
+/* Spacing fix: reduce large gaps between Who It Is For, Deployment, and Readiness */
+#buyers.section {
+  padding-bottom: 2rem;
+}
+
+#aws.section {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+#readiness-score.section {
+  padding-top: 2rem;
+}
+
+#buyers .grid,
+#aws .aws-content,
+#aws .split {
+  margin-bottom: 0;
+}

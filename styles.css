@@ -555,16 +555,16 @@ textarea:focus {
 }
 /* Spacing fix: reduce large gaps between Who It Is For, Deployment, and Readiness */
 #buyers.section {
-  padding-bottom: 2rem;
+  padding-bottom: 1.5rem;
 }
 
 #aws.section {
-  padding-top: 2rem;
-  padding-bottom: 2rem;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
 }
 
 #readiness-score.section {
-  padding-top: 2rem;
+  padding-top: 1.5rem;
 }
 
 #buyers .grid,

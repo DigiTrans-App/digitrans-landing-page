@@ -594,3 +594,19 @@ section#aws.aws .eyebrow {
   letter-spacing: 0.12em;
   line-height: 1.2;
 }
+/* Fix DigiTrust blue box in hero card */
+.hero-card .card-icon {
+  width: auto;
+  min-width: 132px;
+  height: auto;
+  min-height: 52px;
+  padding: 14px 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  white-space: nowrap;
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1;
+}

@@ -349,3 +349,28 @@
       .actions, .site-footer { flex-direction: column; align-items: flex-start; }
       h1 { font-size: 2.8rem; }
     }
+    /* DigiTrans logo sizing */
+.site-header .brand img {
+  width: 170px;
+  height: auto;
+  max-height: none;
+  display: block;
+}
+
+.site-footer img {
+  width: 185px;
+  height: auto;
+  max-height: none;
+  display: block;
+}
+
+/* Mobile logo sizing */
+@media (max-width: 720px) {
+  .site-header .brand img {
+    width: 140px;
+  }
+
+  .site-footer img {
+    width: 155px;
+  }
+} 

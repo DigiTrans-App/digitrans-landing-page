@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DigiTrans DigiTrust | Proof-Ready AI Workflow Evidence</title>
+  <meta name="description" content="DigiTrust helps teams move sensitive AI work from pilot to production with proof-ready Evidence Packets that are clear, reviewable, and easy to share." />
+  <meta property="og:title" content="DigiTrans DigiTrust | Proof-Ready AI Workflow Evidence" />
+  <meta property="og:description" content="Every sensitive AI workflow should come with proof. DigiTrust creates clear Evidence Packets for security, privacy, compliance, audit, and customer review." />
+  <meta property="og:image" content="/digitrans-logo.png" />
+  <link rel="icon" href="/digitrans-logo.png" />
+  <style>
+    :root{
+      --ink:#071827;
+      --ink2:#102a43;
+      --muted:#5f7085;
+      --line:#dbe6ef;
+      --paper:#ffffff;
+      --soft:#f6f9fc;
+      --blue:#2563eb;
+      --blue2:#1d4ed8;
+      --cyan:#0e7490;
+      --green:#16a34a;
+      --mint:#ecfdf5;
+      --navy:#071827;
+      --radius:28px;
+      --shadow:0 22px 70px rgba(15,23,42,.12);
+      --shadow2:0 12px 36px rgba(15,23,42,.08);
+      --max:1180px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--paper);text-rendering:optimizeLegibility}
+    a{color:inherit}
+    p{margin:0 0 18px;color:var(--muted);font-size:18px;line-height:1.65}
+    h1,h2,h3{margin:0;color:var(--ink);letter-spacing:-.045em}
+    h1{font-size:clamp(34px,4.8vw,56px);line-height:1.04;max-width:860px}
+    h2{font-size:clamp(34px,4.4vw,56px);line-height:1.04}
+    h3{font-size:22px;line-height:1.2;letter-spacing:-.025em}
+    .skip{position:absolute;left:-999px;top:auto;width:1px;height:1px;overflow:hidden}.skip:focus{left:20px;top:20px;width:auto;height:auto;background:#fff;padding:12px 16px;border-radius:14px;z-index:99;box-shadow:var(--shadow2)}
+    .nav{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.84);backdrop-filter:blur(18px);border-bottom:1px solid rgba(219,230,239,.8)}
+    .nav-inner{max-width:var(--max);margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:22px;padding:18px 22px}
+    .brand{display:inline-flex;align-items:center;gap:14px;text-decoration:none;font-weight:900;color:var(--ink);min-width:0}.brand img{display:block;width:160px;max-width:42vw;height:auto;object-fit:contain}.brand span{border-left:1px solid var(--line);padding-left:14px;font-size:17px;color:#153c5b;white-space:nowrap}
+    .navlinks{display:flex;align-items:center;gap:22px}.navlinks a{text-decoration:none;color:#39536c;font-weight:780;font-size:14px}.navlinks a:hover{color:var(--blue)}
+    .wrap{max-width:var(--max);margin:0 auto;padding:0 22px}
+    .hero{position:relative;overflow:hidden;background:radial-gradient(circle at 12% 10%,#dbeafe 0,transparent 28%),radial-gradient(circle at 86% 14%,#ccfbf1 0,transparent 24%),linear-gradient(135deg,#f8fbff 0%,#eef7ff 48%,#f0fdf4 100%)}
+    .hero:before{content:"";position:absolute;inset:auto -120px -160px auto;width:520px;height:520px;background:linear-gradient(135deg,rgba(37,99,235,.13),rgba(14,116,144,.12));border-radius:50%;filter:blur(4px)}
+    .hero-grid{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;min-height:720px;padding:86px 0}
+    .eyebrow{display:inline-flex;align-items:center;gap:9px;margin-bottom:18px;padding:9px 13px;border:1px solid #bfdbfe;border-radius:999px;background:rgba(239,246,255,.9);color:#075985;font-size:14px;font-weight:880}.eyebrow:before{content:"";width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 0 5px rgba(22,163,74,.12)}
+    .lead{font-size:clamp(19px,2.1vw,24px);line-height:1.55;max-width:760px;margin-top:22px;color:#476174}
+    .btnrow{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:0 22px;border-radius:999px;text-decoration:none;border:1px solid transparent;font-weight:880;font-size:15px;transition:transform .18s ease,box-shadow .18s ease,background .18s ease}.btn:hover{transform:translateY(-1px)}.primary{background:var(--blue);color:#fff;box-shadow:0 16px 32px rgba(37,99,235,.22)}.primary:hover{background:var(--blue2)}.secondary{background:#fff;color:var(--ink);border-color:#cad8e6;box-shadow:0 10px 28px rgba(15,23,42,.06)}.ghost{background:#ecfdf5;color:#065f46;border-color:#a7f3d0}
+    .signal-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}.signal{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid #cfe0ef;color:#29485f;font-size:13px;font-weight:780}.signal:before{content:"✓";color:var(--green);font-weight:950}
+    .proof-card{position:relative;background:rgba(255,255,255,.88);border:1px solid #cfe0ef;border-radius:34px;box-shadow:var(--shadow);padding:28px}.proof-card:after{content:"";position:absolute;inset:-1px;border-radius:34px;pointer-events:none;background:linear-gradient(145deg,rgba(37,99,235,.18),transparent 36%,rgba(22,163,74,.16));mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;padding:1px}.packet-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:18px}.status{display:inline-flex;align-items:center;padding:8px 12px;border-radius:999px;background:#dcfce7;color:#166534;font-size:12px;font-weight:950;white-space:nowrap}.proof-row{display:grid;grid-template-columns:34px 1fr auto;gap:12px;align-items:center;margin:10px 0;padding:14px;border:1px solid #e2e8f0;border-radius:18px;background:#f8fafc}.dot{width:16px;height:16px;border-radius:50%;background:var(--green);box-shadow:0 0 0 5px rgba(22,163,74,.12);justify-self:center}.small{font-size:13px;color:#64748b;font-weight:760}.proof-row strong{display:block;color:#12263a;margin-bottom:2px}
+    .section{padding:86px 0}.soft{background:var(--soft)}.blue{background:linear-gradient(180deg,#eff6ff,#f8fbff)}.center{max-width:920px;margin:0 auto 34px;text-align:center}.center p{max-width:780px;margin-left:auto;margin-right:auto}.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}.grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:26px;box-shadow:var(--shadow2)}.card p{font-size:17px}.icon{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:15px;background:#dbeafe;color:#1d4ed8;font-weight:950;margin-bottom:14px}.list{margin:18px 0 0;padding:0;list-style:none}.list li{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #edf2f7;color:#425466;font-size:16px;line-height:1.45}.list li:before{content:"✓";color:var(--green);font-weight:950}.feature{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:center}.panel{background:#fff;border:1px solid #cfe0ef;border-radius:var(--radius);padding:28px;box-shadow:var(--shadow2)}
+    .view-card{display:flex;flex-direction:column;justify-content:space-between;min-height:240px}.view-card .btn{align-self:flex-start;margin-top:10px}details.view{margin-top:18px;background:#fff;border:1px solid #cfe0ef;border-radius:24px;padding:20px 22px;box-shadow:var(--shadow2)}summary{cursor:pointer;list-style:none;font-weight:920;color:#0f3d5c}summary::-webkit-details-marker{display:none}.services{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}.service{border:1px solid #e2e8f0;background:#f8fafc;border-radius:14px;padding:12px;color:#3d5063;font-size:14px;font-weight:780}
+    .steps{counter-reset:step}.step{position:relative}.step:before{counter-increment:step;content:counter(step);display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:14px;background:#dbeafe;color:#1d4ed8;font-weight:950;margin-bottom:16px}.packet-list{columns:2;column-gap:30px;margin:0;padding-left:18px;color:#425466;font-size:16px;line-height:1.62}.packet-list li{break-inside:avoid;margin-bottom:8px}.release-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.release-item{background:#fff;border:1px solid #dbe7f2;border-radius:16px;padding:14px 16px;font-weight:780;color:#3d5063;box-shadow:0 6px 20px rgba(15,23,42,.04)}
+    .built{background:linear-gradient(135deg,#f8fbff 0%,#eef7ff 56%,#ecfdf5 100%);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.built-box{max-width:980px;margin:0 auto;text-align:center}.badge{display:inline-flex;padding:8px 14px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:14px;font-weight:880;margin-bottom:18px}.built h2{max-width:850px;margin:0 auto 18px}.built p{max-width:780px;margin-left:auto;margin-right:auto}.cta{padding:92px 0;background:radial-gradient(circle at 15% 20%,rgba(37,99,235,.25),transparent 24%),linear-gradient(135deg,#071827 0%,#123c5b 100%);color:#fff;text-align:center}.cta h2{color:#fff}.cta p{color:#cbd5e1;max-width:820px;margin-left:auto;margin-right:auto}.footer{background:#061421;color:#cbd5e1;padding:38px 0}.footer-inner{max-width:var(--max);margin:0 auto;padding:0 22px;display:flex;justify-content:space-between;align-items:center;gap:28px;flex-wrap:wrap}.footer-brand{display:flex;align-items:center;gap:16px}.footer-logo{display:inline-flex;align-items:center;justify-content:center;border-radius:18px;background:#fff;padding:10px 14px;box-shadow:0 12px 28px rgba(0,0,0,.18)}.footer-logo img{width:160px;height:auto;display:block}.footer-text{max-width:680px;font-size:14px;line-height:1.55;color:#cbd5e1}.footer-product{font-weight:950;color:#fff;font-size:18px}
+    @media (max-width:960px){.navlinks{display:none}.hero-grid,.feature,.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}.hero-grid{min-height:auto;padding:58px 0}.section{padding:64px 0}.release-list{grid-template-columns:1fr 1fr}.services{grid-template-columns:1fr}.packet-list{columns:1}.brand img{width:148px}.brand span{font-size:16px}}
+    @media (max-width:620px){.nav-inner,.wrap,.footer-inner{padding-left:18px;padding-right:18px}.btnrow{flex-direction:column}.btn{width:100%}.proof-row{grid-template-columns:28px 1fr}.proof-row .small:last-child{grid-column:2}.release-list{grid-template-columns:1fr}.footer-brand{align-items:flex-start}.footer-logo img{width:140px}}
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to main content</a>
+  <nav class="nav" aria-label="Primary navigation">
+    <div class="nav-inner">
+      <a class="brand" href="#top" aria-label="DigiTrans DigiTrust home">
+        <img src="/digitrans-logo.png" alt="DigiTrans logo" onerror="this.onerror=null;this.src='assets/digitrans-logo.svg';" />
+        <span>DigiTrust</span>
+      </a>
+      <div class="navlinks">
+        <a href="#choose">Choose your view</a>
+        <a href="#packet">Evidence Packet</a>
+        <a href="#quickstart">QuickStart</a>
+        <a href="#assurance">Assurance</a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main">
+    <section id="top" class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <span class="eyebrow">Live on AWS for proof-ready AI workflows</span>
+          <h1>Every sensitive AI workflow should come with proof.</h1>
+          <p class="lead">DigiTrust helps teams move sensitive AI work from pilot to production with proof-ready Evidence Packets.</p>
+          <div class="btnrow">
+            <a class="btn primary" href="#packet">See how Evidence Packets work</a>
+            <a class="btn secondary" href="#quickstart">Apply for the QuickStart</a>
+            <a class="btn ghost" href="#assurance">Request assurance materials</a>
+          </div>
+          <div class="signal-row" aria-label="Current DigiTrust status">
+            <span class="signal">Live validation passed</span>
+            <span class="signal">Packet verifier enabled</span>
+            <span class="signal">Proof-ready workflow check included</span>
+            <span class="signal">AWS review-readiness package prepared</span>
+          </div>
+        </div>
+        <aside class="proof-card" aria-label="Sample Evidence Packet summary">
+          <div class="packet-head">
+            <div>
+              <h3>Sample Evidence Packet</h3>
+              <p>One workflow. One approved AI path. One verifiable packet.</p>
+            </div>
+            <span class="status">Verified</span>
+          </div>
+          <div class="proof-row"><span class="dot"></span><div><strong>Baseline checks</strong><span class="small">identity, logging, encryption, storage</span></div><span class="small">Pass</span></div>
+          <div class="proof-row"><span class="dot"></span><div><strong>Sensitive data</strong><span class="small">classified and protected before model use</span></div><span class="small">Pass</span></div>
+          <div class="proof-row"><span class="dot"></span><div><strong>AI workflow path</strong><span class="small">approved model, region, and guardrail reference</span></div><span class="small">Pass</span></div>
+          <div class="proof-row"><span class="dot"></span><div><strong>Proof-Ready AI check</strong><span class="small">workflow proof check completed</span></div><span class="small">Pass</span></div>
+          <div class="proof-row"><span class="dot"></span><div><strong>Packet verifier</strong><span class="small">hash, schema, acceptance, and export checked</span></div><span class="small">Pass</span></div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="choose" class="section">
+      <div class="wrap">
+        <div class="center">
+          <h2>Choose the view that works for you.</h2>
+          <p>Start with plain-language proof questions, then open the AWS view when your technical team wants the deployment details.</p>
+        </div>
+        <div class="grid-2">
+          <div class="card view-card">
+            <div>
+              <span class="icon">1</span>
+              <h3>For business, risk, privacy, and audit teams</h3>
+              <p>See the questions DigiTrust helps answer without reading an architecture diagram.</p>
+            </div>
+            <a class="btn primary" href="#plain-view">Show simple version</a>
+          </div>
+          <div class="card view-card">
+            <div>
+              <span class="icon">2</span>
+              <h3>For AWS, platform, security engineering, and AI teams</h3>
+              <p>See how DigiTrust supports proof-ready workflows powered by Amazon Bedrock and deployed on AWS.</p>
+            </div>
+            <a class="btn secondary" href="#technical-view">Show technical version</a>
+          </div>
+        </div>
+        <div id="plain-view" class="panel" style="margin-top:22px">
+          <h3>DigiTrust helps answer the questions that slow down sensitive AI launches.</h3>
+          <ul class="list">
+            <li>Was this AI workflow approved for its business purpose?</li>
+            <li>Was sensitive data protected before model use?</li>
+            <li>Was the AI path approved by the right team?</li>
+            <li>Did a person review the work when review was needed?</li>
+            <li>Can we share a clean Evidence Packet with security, compliance, audit, or a customer?</li>
+          </ul>
+        </div>
+        <details id="technical-view" class="view" open>
+          <summary>For AWS and technical teams</summary>
+          <p style="margin-top:12px">DigiTrust connects baseline checks, sensitive-data protection, approved Amazon Bedrock paths, packet verification, and reviewer-ready evidence into one proof-ready workflow.</p>
+          <details style="margin-top:16px">
+            <summary>Show AWS services behind the scenes</summary>
+            <div class="services" aria-label="AWS services list">
+              <div class="service">Amazon Bedrock</div>
+              <div class="service">Amazon Bedrock Guardrails</div>
+              <div class="service">Amazon Bedrock Knowledge Bases</div>
+              <div class="service">Amazon ECS on AWS Fargate</div>
+              <div class="service">Amazon S3 with AWS KMS</div>
+              <div class="service">Amazon DynamoDB or Amazon Aurora/PostgreSQL</div>
+              <div class="service">AWS Secrets Manager</div>
+              <div class="service">Amazon CloudWatch</div>
+              <div class="service">AWS CloudTrail</div>
+              <div class="service">AWS WAF</div>
+              <div class="service">AWS Config</div>
+              <div class="service">AWS Well-Architected Tool</div>
+            </div>
+          </details>
+        </details>
+      </div>
+    </section>
+
+    <section class="section soft">
+      <div class="wrap">
+        <div class="center">
+          <h2>Why teams need DigiTrust.</h2>
+          <p>AI is moving into customer, claims, healthcare, finance, legal, and support workflows. Teams need more than a model response. They need a clear record of what happened and why it is ready to move forward.</p>
+        </div>
+        <div class="grid-3">
+          <div class="card"><span class="icon">✓</span><h3>Security and privacy</h3><p>Show how sensitive data was classified, protected, and handled before model use.</p></div>
+          <div class="card"><span class="icon">✓</span><h3>Compliance and audit</h3><p>Share a packet that records the workflow purpose, review outcome, and proof trail.</p></div>
+          <div class="card"><span class="icon">✓</span><h3>AI and cloud teams</h3><p>Use an approved AI path and see workflow evidence in a reviewer-friendly package.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="works" class="section">
+      <div class="wrap">
+        <div class="center">
+          <h2>How DigiTrust works.</h2>
+          <p>Start with one sensitive workflow and produce one packet your reviewers can use.</p>
+        </div>
+        <div class="grid-3 steps">
+          <div class="card step"><h3>Start with one workflow</h3><p>Pick one sensitive AI workflow that needs security, privacy, compliance, audit, customer, or leadership review.</p></div>
+          <div class="card step"><h3>Check the baseline</h3><p>DigiTrust checks key readiness items. If a required baseline check fails, the workflow is not marked as passed.</p></div>
+          <div class="card step"><h3>Protect sensitive data</h3><p>DigiTrust classifies sensitive values and applies the right protection step before model use.</p></div>
+          <div class="card step"><h3>Use an approved AI path</h3><p>DigiTrust records the approved model path, region, guardrail reference, purpose, and routing result.</p></div>
+          <div class="card step"><h3>Add reviewer sign-off</h3><p>When a human decision is needed, DigiTrust records the reviewer, outcome, timestamp, and reason.</p></div>
+          <div class="card step"><h3>Generate and verify the packet</h3><p>DigiTrust creates an Evidence Packet and runs packet verification so teams can share proof with the right reviewers.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="packet" class="section blue">
+      <div class="wrap feature">
+        <div>
+          <h2>The proof object your team can review and share.</h2>
+          <p>An Evidence Packet is a clean, verifiable record of a sensitive AI workflow. It is designed for security, compliance, privacy, audit, customer assurance, AI product, and cloud teams.</p>
+          <p><strong>Important packet rule:</strong> DigiTrust Evidence Packets are designed to store metadata, hashes, references, classifications, decisions, summaries, and status results instead of raw sensitive values.</p>
+          <div class="btnrow"><a class="btn primary" href="#quickstart">See how to produce one</a></div>
+        </div>
+        <div class="card">
+          <h3>Evidence Packet sections</h3>
+          <ul class="packet-list">
+            <li>Workflow identity and owner</li>
+            <li>Business purpose and policy result</li>
+            <li>Sensitive-data classification and protection steps</li>
+            <li>Approved AI path</li>
+            <li>Guardrail and review evidence</li>
+            <li>Output summary and action record</li>
+            <li>Baseline check result</li>
+            <li>Proof-Ready AI check result</li>
+            <li>Acceptance result</li>
+            <li>Verification hash and export record</li>
+            <li>Framework evidence mapping</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="center">
+          <h2>What is included now.</h2>
+          <p>DigiTrust is live on AWS and ready for qualified design-partner validation.</p>
+        </div>
+        <div class="release-list">
+          <div class="release-item">AI workflow path</div>
+          <div class="release-item">Evidence Packet v0.3.1</div>
+          <div class="release-item">Proof-ready workflow check</div>
+          <div class="release-item">Evidence Packet Acceptance Protocol</div>
+          <div class="release-item">Evidence Packet Verifier</div>
+          <div class="release-item">Proof rules engine</div>
+          <div class="release-item">Customer Assurance Package</div>
+          <div class="release-item">Framework Crosswalk Pack</div>
+          <div class="release-item">AI threat model and red-team plan</div>
+          <div class="release-item">Live Validation Report package</div>
+          <div class="release-item">Design Partner Readiness Pack</div>
+          <div class="release-item">Evidence Packet QuickStart</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="quickstart" class="section soft">
+      <div class="wrap feature">
+        <div>
+          <h2>Start with one workflow. Produce one packet. Decide with proof.</h2>
+          <p>The Evidence Packet QuickStart helps a design partner validate one sensitive AI workflow in a focused engagement.</p>
+          <div class="btnrow"><a class="btn primary" href="mailto:hello@digitrans.com?subject=DigiTrust%20Evidence%20Packet%20QuickStart">Apply for the QuickStart</a></div>
+        </div>
+        <div class="card">
+          <h3>QuickStart outcomes</h3>
+          <ul class="list">
+            <li>Select one workflow and business owner</li>
+            <li>Define the sensitive-data profile</li>
+            <li>Confirm the approved AI path</li>
+            <li>Run the workflow with synthetic or approved test data</li>
+            <li>Generate an Evidence Packet</li>
+            <li>Run packet verification</li>
+            <li>Review results with the right stakeholders</li>
+            <li>Create one proof asset for internal review</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section built" id="built-by-digitrans">
+      <div class="wrap built-box">
+        <span class="badge">Built by DigiTrans</span>
+        <h2>Proof-ready AI workflow evidence for teams moving from pilot to production.</h2>
+        <p>DigiTrans builds solutions that help organizations make sensitive AI work easier to review, explain, and move forward with confidence.</p>
+        <p>DigiTrust helps teams turn sensitive AI workflows into clear Evidence Packets that show what happened, what was checked, and why the workflow is ready for security, privacy, compliance, audit, and customer review.</p>
+      </div>
+    </section>
+
+    <section id="assurance" class="section">
+      <div class="wrap">
+        <div class="center">
+          <h2>Customer assurance materials for qualified reviewers.</h2>
+          <p>DigiTrust gives security, compliance, privacy, audit, legal, and AWS teams a clean review package.</p>
+        </div>
+        <div class="grid-4">
+          <div class="card"><h3>Security overview</h3><p>Baseline checks, shared responsibility, packet storage, and data-handling summary.</p></div>
+          <div class="card"><h3>Evidence mapping</h3><p>Framework crosswalk and packet field mapping for customer review.</p></div>
+          <div class="card"><h3>AI safety testing</h3><p>Threat model summary, red-team plan, and remediation workflow.</p></div>
+          <div class="card"><h3>AWS readiness</h3><p>FTR and Well-Architected review-readiness materials for next-step preparation.</p></div>
+        </div>
+        <div class="center btnrow" style="justify-content:center"><a class="btn primary" href="mailto:hello@digitrans.com?subject=Request%20DigiTrust%20Customer%20Assurance%20Package">Request the customer assurance package</a></div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="wrap">
+        <h2>Make your first sensitive AI workflow proof-ready.</h2>
+        <p>DigiTrust is live on AWS for proof-ready AI workflow validation. Start with one workflow, generate a verifiable Evidence Packet, and give every reviewer a clear record they can trust.</p>
+        <div class="btnrow" style="justify-content:center">
+          <a class="btn primary" href="#packet">See Evidence Packets</a>
+          <a class="btn secondary" href="#quickstart">Apply for the QuickStart</a>
+          <a class="btn ghost" href="#assurance">Request assurance materials</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="footer-logo"><img src="/digitrans-logo.png" alt="DigiTrans logo" onerror="this.onerror=null;this.src='assets/digitrans-logo.svg';" /></span>
+        <span><span class="footer-product">DigiTrust</span><br />Proof-ready AI workflow evidence.</span>
+      </div>
+      <div class="footer-text">DigiTrust supports evidence review for security, compliance, privacy, audit, customer assurance, and AI program teams. DigiTrust does not replace a customer’s own legal review, audit process, certification process, or AWS review outcome.</div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,35 +1,222 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>DigiTrust Pricing | DigiTrans</title>
-<meta name="description" content="DigiTrust pricing for Evidence Packet QuickStart, Starter, Team, Business, and Enterprise plans. Checkout is handled securely by Stripe on DigiTrans-owned web properties." />
-<meta property="og:title" content="DigiTrust Pricing" />
-<meta property="og:description" content="Start with a DigiTrust Evidence Packet QuickStart or choose a monthly or annual DigiTrust plan." />
-<link rel="icon" href="/digitrans-logo.png" />
-<style>
-:root{--ink:#071827;--muted:#5b6b7f;--line:#d8e5f0;--bg:#ffffff;--soft:#f6f9fc;--accent:#2563eb;--accent2:#0f766e;--good:#16a34a;--shadow:0 24px 80px rgba(7,24,39,.12);--shadow2:0 10px 30px rgba(7,24,39,.08);--radius:28px;--max:1180px}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg)}a{color:inherit}.nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:16px clamp(18px,4vw,56px);background:rgba(255,255,255,.94);backdrop-filter:blur(18px);border-bottom:1px solid rgba(216,229,240,.82)}.brand{display:inline-flex;align-items:center;gap:14px;text-decoration:none;font-weight:950;letter-spacing:-.03em;color:var(--ink)}.brand img{width:170px;max-width:42vw;height:auto;display:block}.badge-name{border-left:1px solid var(--line);padding-left:14px;font-size:18px;color:#123c5b;white-space:nowrap}.navlinks{display:flex;align-items:center;gap:22px}.navlinks a{text-decoration:none;color:#38526a;font-weight:820;font-size:14px}.navlinks a:hover{color:var(--accent)}
-.hero{position:relative;overflow:hidden;background:radial-gradient(circle at 15% 20%,rgba(37,99,235,.16),transparent 32%),radial-gradient(circle at 88% 12%,rgba(15,118,110,.18),transparent 30%),linear-gradient(135deg,#f8fbff 0%,#eef7ff 55%,#ecfdf5 100%)}.hero:before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(7,24,39,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(7,24,39,.055) 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(to bottom,rgba(0,0,0,.75),transparent 88%)}.hero-wrap{position:relative;max-width:var(--max);margin:0 auto;padding:82px 24px 62px;text-align:center}.eyebrow{display:inline-flex;align-items:center;gap:9px;padding:9px 13px;border:1px solid #bfe5f6;border-radius:999px;background:rgba(224,242,254,.82);color:#075985;font-size:13px;font-weight:900;letter-spacing:.01em}.spark{width:9px;height:9px;border-radius:999px;background:var(--good);box-shadow:0 0 0 6px rgba(22,163,74,.14)}h1{font-size:clamp(38px,5vw,68px);line-height:1.02;letter-spacing:-.058em;margin:20px auto 18px;max-width:940px}.gradient-text{background:linear-gradient(90deg,#071827 0%,#0f5fa8 48%,#0f766e 100%);-webkit-background-clip:text;background-clip:text;color:transparent}.lead{font-size:clamp(18px,2vw,23px);line-height:1.55;color:#455b70;max-width:880px;margin:0 auto 18px}.section{padding:72px 24px}.soft{background:var(--soft)}.blue{background:linear-gradient(135deg,#eff6ff,#ecfdf5)}.wrap{max-width:var(--max);margin:0 auto}.center{max-width:900px;margin:0 auto;text-align:center}.kicker{font-size:13px;font-weight:950;text-transform:uppercase;letter-spacing:.12em;color:var(--accent2);margin-bottom:12px}h2{font-size:clamp(30px,4vw,48px);line-height:1.08;letter-spacing:-.048em;margin:0 0 16px}h3{font-size:22px;line-height:1.2;margin:0 0 10px;letter-spacing:-.025em}p{font-size:17px;line-height:1.62;color:var(--muted);margin:0 0 16px}.pricing-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:32px}.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:26px;box-shadow:var(--shadow2)}.card.featured{border-color:#93c5fd;box-shadow:var(--shadow);position:relative}.badge{display:inline-flex;border-radius:999px;background:#dbeafe;color:#1d4ed8;padding:7px 10px;font-size:12px;font-weight:950;margin-bottom:12px}.price{font-size:38px;font-weight:950;letter-spacing:-.05em;color:#0f5fa8;margin:8px 0 2px}.price span{font-size:16px;color:#64748b;letter-spacing:0;font-weight:800}.desc{min-height:82px}.list{list-style:none;margin:18px 0 0;padding:0}.list li{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #edf2f7;color:#425466;font-size:15px;line-height:1.45}.list li:before{content:"✓";font-weight:950;color:var(--good)}.btnrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}.btn{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:13px 18px;min-height:46px;text-decoration:none;border:1px solid transparent;font-weight:900;font-size:14px;cursor:pointer}.primary{background:var(--accent);color:#fff;box-shadow:0 12px 28px rgba(37,99,235,.24)}.secondary{background:#fff;color:#0b2538;border-color:#cbd9e6}.ghost{background:#eafcf5;color:#065f46;border-color:#b9f4d7}.btn.full{width:100%}.note{font-size:14px;color:#64748b;line-height:1.55;margin-top:12px}.faq{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:28px}.notice{border-left:5px solid var(--accent2);background:#ecfdf5;border-radius:18px;padding:18px 20px;color:#124c3a;margin-top:26px}.notice p{margin:0;color:#124c3a}.footer{background:#06111c;color:#cbd5e1;padding:34px 24px;font-size:14px}.footer-wrap{max-width:var(--max);margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}.footer-brand{display:flex;align-items:center;gap:16px}.footer img{width:160px;background:#fff;border-radius:16px;padding:9px 12px}.disclaimer{max-width:720px;color:#aab7c5;line-height:1.55}.footer a{color:#dbeafe}
-@media (max-width:980px){.navlinks{display:none}.pricing-grid,.faq{grid-template-columns:1fr}.section{padding:56px 20px}.hero-wrap{padding:62px 20px 48px}.brand img{width:146px}.badge-name{font-size:16px}.desc{min-height:auto}}@media (max-width:560px){h1{font-size:38px}.btn{width:100%}.badge-name{display:none}.nav{padding:14px 18px}}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DigiTrust Soft-Launch Pricing | DigiTrans</title>
+  <meta name="description" content="DigiTrust soft-launch pricing for the Evidence Packet QuickStart and ongoing evidence workflow support plans." />
+  <link rel="canonical" href="https://www.digitranshq.com/pricing/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="DigiTrans" />
+  <meta property="og:title" content="DigiTrust Soft-Launch Pricing" />
+  <meta property="og:description" content="Start with one Evidence Packet QuickStart or choose an ongoing DigiTrust evidence workflow support plan." />
+  <meta property="og:url" content="https://www.digitranshq.com/pricing/" />
+  <meta property="og:image" content="https://www.digitranshq.com/digitrans-logo.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="/digitrans-logo.png" />
+  <link rel="stylesheet" href="/assets/site.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "DigiTrust evidence workflow services",
+    "provider": {"@type": "Organization", "name": "DigiTrans LLC", "url": "https://www.digitranshq.com/"},
+    "url": "https://www.digitranshq.com/pricing/",
+    "description": "Soft-launch Evidence Packet QuickStart and ongoing evidence workflow support plans."
+  }
+  </script>
 </head>
 <body>
-<nav aria-label="Primary navigation" class="nav"><a aria-label="DigiTrans DigiTrust home" class="brand" href="/"><img alt="DigiTrans logo" height="48" onerror="this.onerror=null;this.src='/digitrans-logo.png';" src="/digitrans-logo.png" width="170"/><span class="badge-name">DigiTrust</span></a><div aria-label="Page sections" class="navlinks"><a href="/">Home</a><a href="#plans">Plans</a><a href="#faq">FAQ</a><a href="/privacy/digitrust-evidence-assistant/">Privacy</a><a href="/terms/">Terms</a><a href="/get-started.html">Get started</a></div></nav>
-<main>
-<section class="hero"><div class="hero-wrap"><span class="eyebrow"><span class="spark"></span>DigiTrust commercialization</span><h1><span class="gradient-text">DigiTrust pricing for evidence workflows</span></h1><p class="lead">Start with a scoped Evidence Packet QuickStart or choose a DigiTrust subscription plan for ongoing evidence workflows, customer-safe assurance summaries, and buyer-readiness support.</p><p class="lead">Checkout is handled securely by Stripe on DigiTrans-owned web properties. DigiTrust Evidence Assistant in ChatGPT remains a public demo app with synthetic evidence and no in-ChatGPT checkout.</p></div></section>
-<section class="section" id="plans"><div class="wrap"><div class="center"><div class="kicker">Plans</div><h2>Choose the right starting point</h2><p>Use the QuickStart for a first paid engagement, or choose a monthly or annual subscription plan for ongoing DigiTrust workflows.</p></div><div class="pricing-grid">
-<div class="card"><span class="badge">QuickStart</span><h3>DigiTrust Evidence Packet QuickStart</h3><div class="price">$2,500 <span>one-time</span></div><p class="desc">A focused paid starting point for one AI workflow, one proof asset, and one customer-safe assurance output.</p><div class="btnrow"><a class="btn primary full" href="https://buy.stripe.com/28EfZi28edQ727u9zp3gk00">Start QuickStart</a></div><ul class="list"><li>One scoped AI workflow</li><li>Evidence Packet planning path</li><li>Customer-safe assurance output</li><li>High-level reviewer-readiness guidance</li></ul></div>
-<div class="card"><span class="badge">Starter</span><h3>DigiTrust Starter</h3><div class="price">$99 <span>/ month</span></div><p class="desc">Entry plan for small teams starting to organize evidence workflows and customer-safe summaries.</p><div class="btnrow"><a class="btn primary full" href="https://buy.stripe.com/6oU5kE28e8vN13qcLB3gk01">Start monthly</a><a class="btn secondary full" href="https://buy.stripe.com/cNicN6dQW27pbI4fXN3gk02">Start annual — $990/year</a></div><ul class="list"><li>Starter evidence workflow support</li><li>Customer-safe summary workflow</li><li>Buyer-readiness orientation</li><li>Email-based onboarding</li></ul></div>
-<div class="card featured"><span class="badge">Popular</span><h3>DigiTrust Team</h3><div class="price">$399 <span>/ month</span></div><p class="desc">For teams that need stronger evidence workflow support across security, procurement, partner, and customer assurance conversations.</p><div class="btnrow"><a class="btn primary full" href="https://buy.stripe.com/eVqeVe9AGcM327u26X3gk03">Start monthly</a><a class="btn secondary full" href="https://buy.stripe.com/28E3cweV03bt9zW9zp3gk04">Start annual — $3,990/year</a></div><ul class="list"><li>Team evidence workflow support</li><li>Phone number collected for onboarding</li><li>Customer-safe assurance materials</li><li>Readiness gap guidance</li></ul></div>
-<div class="card"><span class="badge">Business</span><h3>DigiTrust Business</h3><div class="price">$1,250 <span>/ month</span></div><p class="desc">Higher-touch plan for businesses preparing evidence workflows for external review, customer assurance, or partner-facing readiness.</p><div class="btnrow"><a class="btn primary full" href="https://buy.stripe.com/9B6dRa3ci27p6nK4f53gk05">Start monthly</a><a class="btn secondary full" href="https://buy.stripe.com/cNicN6aEK5jB5jGaDt3gk06">Start annual — $12,500/year</a></div><ul class="list"><li>Business evidence workflow support</li><li>Phone number collected for onboarding</li><li>Expanded assurance-readiness support</li><li>Priority onboarding path</li></ul></div>
-<div class="card"><span class="badge">Enterprise</span><h3>Enterprise</h3><div class="price">Custom</div><p class="desc">For organizations that require custom onboarding, security review, procurement coordination, and tailored evidence workflow support.</p><div class="btnrow"><a class="btn primary full" href="mailto:info@digitranshq.com?subject=DigiTrust%20Enterprise%20Inquiry">Contact DigiTrans</a><a class="btn secondary full" href="/get-started.html?intent=enterprise">Start intake</a></div><ul class="list"><li>Custom scope and onboarding</li><li>Security/procurement review support</li><li>Contracting and invoicing options</li><li>Enterprise workspace planning</li></ul></div>
-<div class="card"><span class="badge">Need help choosing?</span><h3>Start with a walkthrough</h3><div class="price">20 min</div><p class="desc">Not sure whether to start with QuickStart or a subscription? Request a short DigiTrust walkthrough.</p><div class="btnrow"><a class="btn primary full" href="/get-started.html?intent=pricing-help">Book a walkthrough</a><a class="btn secondary full" href="mailto:info@digitranshq.com?subject=DigiTrust%20pricing%20question">Email DigiTrans</a></div><ul class="list"><li>Discuss your review workflow</li><li>Map the right starting point</li><li>Keep sensitive details out of public forms</li></ul></div>
-</div><div class="notice"><p><strong>Checkout note:</strong> Payment links collect customer email, customer name, and business name. Team and Business links also collect phone number for onboarding. Shipping address, quantity adjustment, and automatic tax are not enabled for the initial launch links. Pricing, checkout, subscriptions, and billing happen outside the ChatGPT app.</p></div></div></section>
-<section class="section soft" id="faq"><div class="wrap"><div class="center"><div class="kicker">FAQ</div><h2>Common pricing questions</h2></div><div class="faq"><div class="card"><h3>Is this checkout inside ChatGPT?</h3><p>No. DigiTrust Evidence Assistant in ChatGPT is a public demo app. Stripe checkout happens on DigiTrans-owned web properties outside ChatGPT.</p></div><div class="card"><h3>What happens after payment?</h3><p>You will receive Stripe confirmation and DigiTrans will follow up for onboarding. You can also complete the DigiTrust intake form after purchase.</p></div><div class="card"><h3>Do these plans replace legal, security, or compliance review?</h3><p>No. DigiTrust supports evidence workflows and customer-safe assurance outputs. Customers remain responsible for their own legal, security, audit, and compliance decisions.</p></div><div class="card"><h3>Can I use Enterprise procurement?</h3><p>Yes. Enterprise buyers should contact DigiTrans for custom terms, onboarding, security review, and procurement coordination.</p></div></div></div></section>
-<section class="section blue"><div class="wrap"><div class="center"><div class="kicker">Ready to begin?</div><h2>Start with one proof-ready workflow</h2><p>Use the intake form if you want help selecting a plan, or choose a Stripe checkout link above when you are ready to proceed.</p><div class="btnrow" style="justify-content:center"><a class="btn primary" href="/get-started.html">Complete intake form</a><a class="btn secondary" href="mailto:info@digitranshq.com?subject=DigiTrust%20pricing%20question">Email DigiTrans</a></div></div></div></section>
-</main>
-<footer class="footer"><div class="footer-wrap"><div class="footer-brand"><img alt="DigiTrans logo" height="48" onerror="this.onerror=null;this.src='/digitrans-logo.png';" src="/digitrans-logo.png" width="170"/><div><strong>DigiTrust</strong><br/>AI trust and verification SaaS platform</div></div><div class="disclaimer">DigiTrust pricing and checkout are managed on DigiTrans-owned web properties using Stripe-hosted checkout. Review the <a href="/terms/">Terms of Service</a> and the <a href="/privacy/digitrust-evidence-assistant/">DigiTrust Evidence Assistant Privacy Policy</a>. Contact <a href="mailto:info@digitranshq.com">info@digitranshq.com</a>.</div></div></footer>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <nav class="nav" aria-label="Primary navigation">
+    <a class="brand" href="/" aria-label="DigiTrans DigiTrust home">
+      <img src="/digitrans-logo.png" alt="DigiTrans logo" width="166" height="48" />
+      <span class="brand-name">DigiTrust</span>
+    </a>
+    <div class="navlinks">
+      <a href="/">Overview</a>
+      <a href="#plans">Plans</a>
+      <a href="#faq">FAQ</a>
+      <a href="/privacy/">Privacy</a>
+      <a href="/terms/">Terms</a>
+    </div>
+    <div class="nav-cta"><a class="btn primary" href="/get-started.html?intent=pricing-help" data-campaign-link>Request guidance</a></div>
+  </nav>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-wrap single">
+        <span class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>Commercialization soft launch</span>
+        <h1 id="page-title"><span class="gradient-text">Pricing for evidence workflows and reviewer-ready proof</span></h1>
+        <p class="lead">Start with a scoped Evidence Packet QuickStart or choose a plan for ongoing evidence workflow support, customer-safe assurance outputs, and buyer-readiness conversations.</p>
+        <div class="btnrow">
+          <a class="btn primary" href="/get-started.html?intent=pricing-help" data-campaign-link>Help me choose</a>
+          <a class="btn secondary" href="#plans">Compare plans</a>
+        </div>
+        <p class="microcopy">Paid checkout and onboarding occur on DigiTrans-owned web properties outside ChatGPT. The public ChatGPT app remains a synthetic-data demo.</p>
+      </div>
+    </section>
+
+    <section class="section" id="plans">
+      <div class="wrap">
+        <div class="notice">
+          <p><strong>Soft-launch availability:</strong> DigiTrans is onboarding a limited number of organizations. Public prices are current starting points; scope, readiness, and the appropriate operating path may be confirmed during onboarding. Do not place sensitive information in Stripe checkout or the public intake form.</p>
+        </div>
+        <div class="center" style="margin-top:42px">
+          <div class="kicker">Plans</div>
+          <h2>Choose the smallest useful starting point</h2>
+          <p>The QuickStart is the recommended first commercial engagement when your organization has not yet completed a DigiTrust workflow.</p>
+        </div>
+
+        <div class="pricing-grid mt">
+          <article class="card price-card featured">
+            <span class="badge">Recommended first engagement</span>
+            <h3>Evidence Packet QuickStart</h3>
+            <div class="price">$2,500 <span>one time</span></div>
+            <p class="description">A focused starting point for one AI workflow, one proof asset, and one customer-safe assurance output.</p>
+            <ul class="list">
+              <li>One scoped AI workflow</li>
+              <li>Evidence Packet planning path</li>
+              <li>Customer-safe assurance output</li>
+              <li>High-level reviewer-readiness guidance</li>
+            </ul>
+            <div class="btnrow">
+              <a class="btn primary full" href="https://buy.stripe.com/28EfZi28edQ727u9zp3gk00" target="_blank" rel="noopener" aria-label="Start Evidence Packet QuickStart in Stripe checkout, opens in a new tab">Start QuickStart</a>
+              <a class="btn secondary full" href="/get-started.html?intent=quickstart" data-campaign-link>Discuss before checkout</a>
+            </div>
+          </article>
+
+          <article class="card price-card">
+            <span class="badge">Starter</span>
+            <h3>DigiTrust Starter</h3>
+            <div class="price">$99 <span>/ month</span></div>
+            <p class="description">For small teams beginning to organize evidence workflows and customer-safe summaries.</p>
+            <ul class="list">
+              <li>Starter evidence workflow support</li>
+              <li>Customer-safe summary workflow</li>
+              <li>Buyer-readiness orientation</li>
+              <li>Email-based onboarding</li>
+            </ul>
+            <div class="btnrow">
+              <a class="btn primary full" href="https://buy.stripe.com/6oU5kE28e8vN13qcLB3gk01" target="_blank" rel="noopener" aria-label="Start DigiTrust Starter monthly plan in Stripe checkout, opens in a new tab">Start monthly</a>
+              <a class="btn secondary full" href="https://buy.stripe.com/cNicN6dQW27pbI4fXN3gk02" target="_blank" rel="noopener" aria-label="Start DigiTrust Starter annual plan in Stripe checkout, opens in a new tab">Start annual - $990/year</a>
+            </div>
+          </article>
+
+          <article class="card price-card">
+            <span class="badge">Team</span>
+            <h3>DigiTrust Team</h3>
+            <div class="price">$399 <span>/ month</span></div>
+            <p class="description">For teams supporting security, procurement, partner, and customer assurance conversations.</p>
+            <ul class="list">
+              <li>Team evidence workflow support</li>
+              <li>Customer-safe assurance materials</li>
+              <li>Readiness gap guidance</li>
+              <li>Phone number collected for onboarding</li>
+            </ul>
+            <div class="btnrow">
+              <a class="btn primary full" href="https://buy.stripe.com/eVqeVe9AGcM327u26X3gk03" target="_blank" rel="noopener" aria-label="Start DigiTrust Team monthly plan in Stripe checkout, opens in a new tab">Start monthly</a>
+              <a class="btn secondary full" href="https://buy.stripe.com/28E3cweV03bt9zW9zp3gk04" target="_blank" rel="noopener" aria-label="Start DigiTrust Team annual plan in Stripe checkout, opens in a new tab">Start annual - $3,990/year</a>
+            </div>
+          </article>
+
+          <article class="card price-card">
+            <span class="badge">Business</span>
+            <h3>DigiTrust Business</h3>
+            <div class="price">$1,250 <span>/ month</span></div>
+            <p class="description">Higher-touch support for organizations preparing evidence workflows for external review and customer assurance.</p>
+            <ul class="list">
+              <li>Business evidence workflow support</li>
+              <li>Expanded assurance-readiness support</li>
+              <li>Priority onboarding path</li>
+              <li>Phone number collected for onboarding</li>
+            </ul>
+            <div class="btnrow">
+              <a class="btn primary full" href="https://buy.stripe.com/9B6dRa3ci27p6nK4f53gk05" target="_blank" rel="noopener" aria-label="Start DigiTrust Business monthly plan in Stripe checkout, opens in a new tab">Start monthly</a>
+              <a class="btn secondary full" href="https://buy.stripe.com/cNicN6aEK5jB5jGaDt3gk06" target="_blank" rel="noopener" aria-label="Start DigiTrust Business annual plan in Stripe checkout, opens in a new tab">Start annual - $12,500/year</a>
+            </div>
+          </article>
+
+          <article class="card price-card">
+            <span class="badge">Enterprise</span>
+            <h3>Enterprise</h3>
+            <div class="price">Custom</div>
+            <p class="description">For organizations that require custom scope, security review, procurement coordination, or tailored onboarding.</p>
+            <ul class="list">
+              <li>Custom scope and onboarding</li>
+              <li>Security and procurement review support</li>
+              <li>Contracting and invoicing options</li>
+              <li>Enterprise workspace planning</li>
+            </ul>
+            <div class="btnrow">
+              <a class="btn primary full" href="/get-started.html?intent=enterprise" data-campaign-link>Start enterprise intake</a>
+              <a class="btn secondary full" href="mailto:info@digitranshq.com?subject=DigiTrust%20Enterprise%20Inquiry">Contact DigiTrans</a>
+            </div>
+          </article>
+
+          <article class="card price-card success">
+            <span class="badge">Not sure?</span>
+            <h3>20-minute walkthrough</h3>
+            <div class="price">No cost</div>
+            <p class="description">Use a short discovery conversation to choose the right starting point without sharing sensitive details.</p>
+            <ul class="list">
+              <li>Discuss the review workflow</li>
+              <li>Identify the decision audience</li>
+              <li>Map the smallest useful next step</li>
+              <li>Keep sensitive details out of public channels</li>
+            </ul>
+            <div class="btnrow">
+              <a class="btn primary full" href="/get-started.html?intent=walkthrough" data-campaign-link>Request a walkthrough</a>
+              <a class="btn secondary full" href="mailto:info@digitranshq.com?subject=DigiTrust%20pricing%20question">Email DigiTrans</a>
+            </div>
+          </article>
+        </div>
+
+        <div class="notice warn" style="margin-top:28px">
+          <p><strong>Checkout note:</strong> Stripe-hosted checkout collects the customer information configured for the selected plan. Shipping, quantity adjustment, and automatic tax are not enabled for the initial launch links. Review the plan, billing interval, <a href="/terms/"><strong>Terms of Service</strong></a>, and <a href="/privacy/"><strong>Website Privacy Notice</strong></a> before purchase.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section soft" id="faq">
+      <div class="wrap">
+        <div class="center">
+          <div class="kicker">FAQ</div>
+          <h2>Common soft-launch questions</h2>
+        </div>
+        <div class="grid-2 mt">
+          <article class="card"><h3>Is this checkout inside ChatGPT?</h3><p>No. DigiTrust Evidence Assistant in ChatGPT is a public demo. Pricing, checkout, subscriptions, billing, and paid onboarding happen outside ChatGPT.</p></article>
+          <article class="card"><h3>What happens after payment?</h3><p>Stripe provides payment confirmation and DigiTrans follows up for onboarding. You may also complete the intake to provide reviewer-safe context for your workflow.</p></article>
+          <article class="card"><h3>What am I purchasing?</h3><p>You are purchasing the plan or scoped service described on this page and at checkout. The public ChatGPT demo is not a paid workspace and does not itself deliver the commercial service.</p></article>
+          <article class="card"><h3>Do plans replace professional review?</h3><p>No. DigiTrust supports evidence workflows and assurance outputs. Customers remain responsible for their own legal, security, audit, procurement, certification, and compliance decisions.</p></article>
+          <article class="card"><h3>How do subscriptions renew?</h3><p>Monthly and annual subscriptions renew on the interval shown at checkout unless canceled. Review the cancellation and refund terms before purchasing.</p></article>
+          <article class="card"><h3>Can enterprise buyers use procurement?</h3><p>Yes. Enterprise buyers should use the intake or contact DigiTrans to discuss custom terms, security review, procurement, invoicing, and onboarding.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="center">
+        <h2>Start with the smallest plan that creates real evidence</h2>
+        <p>Use the intake when you want help selecting a plan or confirming scope before checkout.</p>
+        <div class="btnrow">
+          <a class="btn primary" href="/get-started.html?intent=pricing-help" data-campaign-link>Complete the intake</a>
+          <a class="btn secondary" href="mailto:info@digitranshq.com?subject=DigiTrust%20pricing%20question">Email DigiTrans</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-wrap">
+      <div class="footer-brand"><img src="/digitrans-logo.png" alt="DigiTrans logo" width="156" height="45" /><div><strong>DigiTrust</strong><br />AI trust and verification workflows</div></div>
+      <div class="footer-copy">Pricing and checkout are managed on DigiTrans-owned web properties using Stripe-hosted checkout.
+        <div class="footer-links"><a href="/">Overview</a><a href="/get-started.html" data-campaign-link>Get started</a><a href="/privacy/">Website privacy</a><a href="/privacy/digitrust-evidence-assistant/">ChatGPT app privacy</a><a href="/terms/">Terms</a><a href="mailto:info@digitranshq.com">Contact</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/site.js" defer></script>
 </body>
 </html>

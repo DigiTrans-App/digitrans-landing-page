@@ -1,246 +1,216 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Get Started with DigiTrust | Evidence Packet Intake</title>
-<meta content="Start your first DigiTrust Evidence Packet. Tell us about the AI workflow you want to make proof-ready." name="description"/>
-<meta content="Get Started with DigiTrust | Evidence Packet Intake" property="og:title"/>
-<meta content="Submit a DigiTrust intake request to start with one AI workflow and one auditable Evidence Packet." property="og:description"/>
-<meta content="/digitrans-logo.png" property="og:image"/>
-<link href="/digitrans-logo.png" rel="icon"/>
-<style>
-:root{
-  --ink:#071827;--muted:#5b6b7f;--line:#d8e5f0;--soft:#f6f9fc;--accent:#2563eb;
-  --accent2:#0f766e;--good:#16a34a;--warn:#f59e0b;--shadow:0 24px 80px rgba(7,24,39,.12);
-  --shadow2:0 10px 30px rgba(7,24,39,.08);--radius:28px;--max:1120px;
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:#fff}
-a{color:inherit}
-.nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:16px clamp(18px,4vw,56px);background:rgba(255,255,255,.93);backdrop-filter:blur(18px);border-bottom:1px solid rgba(216,229,240,.82)}
-.brand{display:inline-flex;align-items:center;gap:14px;text-decoration:none;font-weight:950;letter-spacing:-.03em;color:var(--ink)}
-.brand img{width:170px;max-width:42vw;height:auto;display:block}.badge-name{border-left:1px solid var(--line);padding-left:14px;font-size:18px;color:#123c5b;white-space:nowrap}
-.navlinks{display:flex;align-items:center;gap:20px}.navlinks a{text-decoration:none;color:#38526a;font-weight:820;font-size:14px}.navlinks a:hover{color:var(--accent)}
-.hero{position:relative;overflow:hidden;background:radial-gradient(circle at 15% 20%,rgba(37,99,235,.16),transparent 32%),radial-gradient(circle at 88% 12%,rgba(15,118,110,.18),transparent 30%),linear-gradient(135deg,#f8fbff 0%,#eef7ff 55%,#ecfdf5 100%)}
-.hero:before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(7,24,39,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(7,24,39,.055) 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(to bottom,rgba(0,0,0,.75),transparent 88%)}
-.hero-wrap{position:relative;max-width:var(--max);margin:0 auto;display:grid;grid-template-columns:1fr .9fr;gap:36px;align-items:center;padding:82px 24px 62px}
-.eyebrow{display:inline-flex;align-items:center;gap:9px;padding:9px 13px;border:1px solid #bfe5f6;border-radius:999px;background:rgba(224,242,254,.82);color:#075985;font-size:13px;font-weight:900;letter-spacing:.01em}.spark{width:9px;height:9px;border-radius:999px;background:var(--good);box-shadow:0 0 0 6px rgba(22,163,74,.14)}
-h1{font-size:clamp(36px,5vw,62px);line-height:1.02;letter-spacing:-.058em;margin:20px 0 18px;max-width:860px}.gradient-text{background:linear-gradient(90deg,#071827 0%,#0f5fa8 48%,#0f766e 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
-.lead{font-size:clamp(18px,2vw,22px);line-height:1.55;color:#455b70;max-width:780px;margin:0 0 18px}.lead strong{color:#102b42}
-.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:26px;box-shadow:var(--shadow2)}
-.hero-card{box-shadow:var(--shadow);background:rgba(255,255,255,.92)}
-.list{list-style:none;margin:18px 0 0;padding:0}.list li{display:flex;gap:12px;padding:9px 0;border-bottom:1px solid #edf2f7;color:#425466;font-size:16px;line-height:1.45}.list li:before{content:"✓";font-weight:950;color:var(--good)}
-.section{padding:72px 24px}.soft{background:var(--soft)}.wrap{max-width:var(--max);margin:0 auto}.center{max-width:900px;margin:0 auto;text-align:center}.kicker{font-size:13px;font-weight:950;text-transform:uppercase;letter-spacing:.12em;color:var(--accent2);margin-bottom:12px}
-h2{font-size:clamp(30px,4vw,46px);line-height:1.08;letter-spacing:-.048em;margin:0 0 16px}h3{font-size:22px;line-height:1.2;margin:0 0 10px;letter-spacing:-.025em}p{font-size:18px;line-height:1.64;color:var(--muted);margin:0 0 16px}
-.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px}
-.form-shell{margin-top:30px;background:#fff;border:1px solid #cfe0ef;border-radius:34px;box-shadow:var(--shadow);overflow:hidden}
-.form-header{padding:26px 30px;border-bottom:1px solid var(--line);background:linear-gradient(135deg,#ffffff,#f3fbff)}.form-header p{margin-bottom:0}
-.intake-form{padding:30px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.field{display:flex;flex-direction:column;gap:8px}.field.full{grid-column:1/-1}.field label{font-size:14px;font-weight:900;color:#17334a}.required{color:#b42318}.field input,.field select,.field textarea{width:100%;border:1px solid #b9c8d7;border-radius:14px;background:#fff;color:var(--ink);font:inherit;padding:13px 14px;outline:none;transition:border-color .15s,box-shadow .15s}.field input:focus,.field select:focus,.field textarea:focus{border-color:#60a5fa;box-shadow:0 0 0 4px rgba(37,99,235,.12)}.field textarea{min-height:132px;resize:vertical}.helper{font-size:13px;line-height:1.45;color:#64748b;margin:0}
-.consent{display:flex;align-items:flex-start;gap:11px;padding:16px;border:1px solid #d6e2ed;border-radius:16px;background:#f8fafc}.consent input{margin-top:4px}.consent label{font-size:14px;line-height:1.5;color:#425466}.bot-field{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;overflow:hidden!important}
-.form-footer{margin-top:24px;padding-top:22px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}.form-footer p{font-size:14px;line-height:1.5;color:#64748b;max-width:660px;margin:0}
-.notice{border-left:5px solid var(--warn);background:#fffbeb;border-radius:18px;padding:18px 20px;color:#713f12;margin-top:20px}.notice strong{color:#78350f}
-.btnrow{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}.btn{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:14px 20px;min-height:48px;text-decoration:none;border:1px solid transparent;font-weight:900;font-size:15px;cursor:pointer}.primary{background:var(--accent);color:#fff;box-shadow:0 12px 28px rgba(37,99,235,.24)}.secondary{background:#fff;color:#0b2538;border-color:#cbd9e6}.ghost{background:#eafcf5;color:#065f46;border-color:#b9f4d7}.btn:hover{transform:translateY(-1px)}
-.footer{background:#06111c;color:#cbd5e1;padding:34px 24px;font-size:14px}.footer-wrap{max-width:var(--max);margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}.footer-brand{display:flex;align-items:center;gap:16px}.footer img{width:160px;background:#fff;border-radius:16px;padding:9px 12px}.disclaimer{max-width:680px;color:#aab7c5;line-height:1.55}.footer a{color:#dbeafe}
-@media (max-width:900px){.navlinks{display:none}.hero-wrap,.grid-3,.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.hero-wrap{padding:64px 20px 52px}.section{padding:56px 20px}.brand img{width:146px}.badge-name{font-size:16px}}
-@media (max-width:560px){h1{font-size:36px}.btn{width:100%}.badge-name{display:none}.nav{padding:14px 18px}.intake-form{padding:22px 18px}.form-header{padding:22px 18px}.form-footer{display:block}.form-footer .btn{margin-top:14px}}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Get Started with DigiTrust | Evidence Packet Intake</title>
+  <meta name="description" content="Request a DigiTrust walkthrough, discuss an Evidence Packet QuickStart, or identify the right soft-launch plan for one enterprise AI workflow." />
+  <link rel="canonical" href="https://www.digitranshq.com/get-started.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="DigiTrans" />
+  <meta property="og:title" content="Get Started with DigiTrust" />
+  <meta property="og:description" content="Tell us about one AI workflow and the review outcome you need." />
+  <meta property="og:url" content="https://www.digitranshq.com/get-started.html" />
+  <meta property="og:image" content="https://www.digitranshq.com/digitrans-logo.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="/digitrans-logo.png" />
+  <link rel="stylesheet" href="/assets/site.css" />
 </head>
 <body>
-<nav aria-label="Primary navigation" class="nav">
-<a aria-label="DigiTrans DigiTrust home" class="brand" href="/">
-<img alt="DigiTrans logo" height="48" onerror="this.onerror=null;this.src='assets/digitrans-logo.svg';" src="/digitrans-logo.png" width="170"/>
-<span class="badge-name">DigiTrust</span>
-</a>
-<div aria-label="Page sections" class="navlinks">
-<a href="/">Home</a>
-<a href="#intake">Intake form</a>
-<a href="#how-it-works">How it works</a>
-<a href="/pricing/">Pricing</a>
-</div>
-</nav>
+  <a class="skip-link" href="#main">Skip to main content</a>
 
-<main id="top">
-<section class="hero">
-<div class="hero-wrap">
-<div>
-<span class="eyebrow"><span class="spark"></span>Start your first proof-ready AI workflow</span>
-<h1><span class="gradient-text">Get your first Evidence Packet</span></h1>
-<p class="lead"><strong>Tell us about the AI workflow you want to make proof-ready.</strong> Complete the intake directly on this page—no Microsoft account or external sign-in is required.</p>
-<p class="lead">DigiTrust helps enterprises generate auditable proof for AI workflows so teams can speed approvals, support compliance review, protect sensitive data, and build trust.</p>
-<div class="btnrow">
-<a class="btn primary" href="#intake">Complete intake form</a>
-<a class="btn secondary" href="/pricing/">View DigiTrust pricing</a>
-<a class="btn ghost" href="/">Back to overview</a>
-</div>
-</div>
-<aside class="card hero-card">
-<h3>What happens after you submit?</h3>
-<ul class="list">
-<li>We review your AI workflow and requested outcome.</li>
-<li>We identify the right DigiTrust next step: demo, design partner, QuickStart, or partner conversation.</li>
-<li>We follow up by email with a practical path to your first Evidence Packet.</li>
-</ul>
-<div class="notice"><strong>Safety note:</strong> Do not submit raw sensitive data, credentials, customer production data, raw Evidence Packets, payment information, tax information, banking information, or confidential legal materials.</div>
-</aside>
-</div>
-</section>
+  <nav class="nav" aria-label="Primary navigation">
+    <a class="brand" href="/" aria-label="DigiTrans DigiTrust home">
+      <img src="/digitrans-logo.png" alt="DigiTrans logo" width="166" height="48" />
+      <span class="brand-name">DigiTrust</span>
+    </a>
+    <div class="navlinks">
+      <a href="/">Overview</a>
+      <a href="#intake">Intake</a>
+      <a href="#process">Process</a>
+      <a href="/pricing/" data-campaign-link>Pricing</a>
+      <a href="/privacy/">Privacy</a>
+    </div>
+    <div class="nav-cta"><a class="btn secondary" href="/pricing/" data-campaign-link>View pricing</a></div>
+  </nav>
 
-<section class="section" id="intake">
-<div class="wrap">
-<div class="center">
-<div class="kicker">DigiTrust intake</div>
-<h2>Start with one AI workflow</h2>
-<p>Share high-level, reviewer-safe information about your business goal, review blockers, and desired timeline. No account authentication is required.</p>
-</div>
+  <main id="main">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-wrap">
+        <div>
+          <span class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>One workflow. One clear next step.</span>
+          <h1 id="page-title"><span class="gradient-text">Start your first proof-ready AI workflow</span></h1>
+          <p class="lead"><strong>Tell us what you are trying to review, approve, or explain.</strong> We will use your high-level information to identify the best next step: walkthrough, QuickStart, design-partner discussion, or commercial plan.</p>
+          <p class="sublead">Do not include secrets, credentials, regulated data, raw production records, payment information, or confidential legal materials.</p>
+          <div class="btnrow">
+            <a class="btn primary" href="#intake">Complete the intake</a>
+            <a class="btn secondary" href="/pricing/" data-campaign-link>Review pricing</a>
+          </div>
+        </div>
+        <aside class="card success">
+          <h3>What happens next</h3>
+          <ul class="list">
+            <li>We review the workflow and the outcome you need.</li>
+            <li>We identify the most practical starting path.</li>
+            <li>We follow up using the work email you provide.</li>
+            <li>Detailed or sensitive review moves to an appropriate private channel.</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
 
-<div class="form-shell">
-<div class="form-header">
-<h3>DigiTrust Intake Form</h3>
-<p>Required fields are marked with an asterisk. DigiTrans will use this information only to evaluate and respond to your request.</p>
-</div>
-<form class="intake-form" id="digitrust-intake" action="https://formsubmit.co/info@digitranshq.com" method="POST">
-<input type="hidden" name="_subject" value="New DigiTrust intake request"/>
-<input type="hidden" name="_template" value="table"/>
-<input type="hidden" name="_next" value="https://www.digitranshq.com/intake-thank-you/"/>
-<input type="hidden" name="_autoresponse" value="Thank you for contacting DigiTrans about DigiTrust. We received your intake request and will follow up using the email address you provided. Please do not reply with sensitive data, credentials, payment information, or production customer records."/>
-<input type="hidden" name="intent" id="intent" value="general-intake"/>
-<input type="hidden" name="utm_source" id="utm_source" value=""/>
-<input type="hidden" name="utm_medium" id="utm_medium" value=""/>
-<input type="hidden" name="utm_campaign" id="utm_campaign" value=""/>
-<input type="hidden" name="referrer" id="referrer" value=""/>
-<div class="bot-field" aria-hidden="true"><label>Leave this field empty<input type="text" name="website_check" id="website_check" tabindex="-1" autocomplete="off"/></label></div>
+    <section class="section" id="intake">
+      <div class="wrap">
+        <div class="center">
+          <div class="kicker">DigiTrust intake</div>
+          <h2>Share reviewer-safe information about one workflow</h2>
+          <p>Required fields are intentionally limited. Additional information is optional and helps us recommend the right commercial path.</p>
+        </div>
 
-<div class="form-grid">
-<div class="field">
-<label for="full_name">Full name <span class="required">*</span></label>
-<input id="full_name" name="Full Name" type="text" autocomplete="name" required maxlength="120"/>
-</div>
-<div class="field">
-<label for="email">Work email <span class="required">*</span></label>
-<input id="email" name="email" type="email" autocomplete="email" required maxlength="180"/>
-</div>
-<div class="field">
-<label for="company">Company / organization <span class="required">*</span></label>
-<input id="company" name="Company" type="text" autocomplete="organization" required maxlength="160"/>
-</div>
-<div class="field">
-<label for="role">Role / title</label>
-<input id="role" name="Role or Title" type="text" autocomplete="organization-title" maxlength="160"/>
-</div>
-<div class="field">
-<label for="phone">Phone number</label>
-<input id="phone" name="Phone" type="tel" autocomplete="tel" maxlength="40"/>
-<p class="helper">Optional. Include it only if you want a phone follow-up.</p>
-</div>
-<div class="field">
-<label for="use_case">Primary use case <span class="required">*</span></label>
-<select id="use_case" name="Primary Use Case" required>
-<option value="" selected disabled>Select one</option>
-<option>Security review</option>
-<option>Procurement or vendor review</option>
-<option>Partner assurance</option>
-<option>Customer assurance</option>
-<option>AI governance</option>
-<option>Evidence Packet evaluation</option>
-<option>Other</option>
-</select>
-</div>
-<div class="field">
-<label for="plan_interest">Preferred starting point <span class="required">*</span></label>
-<select id="plan_interest" name="Preferred Starting Point" required>
-<option value="" selected disabled>Select one</option>
-<option>Evidence Packet QuickStart</option>
-<option>DigiTrust Starter</option>
-<option>DigiTrust Team</option>
-<option>DigiTrust Business</option>
-<option>Enterprise</option>
-<option>Not sure — recommend a path</option>
-</select>
-</div>
-<div class="field">
-<label for="timeline">Desired timeline <span class="required">*</span></label>
-<select id="timeline" name="Desired Timeline" required>
-<option value="" selected disabled>Select one</option>
-<option>As soon as possible</option>
-<option>Within 30 days</option>
-<option>Within 60–90 days</option>
-<option>Within 3–6 months</option>
-<option>Exploring / no fixed timeline</option>
-</select>
-</div>
-<div class="field full">
-<label for="workflow_name">AI workflow or initiative name</label>
-<input id="workflow_name" name="Workflow or Initiative" type="text" maxlength="180"/>
-<p class="helper">Use a high-level name only. Do not include confidential project names if they are sensitive.</p>
-</div>
-<div class="field full">
-<label for="business_goal">Business goal <span class="required">*</span></label>
-<textarea id="business_goal" name="Business Goal" required maxlength="1600" placeholder="What outcome are you trying to achieve, and who needs to review or approve the workflow?"></textarea>
-</div>
-<div class="field full">
-<label for="review_blockers">Current review blockers or questions</label>
-<textarea id="review_blockers" name="Review Blockers" maxlength="1600" placeholder="Examples: security review, procurement, customer assurance, governance, evidence readiness, or approval workflow questions."></textarea>
-</div>
-<div class="field full">
-<div class="consent">
-<input id="consent" name="Consent" type="checkbox" value="Agreed" required/>
-<label for="consent">I agree that DigiTrans LLC may use the information submitted to evaluate and respond to this request. I will not submit secrets, credentials, payment information, regulated data, production customer records, or confidential legal materials. <span class="required">*</span></label>
-</div>
-</div>
-</div>
+        <div class="form-shell">
+          <div class="form-header">
+            <h3>DigiTrust soft-launch intake</h3>
+            <p>DigiTrans LLC will use this information to evaluate and respond to your request. Review the <a href="/privacy/"><strong>Website Privacy Notice</strong></a>.</p>
+          </div>
+          <form class="intake-form" id="digitrust-intake" action="https://formsubmit.co/info@digitranshq.com" method="POST">
+            <input type="hidden" name="_subject" value="New DigiTrust soft-launch intake" />
+            <input type="hidden" name="_template" value="table" />
+            <input type="hidden" name="_next" value="https://www.digitranshq.com/intake-thank-you/" />
+            <input type="hidden" name="_autoresponse" value="Thank you for contacting DigiTrans about DigiTrust. We received your request and will follow up using the email address you provided. Please do not reply with sensitive data, credentials, payment information, regulated data, or production customer records." />
+            <input type="hidden" name="intent" id="intent" value="general-intake" />
+            <input type="hidden" name="utm_source" id="utm_source" value="" />
+            <input type="hidden" name="utm_medium" id="utm_medium" value="" />
+            <input type="hidden" name="utm_campaign" id="utm_campaign" value="" />
+            <input type="hidden" name="utm_term" id="utm_term" value="" />
+            <input type="hidden" name="utm_content" id="utm_content" value="" />
+            <input type="hidden" name="referrer" id="referrer" value="" />
+            <input type="hidden" name="landing_page" id="landing_page" value="" />
+            <input type="hidden" name="source_path" id="source_path" value="" />
+            <div class="bot-field" aria-hidden="true"><label>Leave this field empty<input type="text" name="website_check" id="website_check" tabindex="-1" autocomplete="off" /></label></div>
 
-<div class="form-footer">
-<p>Form delivery is handled by a form-processing provider and routed to <strong>info@digitranshq.com</strong>. A simple anti-spam challenge may appear; no Microsoft account or DigiTrans login is required.</p>
-<button class="btn primary" type="submit">Submit DigiTrust intake</button>
-</div>
-</form>
-</div>
-</div>
-</section>
+            <div class="form-grid">
+              <div class="field">
+                <label for="full_name">Full name <span class="required">*</span></label>
+                <input id="full_name" name="Full Name" type="text" autocomplete="name" required maxlength="120" />
+              </div>
+              <div class="field">
+                <label for="email">Work email <span class="required">*</span></label>
+                <input id="email" name="email" type="email" autocomplete="email" required maxlength="180" />
+              </div>
+              <div class="field">
+                <label for="company">Company or organization <span class="required">*</span></label>
+                <input id="company" name="Company" type="text" autocomplete="organization" required maxlength="160" />
+              </div>
+              <div class="field">
+                <label for="role">Role or title</label>
+                <input id="role" name="Role or Title" type="text" autocomplete="organization-title" maxlength="160" />
+              </div>
+              <div class="field">
+                <label for="phone">Phone number</label>
+                <input id="phone" name="Phone" type="tel" autocomplete="tel" maxlength="40" />
+                <p class="helper">Optional. Include it only if you want a phone follow-up.</p>
+              </div>
+              <div class="field">
+                <label for="use_case">Primary use case <span class="required">*</span></label>
+                <select id="use_case" name="Primary Use Case" required>
+                  <option value="" selected disabled>Select one</option>
+                  <option>Security review</option>
+                  <option>Procurement or vendor review</option>
+                  <option>Partner assurance</option>
+                  <option>Customer assurance</option>
+                  <option>AI governance</option>
+                  <option>Evidence Packet evaluation</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="plan_interest">Preferred starting point</label>
+                <select id="plan_interest" name="Preferred Starting Point">
+                  <option value="" selected>Not sure - recommend a path</option>
+                  <option>20-minute walkthrough</option>
+                  <option>Evidence Packet QuickStart</option>
+                  <option>DigiTrust Starter</option>
+                  <option>DigiTrust Team</option>
+                  <option>DigiTrust Business</option>
+                  <option>Enterprise</option>
+                  <option>Design-partner discussion</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="timeline">Desired timeline</label>
+                <select id="timeline" name="Desired Timeline">
+                  <option value="" selected>Exploring / no fixed timeline</option>
+                  <option>As soon as practical</option>
+                  <option>Within 30 days</option>
+                  <option>Within 60-90 days</option>
+                  <option>Within 3-6 months</option>
+                </select>
+              </div>
+              <div class="field full">
+                <label for="workflow_name">AI workflow or initiative name</label>
+                <input id="workflow_name" name="Workflow or Initiative" type="text" maxlength="180" />
+                <p class="helper">Use a high-level name only. Do not include a confidential project name.</p>
+              </div>
+              <div class="field full">
+                <label for="business_goal">Business goal and review outcome <span class="required">*</span></label>
+                <textarea id="business_goal" name="Business Goal" required maxlength="1600" placeholder="What outcome are you trying to achieve, and who needs to review, approve, or rely on the workflow?"></textarea>
+              </div>
+              <div class="field full">
+                <label for="review_blockers">Current blockers or questions</label>
+                <textarea id="review_blockers" name="Review Blockers" maxlength="1600" placeholder="Examples: security review, procurement, customer assurance, governance, evidence readiness, or approval workflow questions."></textarea>
+              </div>
+              <div class="field full">
+                <div class="consent">
+                  <input id="consent" name="Consent" type="checkbox" value="Agreed" required />
+                  <label for="consent">I have read the <a href="/privacy/">Website Privacy Notice</a>. I agree that DigiTrans LLC may use this information to evaluate and respond to my request, and I will not submit secrets, credentials, payment information, regulated data, production customer records, or confidential legal materials. <span class="required">*</span></label>
+                </div>
+              </div>
+            </div>
 
-<section class="section soft" id="how-it-works">
-<div class="wrap">
-<div class="center">
-<div class="kicker">How the intake supports DigiTrust</div>
-<h2>From request to proof-ready workflow</h2>
-<p>DigiTrust turns enterprise AI review into a clear sequence: define the workflow, protect sensitive data, confirm the approved path, capture review, and generate a verifiable Evidence Packet.</p>
-</div>
-<div class="grid-3">
-<div class="card"><h3>1. Tell us the workflow</h3><p>Share the AI use case, business outcome, review blockers, and timeline.</p></div>
-<div class="card"><h3>2. Align on the proof path</h3><p>We identify whether your next step is a demo, design partner, Marketplace conversation, or Evidence Packet QuickStart.</p></div>
-<div class="card"><h3>3. Produce proof</h3><p>The goal is one AI workflow, one clean Evidence Packet, and one reviewer-safe assurance asset.</p></div>
-</div>
-</div>
-</section>
+            <div class="form-footer">
+              <p>Form delivery is handled by a form-processing provider and routed to <strong>info@digitranshq.com</strong>. An anti-spam challenge may appear. No DigiTrans or Microsoft account is required.</p>
+              <button class="btn primary" type="submit">Submit DigiTrust intake</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
 
-<section class="section">
-<div class="wrap">
-<div class="center">
-<h2>Questions before submitting?</h2>
-<p>Email <a href="mailto:info@digitranshq.com">info@digitranshq.com</a> and include “DigiTrust intake” in the subject line.</p>
-<div class="btnrow" style="justify-content:center"><a class="btn primary" href="#intake">Complete intake form</a><a class="btn ghost" href="mailto:info@digitranshq.com?subject=DigiTrust%20intake%20question">Email DigiTrans</a></div>
-</div>
-</div>
-</section>
-</main>
+    <section class="section soft" id="process">
+      <div class="wrap">
+        <div class="center">
+          <div class="kicker">Commercial path</div>
+          <h2>From intake to a concrete proof plan</h2>
+        </div>
+        <div class="grid-3 mt">
+          <article class="card"><span class="number">1</span><h3>Qualify the workflow</h3><p>Confirm the use case, review audience, business outcome, and information that can be handled safely.</p></article>
+          <article class="card"><span class="number">2</span><h3>Choose the starting path</h3><p>Select a walkthrough, QuickStart, subscription plan, design-partner discussion, or enterprise review.</p></article>
+          <article class="card"><span class="number">3</span><h3>Build the first proof asset</h3><p>Define the evidence path and move toward one Evidence Packet and one customer-safe assurance output.</p></article>
+        </div>
+      </div>
+    </section>
 
-<footer class="footer">
-<div class="footer-wrap">
-<div class="footer-brand"><img alt="DigiTrans logo" height="48" onerror="this.onerror=null;this.src='assets/digitrans-logo.svg';" src="/digitrans-logo.png" width="170"/><div><strong>DigiTrust</strong><br/>AI trust and verification SaaS platform</div></div>
-<div class="disclaimer">DigiTrust supports evidence review for security, compliance, privacy, audit, customer assurance, and AI program teams. DigiTrust does not replace a customer’s own legal review, audit process, certification process, AWS review outcome, or compliance obligation. Review the <a href="/terms/">Terms of Service</a>.</div>
-</div>
-</footer>
-<script>
-(function(){
-  var params=new URLSearchParams(window.location.search);
-  var names=["intent","utm_source","utm_medium","utm_campaign"];
-  names.forEach(function(name){var el=document.getElementById(name);if(el&&params.get(name)){el.value=params.get(name).slice(0,200);}});
-  var ref=document.getElementById("referrer");if(ref){ref.value=(document.referrer||"").slice(0,500);}
-  var form=document.getElementById("digitrust-intake");
-  if(form){form.addEventListener("submit",function(event){var trap=document.getElementById("website_check");if(trap&&trap.value){event.preventDefault();window.location.href="/intake-thank-you/";}});}
-})();
-</script>
+    <section class="cta">
+      <div class="center">
+        <h2>Need context before submitting?</h2>
+        <p>Review the soft-launch pricing or email DigiTrans with a high-level question. Keep sensitive details out of public forms and email.</p>
+        <div class="btnrow">
+          <a class="btn primary" href="/pricing/" data-campaign-link>Review pricing</a>
+          <a class="btn secondary" href="mailto:info@digitranshq.com?subject=DigiTrust%20soft-launch%20question">Email DigiTrans</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-wrap">
+      <div class="footer-brand"><img src="/digitrans-logo.png" alt="DigiTrans logo" width="156" height="45" /><div><strong>DigiTrust</strong><br />AI trust and verification workflows</div></div>
+      <div class="footer-copy">DigiTrust does not replace legal, security, audit, certification, procurement, or compliance review.
+        <div class="footer-links"><a href="/">Overview</a><a href="/pricing/" data-campaign-link>Pricing</a><a href="/privacy/">Website privacy</a><a href="/terms/">Terms</a><a href="mailto:info@digitranshq.com">Contact</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/site.js" defer></script>
 </body>
 </html>

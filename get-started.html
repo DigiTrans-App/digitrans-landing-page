@@ -16,6 +16,7 @@
   --shadow2:0 10px 30px rgba(7,24,39,.08);--radius:28px;--max:1120px;
 }
 *{box-sizing:border-box}
+html{scroll-behavior:smooth}
 body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:#fff}
 a{color:inherit}
 .nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:16px clamp(18px,4vw,56px);background:rgba(255,255,255,.93);backdrop-filter:blur(18px);border-bottom:1px solid rgba(216,229,240,.82)}
@@ -34,15 +35,13 @@ h1{font-size:clamp(36px,5vw,62px);line-height:1.02;letter-spacing:-.058em;margin
 .section{padding:72px 24px}.soft{background:var(--soft)}.wrap{max-width:var(--max);margin:0 auto}.center{max-width:900px;margin:0 auto;text-align:center}.kicker{font-size:13px;font-weight:950;text-transform:uppercase;letter-spacing:.12em;color:var(--accent2);margin-bottom:12px}
 h2{font-size:clamp(30px,4vw,46px);line-height:1.08;letter-spacing:-.048em;margin:0 0 16px}h3{font-size:22px;line-height:1.2;margin:0 0 10px;letter-spacing:-.025em}p{font-size:18px;line-height:1.64;color:var(--muted);margin:0 0 16px}
 .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px}
-.form-shell{margin-top:30px;background:#fff;border:1px solid #cfe0ef;border-radius:34px;box-shadow:var(--shadow);overflow:hidden}
-.form-header{padding:24px 26px;border-bottom:1px solid var(--line);background:linear-gradient(135deg,#ffffff,#f3fbff)}
-.form-header p{margin-bottom:0}.form-embed{padding:0;min-height:920px;background:#f8fafc}.form-embed iframe{display:block;width:100%;height:960px;min-height:960px;border:0;max-height:none!important;background:#fff}
-.form-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:18px 22px;border-top:1px solid var(--line);background:#f8fafc}.form-actions p{font-size:14px;line-height:1.45;margin:0;color:#526375;max-width:660px}
+.intake-panel{margin-top:30px;background:#fff;border:1px solid #cfe0ef;border-radius:34px;box-shadow:var(--shadow);padding:34px;text-align:center}
+.intake-panel h3{font-size:28px}.intake-panel p{max-width:760px;margin-left:auto;margin-right:auto}.intake-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:26px 0;text-align:left}.intake-item{border:1px solid var(--line);border-radius:18px;background:#f8fafc;padding:18px}.intake-item strong{display:block;margin-bottom:6px;color:#123c5b}.intake-item span{color:#526375;font-size:15px;line-height:1.45}.form-note{margin-top:18px;padding:16px 18px;border-radius:16px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a5f;font-size:15px;line-height:1.5}
 .notice{border-left:5px solid var(--warn);background:#fffbeb;border-radius:18px;padding:18px 20px;color:#713f12;margin-top:20px}.notice strong{color:#78350f}
 .btnrow{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}.btn{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:14px 20px;min-height:48px;text-decoration:none;border:1px solid transparent;font-weight:900;font-size:15px}.primary{background:var(--accent);color:#fff;box-shadow:0 12px 28px rgba(37,99,235,.24)}.secondary{background:#fff;color:#0b2538;border-color:#cbd9e6}.ghost{background:#eafcf5;color:#065f46;border-color:#b9f4d7}
 .footer{background:#06111c;color:#cbd5e1;padding:34px 24px;font-size:14px}.footer-wrap{max-width:var(--max);margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}.footer-brand{display:flex;align-items:center;gap:16px}.footer img{width:160px;background:#fff;border-radius:16px;padding:9px 12px}.disclaimer{max-width:680px;color:#aab7c5;line-height:1.55}
-@media (max-width: 900px){.navlinks{display:none}.hero-wrap,.grid-3{grid-template-columns:1fr}.hero-wrap{padding:64px 20px 52px}.section{padding:56px 20px}.form-embed{min-height:980px}.form-embed iframe{height:1020px;min-height:1020px}.brand img{width:146px}.badge-name{font-size:16px}}
-@media (max-width: 560px){h1{font-size:36px}.btn{width:100%}.badge-name{display:none}.nav{padding:14px 18px}.form-embed{min-height:1060px}.form-embed iframe{height:1100px;min-height:1100px}.form-actions{display:block}.form-actions .btn{margin-top:12px}}
+@media (max-width: 900px){.navlinks{display:none}.hero-wrap,.grid-3,.intake-grid{grid-template-columns:1fr}.hero-wrap{padding:64px 20px 52px}.section{padding:56px 20px}.brand img{width:146px}.badge-name{font-size:16px}}
+@media (max-width: 560px){h1{font-size:36px}.btn{width:100%}.badge-name{display:none}.nav{padding:14px 18px}.intake-panel{padding:24px 18px}}
 </style>
 </head>
 <body>
@@ -68,7 +67,7 @@ h2{font-size:clamp(30px,4vw,46px);line-height:1.08;letter-spacing:-.048em;margin
 <p class="lead"><strong>Tell us about the AI workflow you want to make proof-ready.</strong> We’ll follow up with next steps for a DigiTrust walkthrough, design-partner conversation, or Evidence Packet QuickStart.</p>
 <p class="lead">DigiTrust helps enterprises generate auditable proof for AI workflows so teams can speed approvals, support compliance review, protect sensitive data, and build trust.</p>
 <div class="btnrow">
-<a class="btn primary" href="#intake">Complete intake form</a>
+<a class="btn primary" href="#intake">Open intake form</a>
 <a class="btn secondary" href="/pricing/">View DigiTrust pricing</a>
 <a class="btn ghost" href="/">Back to overview</a>
 </div>
@@ -90,21 +89,21 @@ h2{font-size:clamp(30px,4vw,46px);line-height:1.08;letter-spacing:-.048em;margin
 <div class="center">
 <div class="kicker">DigiTrust intake</div>
 <h2>Start with one AI workflow</h2>
-<p>Use the form below to share your business goal, review blockers, and timeline. The form is designed for high-level intake only.</p>
+<p>Microsoft Forms embeds can be blocked by browser privacy settings, so the intake now opens directly in a secure Microsoft Forms tab.</p>
 </div>
-
-<div class="form-shell">
-<div class="form-header">
-<h3>DigiTrust Intake Form</h3>
-<p>After submission, DigiTrans will receive your request and follow up. Please keep the information high-level and reviewer-safe.</p>
+<div class="intake-panel">
+<h3>Open the DigiTrust Intake Form</h3>
+<p>Use the public Microsoft Forms link to share high-level information about your workflow, review blockers, and timeline. The form opens in a new tab and does not rely on third-party iframe embedding.</p>
+<div class="intake-grid">
+<div class="intake-item"><strong>Business goal</strong><span>Describe the outcome you want from the AI workflow.</span></div>
+<div class="intake-item"><strong>Review context</strong><span>Share security, procurement, assurance, or governance blockers.</span></div>
+<div class="intake-item"><strong>Timeline</strong><span>Tell us when you want to begin and what milestone matters.</span></div>
 </div>
-<div class="form-embed">
-<iframe title="DigiTrust Intake Form" src="https://forms.office.com/Pages/ResponsePage.aspx?id=W0cA_Bj7AkCrGCrkxSUp8UFTed4-l9tKmBpwzkzEHcdUNkkwR0IyNUZOQkVaVFhQOVA5TFQ2VkZMNi4u&embed=true" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen webkitallowfullscreen mozallowfullscreen msallowfullscreen></iframe>
+<div class="btnrow" style="justify-content:center">
+<a class="btn primary" href="https://forms.office.com/Pages/ResponsePage.aspx?id=W0cA_Bj7AkCrGCrkxSUp8UFTed4-l9tKmBpwzkzEHcdUNkkwR0IyNUZOQkVaVFhQOVA5TFQ2VkZMNi4u" target="_blank" rel="noopener">Open DigiTrust Intake Form</a>
+<a class="btn secondary" href="mailto:info@digitranshq.com?subject=DigiTrust%20intake%20request">Email DigiTrans instead</a>
 </div>
-<div class="form-actions">
-<p>If the embedded Microsoft form does not load in your browser, open it directly in a new tab. Some browser privacy settings and third-party cookie settings can block embedded forms.</p>
-<a class="btn primary" href="https://forms.office.com/Pages/ResponsePage.aspx?id=W0cA_Bj7AkCrGCrkxSUp8UFTed4-l9tKmBpwzkzEHcdUNkkwR0IyNUZOQkVaVFhQOVA5TFQ2VkZMNi4u" target="_blank" rel="noopener">Open intake form in new tab</a>
-</div>
+<div class="form-note"><strong>Microsoft Forms setting:</strong> For public access, the form owner should confirm that responses are enabled and the response setting is “Anyone can respond.” If the direct link asks users to sign in, update that setting in Microsoft Forms before promoting the intake page.</div>
 </div>
 </div>
 </section>
@@ -129,7 +128,7 @@ h2{font-size:clamp(30px,4vw,46px);line-height:1.08;letter-spacing:-.048em;margin
 <div class="center">
 <h2>Questions before submitting?</h2>
 <p>Email <a href="mailto:info@digitranshq.com">info@digitranshq.com</a> and include “DigiTrust intake” in the subject line.</p>
-<div class="btnrow" style="justify-content:center"><a class="btn primary" href="#intake">Complete intake form</a><a class="btn ghost" href="mailto:info@digitranshq.com?subject=DigiTrust%20intake%20question">Email DigiTrans</a></div>
+<div class="btnrow" style="justify-content:center"><a class="btn primary" href="#intake">Open intake form</a><a class="btn ghost" href="mailto:info@digitranshq.com?subject=DigiTrust%20intake%20question">Email DigiTrans</a></div>
 </div>
 </div>
 </section>

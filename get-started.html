@@ -35,13 +35,16 @@ h1{font-size:clamp(36px,5vw,62px);line-height:1.02;letter-spacing:-.058em;margin
 .section{padding:72px 24px}.soft{background:var(--soft)}.wrap{max-width:var(--max);margin:0 auto}.center{max-width:900px;margin:0 auto;text-align:center}.kicker{font-size:13px;font-weight:950;text-transform:uppercase;letter-spacing:.12em;color:var(--accent2);margin-bottom:12px}
 h2{font-size:clamp(30px,4vw,46px);line-height:1.08;letter-spacing:-.048em;margin:0 0 16px}h3{font-size:22px;line-height:1.2;margin:0 0 10px;letter-spacing:-.025em}p{font-size:18px;line-height:1.64;color:var(--muted);margin:0 0 16px}
 .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px}
-.intake-panel{margin-top:30px;background:#fff;border:1px solid #cfe0ef;border-radius:34px;box-shadow:var(--shadow);padding:34px;text-align:center}
-.intake-panel h3{font-size:28px}.intake-panel p{max-width:760px;margin-left:auto;margin-right:auto}.intake-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:26px 0;text-align:left}.intake-item{border:1px solid var(--line);border-radius:18px;background:#f8fafc;padding:18px}.intake-item strong{display:block;margin-bottom:6px;color:#123c5b}.intake-item span{color:#526375;font-size:15px;line-height:1.45}.form-note{margin-top:18px;padding:16px 18px;border-radius:16px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a5f;font-size:15px;line-height:1.5}
+.form-shell{margin-top:30px;background:#fff;border:1px solid #cfe0ef;border-radius:34px;box-shadow:var(--shadow);overflow:hidden}
+.form-header{padding:26px 30px;border-bottom:1px solid var(--line);background:linear-gradient(135deg,#ffffff,#f3fbff)}.form-header p{margin-bottom:0}
+.intake-form{padding:30px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.field{display:flex;flex-direction:column;gap:8px}.field.full{grid-column:1/-1}.field label{font-size:14px;font-weight:900;color:#17334a}.required{color:#b42318}.field input,.field select,.field textarea{width:100%;border:1px solid #b9c8d7;border-radius:14px;background:#fff;color:var(--ink);font:inherit;padding:13px 14px;outline:none;transition:border-color .15s,box-shadow .15s}.field input:focus,.field select:focus,.field textarea:focus{border-color:#60a5fa;box-shadow:0 0 0 4px rgba(37,99,235,.12)}.field textarea{min-height:132px;resize:vertical}.helper{font-size:13px;line-height:1.45;color:#64748b;margin:0}
+.consent{display:flex;align-items:flex-start;gap:11px;padding:16px;border:1px solid #d6e2ed;border-radius:16px;background:#f8fafc}.consent input{margin-top:4px}.consent label{font-size:14px;line-height:1.5;color:#425466}.bot-field{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;overflow:hidden!important}
+.form-footer{margin-top:24px;padding-top:22px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}.form-footer p{font-size:14px;line-height:1.5;color:#64748b;max-width:660px;margin:0}
 .notice{border-left:5px solid var(--warn);background:#fffbeb;border-radius:18px;padding:18px 20px;color:#713f12;margin-top:20px}.notice strong{color:#78350f}
-.btnrow{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}.btn{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:14px 20px;min-height:48px;text-decoration:none;border:1px solid transparent;font-weight:900;font-size:15px}.primary{background:var(--accent);color:#fff;box-shadow:0 12px 28px rgba(37,99,235,.24)}.secondary{background:#fff;color:#0b2538;border-color:#cbd9e6}.ghost{background:#eafcf5;color:#065f46;border-color:#b9f4d7}
-.footer{background:#06111c;color:#cbd5e1;padding:34px 24px;font-size:14px}.footer-wrap{max-width:var(--max);margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}.footer-brand{display:flex;align-items:center;gap:16px}.footer img{width:160px;background:#fff;border-radius:16px;padding:9px 12px}.disclaimer{max-width:680px;color:#aab7c5;line-height:1.55}
-@media (max-width: 900px){.navlinks{display:none}.hero-wrap,.grid-3,.intake-grid{grid-template-columns:1fr}.hero-wrap{padding:64px 20px 52px}.section{padding:56px 20px}.brand img{width:146px}.badge-name{font-size:16px}}
-@media (max-width: 560px){h1{font-size:36px}.btn{width:100%}.badge-name{display:none}.nav{padding:14px 18px}.intake-panel{padding:24px 18px}}
+.btnrow{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}.btn{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:14px 20px;min-height:48px;text-decoration:none;border:1px solid transparent;font-weight:900;font-size:15px;cursor:pointer}.primary{background:var(--accent);color:#fff;box-shadow:0 12px 28px rgba(37,99,235,.24)}.secondary{background:#fff;color:#0b2538;border-color:#cbd9e6}.ghost{background:#eafcf5;color:#065f46;border-color:#b9f4d7}.btn:hover{transform:translateY(-1px)}
+.footer{background:#06111c;color:#cbd5e1;padding:34px 24px;font-size:14px}.footer-wrap{max-width:var(--max);margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}.footer-brand{display:flex;align-items:center;gap:16px}.footer img{width:160px;background:#fff;border-radius:16px;padding:9px 12px}.disclaimer{max-width:680px;color:#aab7c5;line-height:1.55}.footer a{color:#dbeafe}
+@media (max-width:900px){.navlinks{display:none}.hero-wrap,.grid-3,.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.hero-wrap{padding:64px 20px 52px}.section{padding:56px 20px}.brand img{width:146px}.badge-name{font-size:16px}}
+@media (max-width:560px){h1{font-size:36px}.btn{width:100%}.badge-name{display:none}.nav{padding:14px 18px}.intake-form{padding:22px 18px}.form-header{padding:22px 18px}.form-footer{display:block}.form-footer .btn{margin-top:14px}}
 </style>
 </head>
 <body>
@@ -64,10 +67,10 @@ h2{font-size:clamp(30px,4vw,46px);line-height:1.08;letter-spacing:-.048em;margin
 <div>
 <span class="eyebrow"><span class="spark"></span>Start your first proof-ready AI workflow</span>
 <h1><span class="gradient-text">Get your first Evidence Packet</span></h1>
-<p class="lead"><strong>Tell us about the AI workflow you want to make proof-ready.</strong> We’ll follow up with next steps for a DigiTrust walkthrough, design-partner conversation, or Evidence Packet QuickStart.</p>
+<p class="lead"><strong>Tell us about the AI workflow you want to make proof-ready.</strong> Complete the intake directly on this page—no Microsoft account or external sign-in is required.</p>
 <p class="lead">DigiTrust helps enterprises generate auditable proof for AI workflows so teams can speed approvals, support compliance review, protect sensitive data, and build trust.</p>
 <div class="btnrow">
-<a class="btn primary" href="#intake">Open intake form</a>
+<a class="btn primary" href="#intake">Complete intake form</a>
 <a class="btn secondary" href="/pricing/">View DigiTrust pricing</a>
 <a class="btn ghost" href="/">Back to overview</a>
 </div>
@@ -89,21 +92,110 @@ h2{font-size:clamp(30px,4vw,46px);line-height:1.08;letter-spacing:-.048em;margin
 <div class="center">
 <div class="kicker">DigiTrust intake</div>
 <h2>Start with one AI workflow</h2>
-<p>Microsoft Forms embeds can be blocked by browser privacy settings, so the intake now opens directly in a secure Microsoft Forms tab.</p>
+<p>Share high-level, reviewer-safe information about your business goal, review blockers, and desired timeline. No account authentication is required.</p>
 </div>
-<div class="intake-panel">
-<h3>Open the DigiTrust Intake Form</h3>
-<p>Use the public Microsoft Forms link to share high-level information about your workflow, review blockers, and timeline. The form opens in a new tab and does not rely on third-party iframe embedding.</p>
-<div class="intake-grid">
-<div class="intake-item"><strong>Business goal</strong><span>Describe the outcome you want from the AI workflow.</span></div>
-<div class="intake-item"><strong>Review context</strong><span>Share security, procurement, assurance, or governance blockers.</span></div>
-<div class="intake-item"><strong>Timeline</strong><span>Tell us when you want to begin and what milestone matters.</span></div>
+
+<div class="form-shell">
+<div class="form-header">
+<h3>DigiTrust Intake Form</h3>
+<p>Required fields are marked with an asterisk. DigiTrans will use this information only to evaluate and respond to your request.</p>
 </div>
-<div class="btnrow" style="justify-content:center">
-<a class="btn primary" href="https://forms.office.com/Pages/ResponsePage.aspx?id=W0cA_Bj7AkCrGCrkxSUp8UFTed4-l9tKmBpwzkzEHcdUNkkwR0IyNUZOQkVaVFhQOVA5TFQ2VkZMNi4u" target="_blank" rel="noopener">Open DigiTrust Intake Form</a>
-<a class="btn secondary" href="mailto:info@digitranshq.com?subject=DigiTrust%20intake%20request">Email DigiTrans instead</a>
+<form class="intake-form" id="digitrust-intake" action="https://formsubmit.co/info@digitranshq.com" method="POST">
+<input type="hidden" name="_subject" value="New DigiTrust intake request"/>
+<input type="hidden" name="_template" value="table"/>
+<input type="hidden" name="_next" value="https://www.digitranshq.com/intake-thank-you/"/>
+<input type="hidden" name="_autoresponse" value="Thank you for contacting DigiTrans about DigiTrust. We received your intake request and will follow up using the email address you provided. Please do not reply with sensitive data, credentials, payment information, or production customer records."/>
+<input type="hidden" name="intent" id="intent" value="general-intake"/>
+<input type="hidden" name="utm_source" id="utm_source" value=""/>
+<input type="hidden" name="utm_medium" id="utm_medium" value=""/>
+<input type="hidden" name="utm_campaign" id="utm_campaign" value=""/>
+<input type="hidden" name="referrer" id="referrer" value=""/>
+<div class="bot-field" aria-hidden="true"><label>Leave this field empty<input type="text" name="website_check" id="website_check" tabindex="-1" autocomplete="off"/></label></div>
+
+<div class="form-grid">
+<div class="field">
+<label for="full_name">Full name <span class="required">*</span></label>
+<input id="full_name" name="Full Name" type="text" autocomplete="name" required maxlength="120"/>
 </div>
-<div class="form-note"><strong>Microsoft Forms setting:</strong> For public access, the form owner should confirm that responses are enabled and the response setting is “Anyone can respond.” If the direct link asks users to sign in, update that setting in Microsoft Forms before promoting the intake page.</div>
+<div class="field">
+<label for="email">Work email <span class="required">*</span></label>
+<input id="email" name="email" type="email" autocomplete="email" required maxlength="180"/>
+</div>
+<div class="field">
+<label for="company">Company / organization <span class="required">*</span></label>
+<input id="company" name="Company" type="text" autocomplete="organization" required maxlength="160"/>
+</div>
+<div class="field">
+<label for="role">Role / title</label>
+<input id="role" name="Role or Title" type="text" autocomplete="organization-title" maxlength="160"/>
+</div>
+<div class="field">
+<label for="phone">Phone number</label>
+<input id="phone" name="Phone" type="tel" autocomplete="tel" maxlength="40"/>
+<p class="helper">Optional. Include it only if you want a phone follow-up.</p>
+</div>
+<div class="field">
+<label for="use_case">Primary use case <span class="required">*</span></label>
+<select id="use_case" name="Primary Use Case" required>
+<option value="" selected disabled>Select one</option>
+<option>Security review</option>
+<option>Procurement or vendor review</option>
+<option>Partner assurance</option>
+<option>Customer assurance</option>
+<option>AI governance</option>
+<option>Evidence Packet evaluation</option>
+<option>Other</option>
+</select>
+</div>
+<div class="field">
+<label for="plan_interest">Preferred starting point <span class="required">*</span></label>
+<select id="plan_interest" name="Preferred Starting Point" required>
+<option value="" selected disabled>Select one</option>
+<option>Evidence Packet QuickStart</option>
+<option>DigiTrust Starter</option>
+<option>DigiTrust Team</option>
+<option>DigiTrust Business</option>
+<option>Enterprise</option>
+<option>Not sure — recommend a path</option>
+</select>
+</div>
+<div class="field">
+<label for="timeline">Desired timeline <span class="required">*</span></label>
+<select id="timeline" name="Desired Timeline" required>
+<option value="" selected disabled>Select one</option>
+<option>As soon as possible</option>
+<option>Within 30 days</option>
+<option>Within 60–90 days</option>
+<option>Within 3–6 months</option>
+<option>Exploring / no fixed timeline</option>
+</select>
+</div>
+<div class="field full">
+<label for="workflow_name">AI workflow or initiative name</label>
+<input id="workflow_name" name="Workflow or Initiative" type="text" maxlength="180"/>
+<p class="helper">Use a high-level name only. Do not include confidential project names if they are sensitive.</p>
+</div>
+<div class="field full">
+<label for="business_goal">Business goal <span class="required">*</span></label>
+<textarea id="business_goal" name="Business Goal" required maxlength="1600" placeholder="What outcome are you trying to achieve, and who needs to review or approve the workflow?"></textarea>
+</div>
+<div class="field full">
+<label for="review_blockers">Current review blockers or questions</label>
+<textarea id="review_blockers" name="Review Blockers" maxlength="1600" placeholder="Examples: security review, procurement, customer assurance, governance, evidence readiness, or approval workflow questions."></textarea>
+</div>
+<div class="field full">
+<div class="consent">
+<input id="consent" name="Consent" type="checkbox" value="Agreed" required/>
+<label for="consent">I agree that DigiTrans LLC may use the information submitted to evaluate and respond to this request. I will not submit secrets, credentials, payment information, regulated data, production customer records, or confidential legal materials. <span class="required">*</span></label>
+</div>
+</div>
+</div>
+
+<div class="form-footer">
+<p>Form delivery is handled by a form-processing provider and routed to <strong>info@digitranshq.com</strong>. A simple anti-spam challenge may appear; no Microsoft account or DigiTrans login is required.</p>
+<button class="btn primary" type="submit">Submit DigiTrust intake</button>
+</div>
+</form>
 </div>
 </div>
 </section>
@@ -128,7 +220,7 @@ h2{font-size:clamp(30px,4vw,46px);line-height:1.08;letter-spacing:-.048em;margin
 <div class="center">
 <h2>Questions before submitting?</h2>
 <p>Email <a href="mailto:info@digitranshq.com">info@digitranshq.com</a> and include “DigiTrust intake” in the subject line.</p>
-<div class="btnrow" style="justify-content:center"><a class="btn primary" href="#intake">Open intake form</a><a class="btn ghost" href="mailto:info@digitranshq.com?subject=DigiTrust%20intake%20question">Email DigiTrans</a></div>
+<div class="btnrow" style="justify-content:center"><a class="btn primary" href="#intake">Complete intake form</a><a class="btn ghost" href="mailto:info@digitranshq.com?subject=DigiTrust%20intake%20question">Email DigiTrans</a></div>
 </div>
 </div>
 </section>
@@ -137,8 +229,18 @@ h2{font-size:clamp(30px,4vw,46px);line-height:1.08;letter-spacing:-.048em;margin
 <footer class="footer">
 <div class="footer-wrap">
 <div class="footer-brand"><img alt="DigiTrans logo" height="48" onerror="this.onerror=null;this.src='assets/digitrans-logo.svg';" src="/digitrans-logo.png" width="170"/><div><strong>DigiTrust</strong><br/>AI trust and verification SaaS platform</div></div>
-<div class="disclaimer">DigiTrust supports evidence review for security, compliance, privacy, audit, customer assurance, and AI program teams. DigiTrust does not replace a customer’s own legal review, audit process, certification process, AWS review outcome, or compliance obligation.</div>
+<div class="disclaimer">DigiTrust supports evidence review for security, compliance, privacy, audit, customer assurance, and AI program teams. DigiTrust does not replace a customer’s own legal review, audit process, certification process, AWS review outcome, or compliance obligation. Review the <a href="/terms/">Terms of Service</a>.</div>
 </div>
 </footer>
+<script>
+(function(){
+  var params=new URLSearchParams(window.location.search);
+  var names=["intent","utm_source","utm_medium","utm_campaign"];
+  names.forEach(function(name){var el=document.getElementById(name);if(el&&params.get(name)){el.value=params.get(name).slice(0,200);}});
+  var ref=document.getElementById("referrer");if(ref){ref.value=(document.referrer||"").slice(0,500);}
+  var form=document.getElementById("digitrust-intake");
+  if(form){form.addEventListener("submit",function(event){var trap=document.getElementById("website_check");if(trap&&trap.value){event.preventDefault();window.location.href="/intake-thank-you/";}});}
+})();
+</script>
 </body>
 </html>

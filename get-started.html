@@ -36,12 +36,13 @@ h2{font-size:clamp(30px,4vw,46px);line-height:1.08;letter-spacing:-.048em;margin
 .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px}
 .form-shell{margin-top:30px;background:#fff;border:1px solid #cfe0ef;border-radius:34px;box-shadow:var(--shadow);overflow:hidden}
 .form-header{padding:24px 26px;border-bottom:1px solid var(--line);background:linear-gradient(135deg,#ffffff,#f3fbff)}
-.form-header p{margin-bottom:0}.form-embed{padding:0;min-height:560px}.form-embed iframe{display:block;width:100%;min-height:720px;border:0;max-height:none!important}
+.form-header p{margin-bottom:0}.form-embed{padding:0;min-height:920px;background:#f8fafc}.form-embed iframe{display:block;width:100%;height:960px;min-height:960px;border:0;max-height:none!important;background:#fff}
+.form-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:18px 22px;border-top:1px solid var(--line);background:#f8fafc}.form-actions p{font-size:14px;line-height:1.45;margin:0;color:#526375;max-width:660px}
 .notice{border-left:5px solid var(--warn);background:#fffbeb;border-radius:18px;padding:18px 20px;color:#713f12;margin-top:20px}.notice strong{color:#78350f}
 .btnrow{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}.btn{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:14px 20px;min-height:48px;text-decoration:none;border:1px solid transparent;font-weight:900;font-size:15px}.primary{background:var(--accent);color:#fff;box-shadow:0 12px 28px rgba(37,99,235,.24)}.secondary{background:#fff;color:#0b2538;border-color:#cbd9e6}.ghost{background:#eafcf5;color:#065f46;border-color:#b9f4d7}
 .footer{background:#06111c;color:#cbd5e1;padding:34px 24px;font-size:14px}.footer-wrap{max-width:var(--max);margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}.footer-brand{display:flex;align-items:center;gap:16px}.footer img{width:160px;background:#fff;border-radius:16px;padding:9px 12px}.disclaimer{max-width:680px;color:#aab7c5;line-height:1.55}
-@media (max-width: 900px){.navlinks{display:none}.hero-wrap,.grid-3{grid-template-columns:1fr}.hero-wrap{padding:64px 20px 52px}.section{padding:56px 20px}.form-embed iframe{min-height:780px}.brand img{width:146px}.badge-name{font-size:16px}}
-@media (max-width: 560px){h1{font-size:36px}.btn{width:100%}.badge-name{display:none}.nav{padding:14px 18px}.form-embed iframe{min-height:850px}}
+@media (max-width: 900px){.navlinks{display:none}.hero-wrap,.grid-3{grid-template-columns:1fr}.hero-wrap{padding:64px 20px 52px}.section{padding:56px 20px}.form-embed{min-height:980px}.form-embed iframe{height:1020px;min-height:1020px}.brand img{width:146px}.badge-name{font-size:16px}}
+@media (max-width: 560px){h1{font-size:36px}.btn{width:100%}.badge-name{display:none}.nav{padding:14px 18px}.form-embed{min-height:1060px}.form-embed iframe{height:1100px;min-height:1100px}.form-actions{display:block}.form-actions .btn{margin-top:12px}}
 </style>
 </head>
 <body>
@@ -54,6 +55,7 @@ h2{font-size:clamp(30px,4vw,46px);line-height:1.08;letter-spacing:-.048em;margin
 <a href="/">Home</a>
 <a href="#intake">Intake form</a>
 <a href="#how-it-works">How it works</a>
+<a href="/pricing/">Pricing</a>
 </div>
 </nav>
 
@@ -67,7 +69,8 @@ h2{font-size:clamp(30px,4vw,46px);line-height:1.08;letter-spacing:-.048em;margin
 <p class="lead">DigiTrust helps enterprises generate auditable proof for AI workflows so teams can speed approvals, support compliance review, protect sensitive data, and build trust.</p>
 <div class="btnrow">
 <a class="btn primary" href="#intake">Complete intake form</a>
-<a class="btn secondary" href="/">Back to DigiTrust overview</a>
+<a class="btn secondary" href="/pricing/">View DigiTrust pricing</a>
+<a class="btn ghost" href="/">Back to overview</a>
 </div>
 </div>
 <aside class="card hero-card">
@@ -96,7 +99,11 @@ h2{font-size:clamp(30px,4vw,46px);line-height:1.08;letter-spacing:-.048em;margin
 <p>After submission, DigiTrans will receive your request and follow up. Please keep the information high-level and reviewer-safe.</p>
 </div>
 <div class="form-embed">
-<iframe width="640px" height="480px" src="https://forms.office.com/Pages/ResponsePage.aspx?id=W0cA_Bj7AkCrGCrkxSUp8UFTed4-l9tKmBpwzkzEHcdUNkkwR0IyNUZOQkVaVFhQOVA5TFQ2VkZMNi4u&embed=true" frameborder="0" marginwidth="0" marginheight="0" style="border: none; max-width:100%; max-height:100vh" allowfullscreen webkitallowfullscreen mozallowfullscreen msallowfullscreen> </iframe>
+<iframe title="DigiTrust Intake Form" src="https://forms.office.com/Pages/ResponsePage.aspx?id=W0cA_Bj7AkCrGCrkxSUp8UFTed4-l9tKmBpwzkzEHcdUNkkwR0IyNUZOQkVaVFhQOVA5TFQ2VkZMNi4u&embed=true" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen webkitallowfullscreen mozallowfullscreen msallowfullscreen></iframe>
+</div>
+<div class="form-actions">
+<p>If the embedded Microsoft form does not load in your browser, open it directly in a new tab. Some browser privacy settings and third-party cookie settings can block embedded forms.</p>
+<a class="btn primary" href="https://forms.office.com/Pages/ResponsePage.aspx?id=W0cA_Bj7AkCrGCrkxSUp8UFTed4-l9tKmBpwzkzEHcdUNkkwR0IyNUZOQkVaVFhQOVA5TFQ2VkZMNi4u" target="_blank" rel="noopener">Open intake form in new tab</a>
 </div>
 </div>
 </div>

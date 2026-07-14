@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DigiTrust Reference Architecture | Verifiable Trust Infrastructure</title>
+  <meta name="description" content="Explore the DigiTrust reference architecture for turning enterprise evidence into explainable trust decisions and signed assurance outputs." />
+  <link rel="canonical" href="https://www.digitranshq.com/reference-architecture/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="DigiTrans" />
+  <meta property="og:title" content="DigiTrust Reference Architecture" />
+  <meta property="og:description" content="Evidence, provenance, deterministic verification, explainable trust decisions, and signed assurance outputs in one public reference architecture." />
+  <meta property="og:url" content="https://www.digitranshq.com/reference-architecture/" />
+  <meta property="og:image" content="https://www.digitranshq.com/digitrans-logo.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="DigiTrust Reference Architecture" />
+  <meta name="twitter:description" content="How DigiTrust turns enterprise evidence into explainable trust decisions and signed assurance outputs." />
+  <meta name="twitter:image" content="https://www.digitranshq.com/digitrans-logo.png" />
+  <link rel="icon" href="/digitrans-logo.png" />
+  <link rel="stylesheet" href="/assets/site.css" />
+  <link rel="stylesheet" href="/assets/platform.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "DigiTrust Reference Architecture",
+    "description": "A public reference architecture for turning enterprise evidence into explainable trust decisions and signed assurance outputs.",
+    "url": "https://www.digitranshq.com/reference-architecture/",
+    "dateModified": "2026-07-13",
+    "author": {
+      "@type": "Organization",
+      "name": "DigiTrans LLC",
+      "url": "https://www.digitranshq.com/"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "DigiTrans LLC",
+      "logo": {"@type": "ImageObject", "url": "https://www.digitranshq.com/digitrans-logo.png"}
+    }
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <div class="announcement" role="status">
+    <div class="announcement-inner">
+      <strong>Reference architecture:</strong>
+      <span>Current capabilities and planned integrations are qualified by maturity and boundary.</span>
+      <a href="/get-started.html?intent=architecture-review" data-campaign-link>Request a walkthrough</a>
+    </div>
+  </div>
+
+  <nav class="nav" aria-label="Primary navigation">
+    <a class="brand" href="/" aria-label="DigiTrans DigiTrust home">
+      <img src="/digitrans-logo.png" alt="DigiTrans logo" width="166" height="48" />
+      <span class="brand-name">DigiTrust</span>
+    </a>
+    <div class="navlinks" aria-label="Page sections">
+      <a href="/#platform">Platform</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#evidence-quality">Evidence Quality</a>
+      <a href="#aws-pattern">AWS</a>
+      <a href="/#chatgpt">ChatGPT Demo</a>
+      <a href="/pricing/" data-campaign-link>Pricing</a>
+      <a href="#boundaries">Trust</a>
+    </div>
+    <div class="nav-cta">
+      <a class="btn primary" href="/get-started.html?intent=architecture-review" data-campaign-link>Request a walkthrough</a>
+    </div>
+  </nav>
+
+  <main id="main">
+    <section class="hero architecture-hero" aria-labelledby="page-title">
+      <div class="hero-wrap single">
+        <span class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>Public reference architecture &mdash; version 0.1</span>
+        <h1 id="page-title"><span class="gradient-text">From enterprise evidence to verifiable assurance</span></h1>
+        <p class="lead"><strong>DigiTrust is verifiable trust infrastructure for the AI era.</strong></p>
+        <p class="sublead">This public architecture explains how the reference implementation preserves evidence identity and provenance, verifies quality and claim support deterministically, governs agent authority, and binds trust decisions to signed assurance outputs.</p>
+        <div class="btnrow">
+          <a class="btn primary" href="/get-started.html?intent=architecture-review" data-campaign-link>Request an architecture walkthrough</a>
+          <a class="btn secondary" href="/#platform">Return to platform overview</a>
+        </div>
+        <p class="microcopy">Reference implementation, design-partner stage, limited onboarding, and production hardening in progress. This page does not claim general availability or independent certification.</p>
+      </div>
+    </section>
+
+    <section class="section" id="architecture" aria-labelledby="architecture-title">
+      <div class="wrap">
+        <div class="center">
+          <div class="kicker">Trust chain</div>
+          <h2 id="architecture-title">Evidence &rarr; Provenance &rarr; Verification &rarr; Trust Decision &rarr; Assurance Output</h2>
+          <p>Each stage preserves enough identity and context for a reviewer to understand what was evaluated, which rules applied, what failed, and which limitations remain.</p>
+        </div>
+        <div class="trust-flow mt" aria-label="DigiTrust architecture chain">
+          <article class="flow-step"><span>01</span><strong>Evidence</strong><small>Authorized source records, context, identity, classification, and integrity metadata.</small></article>
+          <article class="flow-step"><span>02</span><strong>Provenance</strong><small>Case-scoped lineage, Evidence Events, Tool Invocations, lifecycle, and chain of custody.</small></article>
+          <article class="flow-step"><span>03</span><strong>Verification</strong><small>Deterministic policy, claim support, quality dimensions, authority, and separation of duties.</small></article>
+          <article class="flow-step"><span>04</span><strong>Trust decision</strong><small>Supported or unsupported claims, hard failures, findings, scores, and remediation guidance.</small></article>
+          <article class="flow-step"><span>05</span><strong>Assurance output</strong><small>Signed reference reports, audit exports, summaries, and governed Evidence Packets.</small></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section blue" aria-labelledby="layers-title">
+      <div class="wrap">
+        <div class="center">
+          <div class="kicker">Platform layers</div>
+          <h2 id="layers-title">Three layers, one inspectable trust boundary</h2>
+          <p>Evidence Packets remain an important outcome, while the platform boundary extends from durable evidence through deterministic verification to multiple assurance outputs.</p>
+        </div>
+        <div class="architecture-layers mt">
+          <article class="layer-card">
+            <div class="layer-number" aria-hidden="true">01</div>
+            <div><h3>Evidence Fabric</h3><p>Tenant- and case-scoped services register immutable artifact metadata, link collection events and governed tool invocations, derive supersession and revocation state, project minimized provenance, and produce signed audit exports. Raw secrets, credentials, tool parameters, and customer evidence bytes stay outside public outputs.</p></div>
+          </article>
+          <article class="layer-card">
+            <div class="layer-number" aria-hidden="true">02</div>
+            <div><h3>Verification Engine</h3><p>Strict policy, claim, and plan contracts bind exact identities and input snapshots. Deterministic rules assess eight evidence-quality dimensions, claim support, verifier authority, separation of duties, stale or revoked evidence, and signed-report integrity without LLM calls or fuzzy semantic inference.</p></div>
+          </article>
+          <article class="layer-card">
+            <div class="layer-number" aria-hidden="true">03</div>
+            <div><h3>Assurance Outputs</h3><p>Verification reports, audit exports, findings, remediation guidance, buyer-facing summaries, and Evidence Packets expose the basis, identity, evaluated inputs, decision effects, and current limitations of the assurance provided.</p></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="principles-title">
+      <div class="wrap">
+        <div class="center">
+          <div class="kicker">Trust principles</div>
+          <h2 id="principles-title">Architecture that fails visibly</h2>
+          <p>DigiTrust is designed so critical trust outcomes remain explicit, attributable, and resistant to silent normalization.</p>
+        </div>
+        <div class="principles-grid mt">
+          <article class="principle-card"><strong>Identity before interpretation</strong><span>Tenant, case, artifact, actor, policy, plan, and output identities must agree before a trust decision is accepted.</span></article>
+          <article class="principle-card"><strong>Provenance over presence</strong><span>A document&apos;s existence is insufficient; its source context, lineage, event path, and collection authority matter.</span></article>
+          <article class="principle-card"><strong>Hard failures stay hard</strong><span>Revocation, invalid authority, required separation-of-duties violations, snapshot drift, and unverifiable integrity cannot be downgraded by severity configuration.</span></article>
+          <article class="principle-card"><strong>Minimize disclosure</strong><span>Assurance outputs preserve useful evidence identity and findings without exposing raw secrets, credentials, or unnecessary customer data.</span></article>
+          <article class="principle-card"><strong>Deterministic first</strong><span>Explicit metadata, evidence types, sources, control mappings, and claim criteria drive current verification decisions.</span></article>
+          <article class="principle-card"><strong>Separation of duties</strong><span>Exact versioned actor identities distinguish drafting, evidence collection, verification, and approval responsibilities.</span></article>
+          <article class="principle-card"><strong>Explain every outcome</strong><span>Reports retain findings, remediation, formula inputs, confidence limits, and the reason a claim passed or failed.</span></article>
+          <article class="principle-card"><strong>Qualify maturity</strong><span>Reference controls and planned integrations are described as such rather than presented as production certification.</span></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section dark" aria-labelledby="responsibilities-title">
+      <div class="wrap">
+        <div class="center">
+          <div class="kicker">Responsibility boundary</div>
+          <h2 id="responsibilities-title">Deterministic verification and bounded AI assistance</h2>
+          <p>Current trust outcomes do not depend on an LLM deciding whether evidence is true or semantically sufficient.</p>
+        </div>
+        <div class="grid-2 architecture-split mt">
+          <article class="boundary-card deterministic-card">
+            <h3>Deterministic responsibilities</h3>
+            <ul class="list">
+              <li>Canonical identity, hash, signature, and chain checks</li>
+              <li>Artifact lifecycle and terminal replacement resolution</li>
+              <li>Exact provenance paths and semantic link requirements</li>
+              <li>Declared evidence-type, source, control, and mapping criteria</li>
+              <li>Freshness thresholds, evidence minimums, and scoring formulas</li>
+              <li>Agent authority, delegation, and separation-of-duties checks</li>
+              <li>Non-downgradable hard trust outcomes</li>
+            </ul>
+          </article>
+          <article class="boundary-card ai-boundary-card">
+            <h3>Bounded AI-assisted responsibilities</h3>
+            <ul class="list">
+              <li>Guide a user through approved evidence and review workflows</li>
+              <li>Summarize already-verified findings for a defined audience</li>
+              <li>Help explain remediation without changing the underlying decision</li>
+              <li>Operate only through governed tools and delegated authority</li>
+              <li>Keep public demonstrations synthetic and read-only</li>
+            </ul>
+            <p class="small">Future semantic analysis, if introduced, must remain separately bounded and cannot override deterministic hard failures.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section blue" id="evidence-quality" aria-labelledby="quality-title">
+      <div class="wrap">
+        <div class="center">
+          <div class="kicker">Evidence quality</div>
+          <h2 id="quality-title">Eight dimensions make support inspectable</h2>
+          <p><strong>DigiTrust verifies the quality of evidence, not merely whether a document exists.</strong> Current checks use declared metadata and policy, not semantic truth inference or content-level contradiction analysis.</p>
+        </div>
+        <div class="dimension-grid mt">
+          <article class="dimension-card"><strong>Integrity</strong><span>Are record identity, structure, hashes, signatures, and linked histories intact?</span></article>
+          <article class="dimension-card"><strong>Authority</strong><span>Did an allowed source and exact authorized verifier act within approved scope?</span></article>
+          <article class="dimension-card"><strong>Provenance</strong><span>Does a complete case-scoped path connect the artifact, declared event or invocation, and trust context?</span></article>
+          <article class="dimension-card"><strong>Freshness</strong><span>Is the signed collection time within the explicit threshold for its type and classification?</span></article>
+          <article class="dimension-card"><strong>Lifecycle</strong><span>Is the evidence active, stale, superseded, revoked, or replaced by a verified active terminal?</span></article>
+          <article class="dimension-card"><strong>Relevance</strong><span>Do declared types, sources, media, controls, and mappings match the claim&apos;s explicit criteria?</span></article>
+          <article class="dimension-card"><strong>Completeness</strong><span>Are required metadata fields and the minimum number of usable evidence items present?</span></article>
+          <article class="dimension-card"><strong>Independence</strong><span>Are drafting and verification duties assigned to distinct, exact actor identities when required?</span></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section dark" id="boundaries" aria-labelledby="boundaries-title">
+      <div class="wrap">
+        <div class="center">
+          <div class="kicker">Security and privacy boundaries</div>
+          <h2 id="boundaries-title">Bind what matters. Expose only what is needed.</h2>
+          <p>Reference controls demonstrate the architecture without claiming production key management, certification, or deployment maturity.</p>
+        </div>
+        <div class="grid-2 mt">
+          <article class="boundary-card">
+            <h3>Current reference safeguards</h3>
+            <ul class="list">
+              <li>Tenant- and case-scoped durable records</li>
+              <li>Append-only histories and canonical SHA-256 hashes</li>
+              <li>Demo HMAC signatures over bound identities and inputs</li>
+              <li>Governed tool authorization and explicit delegation scope</li>
+              <li>Minimized provenance and customer-safe output patterns</li>
+              <li>Synthetic, read-only public ChatGPT demonstration</li>
+            </ul>
+          </article>
+          <article class="boundary-card">
+            <h3>Explicit exclusions</h3>
+            <ul class="list">
+              <li>No production KMS or hardware-backed signing claim</li>
+              <li>No independent certification or audit opinion</li>
+              <li>No general production availability claim</li>
+              <li>No production customer evidence in the public demo</li>
+              <li>No guarantee that an assurance output replaces legal, audit, compliance, or procurement judgment</li>
+              <li>No current semantic truth or contradiction inference claim</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="maturity-title">
+      <div class="wrap">
+        <div class="grid-2 architecture-split">
+          <div>
+            <div class="kicker">Current maturity</div>
+            <h2 id="maturity-title">Reference implementation with limited onboarding</h2>
+            <p>DigiTrust currently demonstrates immutable artifact integrity, lifecycle lineage, minimized provenance, signed audit exports, governed agent and delegation checks, deterministic evidence-quality verification, and signed verification reports.</p>
+            <p>Commercial work is in design-partner and soft-launch stages. Production hardening, customer-specific integrations, operating controls, retention, and production key management require scoped validation.</p>
+          </div>
+          <article class="card">
+            <h3>Known limitations</h3>
+            <ol class="numbered-list">
+              <li><span>1</span><div><strong>Reference persistence</strong><small>SQLite demonstrates durable behavior but is not the target production data architecture.</small></div></li>
+              <li><span>2</span><div><strong>Reference signing</strong><small>Demo HMAC validates binding logic but is not production KMS signing or non-repudiation.</small></div></li>
+              <li><span>3</span><div><strong>Metadata verification</strong><small>Current relevance checks explicit metadata and criteria rather than inferred semantic truth.</small></div></li>
+              <li><span>4</span><div><strong>Planned integrations</strong><small>Cloud reference patterns and production connectors remain subject to design and validation.</small></div></li>
+            </ol>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section blue" id="aws-pattern" aria-labelledby="aws-title">
+      <div class="wrap">
+        <div class="grid-2 aws-grid">
+          <div>
+            <div class="kicker">Planned reference integration</div>
+            <h2 id="aws-title">AWS Trust Verification Reference Pattern</h2>
+            <p>AWS is the first planned flagship cloud reference integration. Candidate AWS evidence sources may include authorized configuration, identity, security, logging, and control-assessment records selected for a defined trust use case.</p>
+            <div class="notice warn">
+              <p><strong>Qualification:</strong> the pattern is being prepared and is to be validated through an upcoming AWS engagement. It does not represent AWS endorsement, AWS Marketplace availability, partnership status, certification, or a production integration.</p>
+            </div>
+          </div>
+          <article class="card architecture-card">
+            <h3>Intended validation path</h3>
+            <ol class="numbered-list">
+              <li><span>1</span><div><strong>Collect authorized AWS evidence</strong><small>Define approved accounts, regions, services, sources, and collection authority.</small></div></li>
+              <li><span>2</span><div><strong>Preserve provenance</strong><small>Bind evidence to source context, collection events, governed invocations, and lifecycle.</small></div></li>
+              <li><span>3</span><div><strong>Verify quality and claim support</strong><small>Apply explicit policy, control mappings, evidence criteria, and hard trust outcomes.</small></div></li>
+              <li><span>4</span><div><strong>Generate signed assurance outputs</strong><small>Produce audience-appropriate findings and trust decisions bound to evaluated inputs.</small></div></li>
+            </ol>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta" aria-labelledby="cta-title">
+      <div class="center">
+        <h2 id="cta-title">Review the architecture against one real trust decision</h2>
+        <p>Choose a workflow, evidence source, or planned cloud pattern and request a scoped walkthrough with DigiTrans.</p>
+        <div class="btnrow">
+          <a class="btn primary" href="/get-started.html?intent=architecture-review" data-campaign-link>Request a walkthrough</a>
+          <a class="btn secondary" href="/pricing/" data-campaign-link>Review pricing</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-wrap">
+      <div class="footer-brand">
+        <img src="/digitrans-logo.png" alt="DigiTrans logo" width="156" height="45" />
+        <div><strong>DigiTrust</strong><br />Verifiable trust infrastructure for the AI era</div>
+      </div>
+      <div class="footer-copy">
+        DigiTrust is a reference implementation in design-partner stage. It does not replace a customer&apos;s legal, security, audit, certification, procurement, or compliance responsibilities.
+        <div class="footer-links">
+          <a href="/">Platform</a>
+          <a href="/pricing/" data-campaign-link>Pricing</a>
+          <a href="/privacy/">Website privacy</a>
+          <a href="/privacy/digitrust-evidence-assistant/">ChatGPT app privacy</a>
+          <a href="/terms/">Terms</a>
+          <a href="mailto:info@digitranshq.com">Contact</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/site.js" defer></script>
+</body>
+</html>

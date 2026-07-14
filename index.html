@@ -3,21 +3,22 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>DigiTrust | Evidence Packets for Enterprise AI Workflows</title>
-  <meta name="description" content="DigiTrust helps teams turn AI review into auditable Evidence Packets for security, compliance, procurement, and customer assurance. Request a walkthrough, review pricing, or try the public ChatGPT demo." />
+  <title>DigiTrust | Verifiable Trust Infrastructure for the AI Era</title>
+  <meta name="description" content="DigiTrust turns cloud and enterprise evidence into verifiable assurance through immutable provenance, deterministic evidence-quality verification, governed agents, and signed outputs." />
   <link rel="canonical" href="https://www.digitranshq.com/" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="DigiTrans" />
-  <meta property="og:title" content="DigiTrust | Evidence Packets for Enterprise AI Workflows" />
-  <meta property="og:description" content="Move one AI workflow from scattered review evidence to a reviewer-ready Evidence Packet." />
+  <meta property="og:title" content="DigiTrust | Verifiable Trust Infrastructure for the AI Era" />
+  <meta property="og:description" content="Turn cloud and enterprise evidence into verifiable assurance through immutable provenance, deterministic verification, governed agents, and signed outputs." />
   <meta property="og:url" content="https://www.digitranshq.com/" />
   <meta property="og:image" content="https://www.digitranshq.com/digitrans-logo.png" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="DigiTrust | Evidence Packets for Enterprise AI Workflows" />
-  <meta name="twitter:description" content="Auditable proof records for AI workflow review, approval, and customer assurance." />
+  <meta name="twitter:title" content="DigiTrust | Verifiable Trust Infrastructure for the AI Era" />
+  <meta name="twitter:description" content="Turn cloud and enterprise evidence into verifiable assurance through immutable provenance, deterministic verification, governed agents, and signed outputs." />
   <meta name="twitter:image" content="https://www.digitranshq.com/digitrans-logo.png" />
   <link rel="icon" href="/digitrans-logo.png" />
   <link rel="stylesheet" href="/assets/site.css" />
+  <link rel="stylesheet" href="/assets/platform.css" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -37,7 +38,7 @@
         "applicationCategory": "BusinessApplication",
         "operatingSystem": "Web",
         "url": "https://www.digitranshq.com/",
-        "description": "DigiTrust supports evidence workflows and reviewer-ready Evidence Packets for enterprise AI review, approval, and customer assurance.",
+        "description": "DigiTrust turns cloud and enterprise evidence into verifiable assurance through immutable provenance, deterministic evidence-quality verification, governed agents, and signed outputs.",
         "provider": {"@id": "https://www.digitranshq.com/#organization"}
       }
     ]
@@ -49,8 +50,8 @@
 
   <div class="announcement" role="status">
     <div class="announcement-inner">
-      <strong>New:</strong>
-      <span>DigiTrust Evidence Assistant is now available in ChatGPT.</span>
+      <strong>Public demo:</strong>
+      <span>DigiTrust Evidence Assistant uses synthetic evidence and read-only tools in ChatGPT.</span>
       <a href="/news/digitrust-evidence-assistant-chatgpt/" data-campaign-link>Read the announcement</a>
     </div>
   </div>
@@ -62,8 +63,10 @@
     </a>
     <div class="navlinks" aria-label="Page sections">
       <a href="#platform">Platform</a>
-      <a href="#how">How it works</a>
-      <a href="#chatgpt">ChatGPT demo</a>
+      <a href="/reference-architecture/" data-campaign-link>Architecture</a>
+      <a href="#evidence-quality">Evidence Quality</a>
+      <a href="#aws">AWS</a>
+      <a href="#chatgpt">ChatGPT Demo</a>
       <a href="/pricing/" data-campaign-link>Pricing</a>
       <a href="#trust">Trust</a>
     </div>
@@ -76,92 +79,141 @@
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero-wrap">
         <div>
-          <span class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>Commercialization soft launch - limited onboarding</span>
-          <h1 id="hero-title"><span class="gradient-text">Move AI workflows from review to approval with evidence people can act on</span></h1>
-          <p class="lead"><strong>DigiTrust turns one AI workflow into a reviewer-ready Evidence Packet</strong> for security, compliance, privacy, procurement, audit, and customer assurance conversations.</p>
-          <p class="sublead">Define the workflow, document the approved path, capture review decisions, and generate a clean proof record without exposing raw sensitive values in customer-facing materials.</p>
+          <span class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>Design-partner stage &mdash; limited onboarding</span>
+          <h1 id="hero-title"><span class="gradient-text">Turn enterprise evidence into verifiable assurance.</span></h1>
+          <p class="lead"><strong>DigiTrust is verifiable trust infrastructure for the AI era.</strong></p>
+          <p class="sublead">DigiTrust combines an immutable Evidence Fabric, a deterministic Verification Engine, governed agents, and signed assurance outputs so teams can explain what evidence supports a trust decision and how it was evaluated.</p>
           <div class="btnrow">
-            <a class="btn primary" href="/get-started.html?intent=walkthrough" data-campaign-link>Request a 20-minute walkthrough</a>
-            <a class="btn secondary" href="/pricing/" data-campaign-link>Review soft-launch pricing</a>
+            <a class="btn primary" href="/get-started.html?intent=walkthrough" data-campaign-link>Request a walkthrough</a>
+            <a class="btn secondary" href="/pricing/" data-campaign-link>Review pricing</a>
             <a class="btn ghost" href="#chatgpt">Try the public demo</a>
           </div>
-          <p class="microcopy">The ChatGPT app is a public demo using synthetic evidence and read-only tools. Paid onboarding, checkout, and customer work happen outside ChatGPT.</p>
-          <div class="truststrip" aria-label="DigiTrust launch signals">
-            <span class="chip">ChatGPT app published</span>
-            <span class="chip">Synthetic public demo</span>
-            <span class="chip">Patent pending</span>
-            <span class="chip">Paid QuickStart available</span>
+          <p class="microcopy">Reference implementation and limited onboarding. The public ChatGPT app uses synthetic evidence and read-only tools; paid onboarding and customer work happen outside ChatGPT.</p>
+          <div class="truststrip" aria-label="DigiTrust maturity signals">
+            <span class="chip">Deterministic verification</span>
+            <span class="chip">Immutable provenance</span>
+            <span class="chip">Governed agents</span>
+            <span class="chip">Signed reference outputs</span>
           </div>
         </div>
 
-        <aside class="proof-card" aria-label="Sample Evidence Packet summary">
+        <aside class="proof-card" aria-label="DigiTrust trust pipeline">
           <div class="proof-top">
             <div>
-              <h2>Evidence Packet</h2>
-              <p>Reviewer-ready record for one AI workflow</p>
+              <h2>Verifiable trust pipeline</h2>
+              <p>From evidence capture to an explainable output</p>
             </div>
-            <span class="status">Proof-ready</span>
+            <span class="status">Traceable</span>
           </div>
-          <div class="proof-row"><span class="proof-dot" aria-hidden="true"></span><div><strong>Workflow purpose</strong><div class="tiny">owner, use case, policy context</div></div><span class="tiny">Recorded</span></div>
-          <div class="proof-row"><span class="proof-dot" aria-hidden="true"></span><div><strong>Data handling</strong><div class="tiny">classification and protection steps</div></div><span class="tiny">Documented</span></div>
-          <div class="proof-row"><span class="proof-dot" aria-hidden="true"></span><div><strong>Approved AI path</strong><div class="tiny">model, region, guardrails, review</div></div><span class="tiny">Confirmed</span></div>
-          <div class="proof-row"><span class="proof-dot" aria-hidden="true"></span><div><strong>Human decision</strong><div class="tiny">approval status and reviewer context</div></div><span class="tiny">Captured</span></div>
-          <div class="proof-row"><span class="proof-dot" aria-hidden="true"></span><div><strong>Verification record</strong><div class="tiny">schema, hashes, controls, export</div></div><span class="tiny">Available</span></div>
-          <div class="score"><strong>One clean review record</strong><span>Replace scattered screenshots, tickets, and notes with a structured packet reviewers can evaluate.</span></div>
+          <div class="proof-row"><span class="proof-dot" aria-hidden="true"></span><div><strong>Evidence captured</strong><div class="tiny">authorized source and context recorded</div></div><span class="tiny">Bound</span></div>
+          <div class="proof-row"><span class="proof-dot" aria-hidden="true"></span><div><strong>Provenance preserved</strong><div class="tiny">identity, lineage, and chain of custody</div></div><span class="tiny">Traced</span></div>
+          <div class="proof-row"><span class="proof-dot" aria-hidden="true"></span><div><strong>Quality verified</strong><div class="tiny">deterministic policy and metadata checks</div></div><span class="tiny">Assessed</span></div>
+          <div class="proof-row"><span class="proof-dot" aria-hidden="true"></span><div><strong>Trust decision explained</strong><div class="tiny">claim support, findings, and limitations</div></div><span class="tiny">Clear</span></div>
+          <div class="proof-row"><span class="proof-dot" aria-hidden="true"></span><div><strong>Assurance output signed</strong><div class="tiny">reference signature binds identity and inputs</div></div><span class="tiny">Bound</span></div>
+          <div class="score"><strong>Evidence to assurance</strong><span>Make the path from source record to reviewer-facing trust decision visible and independently checkable.</span></div>
         </aside>
       </div>
     </section>
 
-    <section class="section" id="platform">
+    <section class="section" id="platform" aria-labelledby="platform-title">
       <div class="wrap">
         <div class="center">
-          <div class="kicker">What DigiTrust does</div>
-          <h2>Turn review evidence into a repeatable proof workflow</h2>
-          <p>DigiTrust organizes the information reviewers need to understand an AI workflow: its purpose, owner, data handling, approved technology path, human review, verification result, and customer-safe output.</p>
+          <div class="kicker">Platform model</div>
+          <h2 id="platform-title">Evidence Fabric &rarr; Verification Engine &rarr; Assurance Outputs</h2>
+          <p>DigiTrust turns cloud and enterprise evidence into verifiable assurance through immutable provenance, deterministic evidence-quality verification, governed agents, and signed outputs.</p>
         </div>
         <div class="grid-3 mt">
           <article class="card emphasis">
-            <span class="icon-box" aria-hidden="true">1</span>
-            <h3>For AI and product leaders</h3>
-            <p>Give reviewers a defined workflow and evidence trail before asking them to approve a pilot, launch, or customer-facing use case.</p>
+            <span class="icon-box" aria-hidden="true">01</span>
+            <h3>Evidence Fabric</h3>
+            <p>Captures tenant- and case-scoped evidence records with source context, immutable integrity metadata, lifecycle lineage, Evidence Events, Tool Invocations, and minimized provenance.</p>
           </article>
           <article class="card emphasis">
-            <span class="icon-box" aria-hidden="true">2</span>
-            <h3>For security and compliance teams</h3>
-            <p>Review purpose, data handling, approval context, evidence mapping, and open gaps in one structured record.</p>
+            <span class="icon-box" aria-hidden="true">02</span>
+            <h3>Verification Engine</h3>
+            <p>Applies explicit policy and claim criteria to assess evidence quality, support, authority, separation of duties, freshness, lifecycle state, and input integrity deterministically.</p>
           </article>
           <article class="card emphasis">
-            <span class="icon-box" aria-hidden="true">3</span>
-            <h3>For procurement and customers</h3>
-            <p>Receive a customer-safe assurance summary without exposing raw production data, credentials, or internal implementation artifacts.</p>
+            <span class="icon-box" aria-hidden="true">03</span>
+            <h3>Assurance Outputs</h3>
+            <p>Produces audience-appropriate reports, audit exports, findings, and Evidence Packets whose identity, inputs, decisions, and limitations remain visible.</p>
           </article>
+        </div>
+        <div class="notice trust-notice mt">
+          <p><strong>Evidence Packets are one governed assurance output produced by the broader DigiTrust platform.</strong> They remain the recommended commercial starting point, not the full platform boundary.</p>
+        </div>
+        <div class="center mt">
+          <a class="btn secondary" href="/reference-architecture/" data-campaign-link>Explore the public reference architecture</a>
         </div>
       </div>
     </section>
 
-    <section class="section blue" id="how">
+    <section class="section blue" id="evidence-quality" aria-labelledby="quality-title">
       <div class="wrap">
         <div class="center">
-          <div class="kicker">How it works</div>
-          <h2>From one AI workflow to one auditable packet</h2>
-          <p>The workflow is deliberately simple enough for a soft launch and structured enough to support deeper enterprise review.</p>
+          <div class="kicker">Evidence quality</div>
+          <h2 id="quality-title">DigiTrust verifies the quality of evidence, not merely whether a document exists.</h2>
+          <p>Eight dimensions use declared metadata, durable identity, lifecycle state, provenance, source information, and explicit policy criteria. DigiTrust does not claim semantic truth inference or content-level contradiction analysis.</p>
         </div>
-        <div class="grid-4 mt">
-          <article class="card"><span class="number">1</span><h3>Define</h3><p>Name the workflow, owner, business purpose, intended users, and review context.</p></article>
-          <article class="card"><span class="number">2</span><h3>Protect</h3><p>Classify sensitive inputs and document how they are minimized, transformed, or excluded.</p></article>
-          <article class="card"><span class="number">3</span><h3>Review</h3><p>Confirm the approved AI path, guardrails, human review, and unresolved questions.</p></article>
-          <article class="card"><span class="number">4</span><h3>Prove</h3><p>Generate the Evidence Packet, verification result, and reviewer-safe assurance output.</p></article>
+        <div class="dimension-grid mt">
+          <article class="dimension-card"><strong>Integrity</strong><span>Checks record structure, identity, canonical hashes, signatures, and linked durable histories for detectable alteration.</span></article>
+          <article class="dimension-card"><strong>Authority</strong><span>Confirms declared source authority and that the exact verifier identity and delegated scope are permitted.</span></article>
+          <article class="dimension-card"><strong>Provenance</strong><span>Requires a complete, case-scoped path from evidence through its declared events and invocations to the trust context.</span></article>
+          <article class="dimension-card"><strong>Freshness</strong><span>Compares signed collection timestamps with explicit policy thresholds for evidence type and classification.</span></article>
+          <article class="dimension-card"><strong>Lifecycle</strong><span>Detects active, stale, superseded, and revoked evidence and verifies any terminal active replacement.</span></article>
+          <article class="dimension-card"><strong>Relevance</strong><span>Matches declared evidence types, source systems, media types, control IDs, and mapping IDs to explicit claim criteria.</span></article>
+          <article class="dimension-card"><strong>Completeness</strong><span>Measures required metadata and usable evidence coverage against a claim&apos;s declared minimums.</span></article>
+          <article class="dimension-card"><strong>Independence</strong><span>Enforces separation of duties between drafting and verification actors using exact versioned identities.</span></article>
         </div>
       </div>
     </section>
 
-    <section class="section" id="chatgpt">
+    <section class="section" id="how" aria-labelledby="workflow-title">
+      <div class="wrap">
+        <div class="center">
+          <div class="kicker">Trust workflow</div>
+          <h2 id="workflow-title">Capture. Preserve. Verify. Assure.</h2>
+          <p>A transparent path turns authorized evidence into an explainable trust decision without hiding hard findings behind a score.</p>
+        </div>
+        <div class="grid-4 mt">
+          <article class="card"><span class="number">1</span><h3>Capture</h3><p>Collect authoritative evidence and the identity, source, purpose, and case context needed to evaluate it.</p></article>
+          <article class="card"><span class="number">2</span><h3>Preserve</h3><p>Maintain integrity, lineage, linked events, governed invocations, and chain of custody in the Evidence Fabric.</p></article>
+          <article class="card"><span class="number">3</span><h3>Verify</h3><p>Assess evidence quality and claim support with deterministic rules, explicit thresholds, and non-downgradable trust outcomes.</p></article>
+          <article class="card"><span class="number">4</span><h3>Assure</h3><p>Produce signed, audience-appropriate assurance outputs with findings, limitations, and input identity preserved.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section dark" id="aws" aria-labelledby="aws-title">
+      <div class="wrap">
+        <div class="grid-2 aws-grid">
+          <div>
+            <div class="kicker">Planned flagship cloud reference integration</div>
+            <h2 id="aws-title">Preparing the AWS Trust Verification Reference Pattern</h2>
+            <p>AWS is the first planned flagship cloud reference integration for DigiTrust. The pattern is being prepared for validation through an upcoming AWS engagement.</p>
+            <p class="aws-boundary">Candidate AWS evidence sources and control mappings remain planned. This section does not imply AWS endorsement, AWS Marketplace availability, partnership status, or a production integration.</p>
+            <div class="btnrow">
+              <a class="btn secondary" href="/reference-architecture/#aws-pattern" data-campaign-link>Review the planned pattern</a>
+              <a class="btn primary" href="/get-started.html?intent=aws-reference-pattern" data-campaign-link>Discuss an AWS use case</a>
+            </div>
+          </div>
+          <div class="aws-pattern" aria-label="Planned AWS trust verification pattern">
+            <div class="aws-pattern-row"><span>01 &middot; Collect</span><strong>Authorized AWS evidence</strong><small>Candidate configuration, identity, security, audit, and control evidence gathered within approved scope.</small></div>
+            <div class="aws-pattern-row"><span>02 &middot; Preserve</span><strong>Provenance and chain of custody</strong><small>Source identity, collection context, events, invocations, hashes, and lifecycle state retained.</small></div>
+            <div class="aws-pattern-row"><span>03 &middot; Verify</span><strong>Quality and claim support</strong><small>Deterministic checks apply explicit evidence criteria, policy thresholds, authority, and separation of duties.</small></div>
+            <div class="aws-pattern-row"><span>04 &middot; Assure</span><strong>Signed reference outputs</strong><small>Findings and trust decisions are bound to their declared identity and evaluated inputs using reference controls.</small></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="chatgpt" aria-labelledby="chatgpt-title">
       <div class="wrap">
         <div class="grid-2" style="align-items:center">
           <div>
             <div class="kicker">Public trust surface</div>
-            <h2>Experience the evidence workflow inside ChatGPT</h2>
-            <p>DigiTrust Evidence Assistant gives prospects, partners, security reviewers, and procurement teams a safe way to explore synthetic Evidence Packets and customer-safe summaries.</p>
+            <h2 id="chatgpt-title">Explore a bounded evidence workflow inside ChatGPT</h2>
+            <p>DigiTrust Evidence Assistant is a public trust surface where prospects, partners, security reviewers, and procurement teams can explore synthetic Evidence Packets and customer-safe summaries.</p>
             <div class="notice">
               <p><strong>Demo boundary:</strong> synthetic evidence only, read-only tools, no paid workspace records, no billing, and no raw customer data.</p>
             </div>
@@ -184,13 +236,13 @@
       </div>
     </section>
 
-    <section class="section soft" id="quickstart">
+    <section class="section soft" id="quickstart" aria-labelledby="quickstart-title">
       <div class="wrap">
         <div class="offer">
           <div>
             <div class="kicker">Recommended first paid engagement</div>
-            <h2>Start with one proof-ready workflow</h2>
-            <p>The Evidence Packet QuickStart is the clearest path from interest to a scoped commercial engagement during the soft launch.</p>
+            <h2 id="quickstart-title">Start with one proof-ready workflow</h2>
+            <p>The Evidence Packet QuickStart is a practical entry point into the broader DigiTrust platform: scope one workflow, organize its evidence path, surface gaps, and produce one customer-safe assurance output.</p>
             <div class="btnrow">
               <a class="btn primary" href="/get-started.html?intent=quickstart" data-campaign-link>Discuss a QuickStart</a>
               <a class="btn secondary" href="/pricing/" data-campaign-link>See plans and pricing</a>
@@ -199,9 +251,9 @@
           <div>
             <ul class="list">
               <li>One scoped AI workflow</li>
-              <li>Evidence Packet planning path</li>
+              <li>Evidence and provenance planning path</li>
               <li>Reviewer-readiness gap orientation</li>
-              <li>One customer-safe assurance output</li>
+              <li>One governed assurance output</li>
               <li>Clear next-step recommendation</li>
             </ul>
           </div>
@@ -209,18 +261,18 @@
       </div>
     </section>
 
-    <section class="section" id="trust">
+    <section class="section" id="trust" aria-labelledby="trust-title">
       <div class="wrap">
         <div class="center">
           <div class="kicker">Trust, validation, and boundaries</div>
-          <h2>Enough public evidence to evaluate the next conversation</h2>
-          <p>The soft launch combines a public demo, transparent commercial paths, a published privacy policy, a patent notice, and confidential review under mutual NDA for qualified organizations.</p>
+          <h2 id="trust-title">Evaluate the architecture and the next conversation</h2>
+          <p>DigiTrust is a reference implementation in design-partner stage with limited onboarding and production hardening in progress. Public materials make current capabilities and boundaries explicit.</p>
         </div>
         <div class="grid-3 mt">
           <article class="card">
-            <h3>Press announcement</h3>
-            <p>DigiTrans announced that DigiTrust Evidence Assistant is now available in ChatGPT as a public synthetic-evidence demo.</p>
-            <a href="/news/digitrust-evidence-assistant-chatgpt/" data-campaign-link><strong>Read the announcement</strong></a>
+            <h3>Public architecture</h3>
+            <p>Review platform layers, trust principles, deterministic and AI-assisted responsibilities, security boundaries, and current limitations.</p>
+            <a href="/reference-architecture/" data-campaign-link><strong>Read the reference architecture</strong></a>
           </article>
           <article class="card">
             <h3>Patent notice</h3>
@@ -236,10 +288,10 @@
       </div>
     </section>
 
-    <section class="cta">
+    <section class="cta" aria-labelledby="cta-title">
       <div class="center">
-        <h2>Choose one workflow and make the review path concrete</h2>
-        <p>Use the intake to request a walkthrough, discuss the Evidence Packet QuickStart, or identify the right soft-launch plan.</p>
+        <h2 id="cta-title">Make one trust decision explainable from evidence to output</h2>
+        <p>Request a walkthrough, discuss the Evidence Packet QuickStart, or identify the right design-partner path for your organization.</p>
         <div class="btnrow">
           <a class="btn primary" href="/get-started.html?intent=soft-launch" data-campaign-link>Start the DigiTrust intake</a>
           <a class="btn secondary" href="/pricing/" data-campaign-link>Review pricing</a>
@@ -252,11 +304,12 @@
     <div class="footer-wrap">
       <div class="footer-brand">
         <img src="/digitrans-logo.png" alt="DigiTrans logo" width="156" height="45" />
-        <div><strong>DigiTrust</strong><br />AI trust and verification workflows</div>
+        <div><strong>DigiTrust</strong><br />Verifiable trust infrastructure for the AI era</div>
       </div>
       <div class="footer-copy">
         DigiTrust supports evidence review and customer-safe assurance workflows. It does not replace a customer&apos;s legal, security, audit, certification, procurement, or compliance responsibilities.
         <div class="footer-links">
+          <a href="/reference-architecture/" data-campaign-link>Architecture</a>
           <a href="/pricing/" data-campaign-link>Pricing</a>
           <a href="/privacy/">Website privacy</a>
           <a href="/privacy/digitrust-evidence-assistant/">ChatGPT app privacy</a>

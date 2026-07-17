@@ -5,6 +5,25 @@
   var storageKey = "digitrust_campaign";
   var maxValueLength = 200;
 
+  var isHomepage = window.location.pathname === "/" || window.location.pathname === "/index.html";
+  if (isHomepage) {
+    var announcement = document.querySelector(".announcement-inner");
+    if (announcement) {
+      var announcementLabel = document.createElement("strong");
+      announcementLabel.textContent = "Press release:";
+
+      var announcementMessage = document.createElement("span");
+      announcementMessage.textContent = "DigiTrust Evidence Assistant is now available in ChatGPT as a public demo using synthetic evidence and read-only tools.";
+
+      var announcementLink = document.createElement("a");
+      announcementLink.href = "/news/digitrust-evidence-assistant-chatgpt/";
+      announcementLink.textContent = "Read the announcement";
+      announcementLink.setAttribute("data-campaign-link", "");
+
+      announcement.replaceChildren(announcementLabel, announcementMessage, announcementLink);
+    }
+  }
+
   function clean(value, maxLength) {
     if (!value) return "";
     return String(value).replace(/[\u0000-\u001f\u007f]/g, "").slice(0, maxLength || maxValueLength);

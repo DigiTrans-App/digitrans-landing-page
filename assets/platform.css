@@ -60,6 +60,18 @@
 .flow-step strong { color: var(--ink); font-size: 18px; }
 .flow-step small { color: #526375; font-size: 14px; line-height: 1.5; }
 
+.lifecycle-flow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+.lifecycle-flow .flow-step {
+  min-height: 200px;
+}
+.lifecycle-flow .flow-step::after {
+  display: none;
+}
+
 .architecture-split { align-items: stretch; }
 .architecture-card { height: 100%; }
 .ai-card { border-color: #9be7dc; background: linear-gradient(180deg, #fff, #effcf9); }
@@ -89,6 +101,32 @@
 .dimension-card span,
 .principle-card span { color: #526375; font-size: 15px; line-height: 1.55; }
 .trust-notice { max-width: 960px; margin-left: auto; margin-right: auto; }
+
+.control-card {
+  border-color: #bfe3dc;
+  background: linear-gradient(180deg, #fff, #f1fbf8);
+}
+.ecosystem-card {
+  min-height: 215px;
+}
+.status-grid .status-card {
+  min-height: 300px;
+}
+.status-label {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  margin-bottom: 16px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 0.02em;
+}
+.status-label.implemented { color: #166534; background: #dcfce7; }
+.status-label.deployed { color: #1d4ed8; background: #dbeafe; }
+.status-label.partner { color: #7c2d12; background: #ffedd5; }
+.status-label.future { color: #5b21b6; background: #ede9fe; }
 
 .aws-grid { align-items: center; }
 .aws-boundary { color: #aabbd0 !important; }
@@ -176,15 +214,18 @@
 @media (max-width: 1120px) {
   .navlinks { gap: 13px; }
   .navlinks a { font-size: 13px; }
+  .lifecycle-flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 980px) {
   .trust-flow { grid-template-columns: 1fr; }
   .flow-step { min-height: 0; }
   .flow-step:not(:last-child)::after { content: "\2193"; top: auto; right: 50%; bottom: -18px; transform: translateX(50%); }
   .dimension-grid, .principles-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lifecycle-flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .status-grid .status-card { min-height: 0; }
 }
 @media (max-width: 640px) {
-  .dimension-grid, .principles-grid { grid-template-columns: 1fr; }
+  .dimension-grid, .principles-grid, .lifecycle-flow { grid-template-columns: 1fr; }
   .layer-card { grid-template-columns: 1fr; }
   .proof-heading { align-items: flex-start; }
   .proof-logo { width: 48px; height: 48px; }

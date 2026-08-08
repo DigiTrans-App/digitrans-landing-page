@@ -1,0 +1,265 @@
+name: Fix and apply plain-language category-launch copy
+
+on:
+  push:
+    branches:
+      - launch/category-launch-v1
+    paths:
+      - .github/workflows/fix-plain-language-v1.yml
+
+permissions:
+  contents: write
+
+jobs:
+  revise:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.13'
+      - name: Apply plain-language revisions
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          pages = [
+              Path('index.html'),
+              Path('financial-services/index.html'),
+              Path('healthcare/index.html'),
+              Path('aws-marketplace/index.html'),
+              Path('get-started.html'),
+              Path('pricing/index.html'),
+              Path('intake-thank-you/index.html'),
+          ]
+
+          replacements = [
+              ('DigiTrust successfully passed the AWS Foundational Technical Review', 'DigiTrust successfully passed an AWS solution review'),
+              ('DigiTrust completed the AWS Foundational Technical Review', 'DigiTrust completed an AWS solution review'),
+              ('Foundational Technical Review approved', 'AWS solution review completed'),
+              ('DigiTrust FTR approved', 'DigiTrust passed an AWS solution review'),
+              ('FTR approved', 'AWS solution review passed'),
+              ('FTR', 'AWS solution review'),
+              ('AWS Software Path — Validated', 'AWS Partner validation completed'),
+              ('Software Path — Validated', 'Partner validation completed'),
+              ('$25K–$50K', '$25,000–$50,000'),
+              ('$100K+ ACV path', '$100,000+ annual production path'),
+              ('$100,000+ ACV', '$100,000+ annual production value'),
+              ('ACV', 'annual contract value'),
+              ('No PHI required for initial discovery', 'No protected health information required for initial discovery'),
+              ('No PHI required', 'No protected health information required'),
+              ('PHI', 'protected health information'),
+              ('KYC or AML controls', 'identity-verification and anti-money-laundering controls'),
+              ('KYC', 'identity verification'),
+              ('AML', 'anti-money-laundering'),
+              ('API-driven', 'connected-system'),
+              ('agentic workflows', 'AI-agent workflows'),
+              ('agentic operations', 'AI-agent operations'),
+              ('Agentic workflow or tool use', 'AI-agent workflow or automated tool use'),
+              ('agentic', 'AI-agent'),
+              ('Deterministic verification', 'Repeatable, rule-based checks'),
+              ('deterministic verification', 'repeatable, rule-based checks'),
+              ('Deterministic checks', 'Repeatable, rule-based checks'),
+              ('deterministic checks', 'repeatable, rule-based checks'),
+              ('deterministic', 'rule-based'),
+              ('Evidence provenance', 'Evidence source history'),
+              ('evidence provenance', 'evidence source history'),
+              ('Source and workflow provenance', 'Source and workflow history'),
+              ('source and workflow provenance', 'source and workflow history'),
+              ('Provenance', 'Source history'),
+              ('provenance', 'source history'),
+              ('Exact-use authorization', 'Approval for a specific use'),
+              ('exact-use authorization', 'approval for a specific use'),
+              ('exact-use conditions', 'approved-use conditions'),
+              ('exact-use boundaries', 'approved-use boundaries'),
+              ('exact-use', 'approved-use'),
+              ('fails closed', 'is blocked automatically'),
+              ('fail closed', 'block the action automatically'),
+              ('co-selling', 'selling with AWS'),
+              ('co-sell', 'joint sales'),
+              ('go-to-market', 'sales and marketing'),
+              ('technical validation', 'AWS solution review'),
+              ('technical foundation', 'solution foundation'),
+              ('provider-neutral', 'designed to work across providers'),
+              ('model-risk', 'model risk'),
+              ('data-governance', 'data governance'),
+              ('Procurement', 'Purchasing'),
+              ('procurement', 'purchasing'),
+              ('audit-ready reconstruction', 'a complete review history'),
+              ('audit reconstruction', 'complete review history'),
+              ('reconstructable', 'reviewable later'),
+              ('reconstruction', 'review history'),
+          ]
+
+          for page in pages:
+              text = page.read_text(encoding='utf-8')
+              for old, new in replacements:
+                  text = text.replace(old, new)
+              page.write_text(text, encoding='utf-8')
+
+          page_replacements = {
+              'index.html': [
+                  ('<a href="#category">Category</a>', '<a href="#category">Why DigiTrust</a>'),
+                  ('<a href="#pilot">Enterprise Pilot</a>', '<a href="#pilot">Pilot</a>'),
+                  ('<a href="#aws">AWS Marketplace</a>', '<a href="#aws">Buy on AWS</a>'),
+                  ('>Architecture</a>', '>How it works</a>'),
+                  ('Start an enterprise pilot', 'Request a pilot briefing'),
+                  ('Provider-neutral trust architecture', 'Works across cloud and AI providers'),
+                  ('When AI acts, recommends, or automates, DigiTrust preserves what happened, verifies what supported the result, binds accountable human authority, controls the exact permitted use, records limitations, and makes the full history reviewable later.',
+                   'When AI acts, recommends, or automates, DigiTrust records what happened, checks the supporting evidence, captures who approved the result, limits it to the approved purpose, identifies known limits, and keeps a complete review history.'),
+                  ('Actor, model, tool, purpose, version, and execution context', 'Who or what acted, why, and in what setting'),
+                  ('Source, source history, integrity, lifecycle, and chain of custody', 'Where the information came from, whether it stayed intact, and how it moved'),
+                  ('Repeatable, rule-based checks, support, authority, contradictions, and disclosure', 'Repeatable checks, supporting evidence, conflicts, approval rights, and safe disclosure'),
+                  ('Exact reviewer, scope, conditions, decision, and time window', 'Who approved it, for what purpose, under which conditions, and for how long'),
+                  ('Evidence, verification, decisions, limitations, and current state', 'Evidence, checks, decisions, known limits, and current status'),
+                  ('One inspectable record connects AI execution to evidence, verification, accountable authority, permitted use, and audit history.',
+                   'One clear record connects the AI action to its evidence, checks, human approval, approved use, and complete review history.'),
+                  ('<span>Attribution</span>', '<span>Who and what acted</span>'),
+                  ('<span>Source history</span>', '<span>Where the evidence came from</span>'),
+                  ('<span>Assurance</span>', '<span>Checks performed</span>'),
+                  ('<span>Authority</span>', '<span>Human approval</span>'),
+                  ('<span>Audit</span>', '<span>Review history</span>'),
+                  ('<h3>Evidence and source history</h3><p>Preserve what the AI used, where it came from, its integrity, lifecycle, source context, and governed collection path.</p>',
+                   '<h3>Evidence and source history</h3><p>Preserve what the AI used, where it came from, whether it stayed intact, and how it moved through the workflow.</p>'),
+                  ('<h3>Repeatable, rule-based checks</h3><p>Apply explicit checks to evidence quality, claim support, authority, contradictions, disclosure, and bound inputs.</p>',
+                   '<h3>Repeatable, rule-based checks</h3><p>Use clear rules to check evidence quality, supporting facts, approval rights, conflicts, safe disclosure, and the exact information reviewed.</p>'),
+                  ('<h3>Accountable human control</h3><p>Bind decisions to the exact subject, authorized reviewer, scope, conditions, and time window.</p>',
+                   '<h3>Accountable human approval</h3><p>Record who approved the result, what was approved, the conditions, and how long the approval lasts.</p>'),
+                  ('<h3>Approval for a specific use</h3><p>Permit only the approved subject and conditions. Changed, expired, revoked, or substituted use is blocked automatically.</p>',
+                   '<h3>Approval for a specific use</h3><p>Allow only the approved result and conditions. Changed, expired, revoked, or substituted use is blocked automatically.</p>'),
+                  ('<h3>Limitations and review history</h3><p>Keep hard findings visible, disclose what remains unavailable, and reproduce the full evidence and decision history.</p>',
+                   '<h3>Known limits and complete review history</h3><p>Keep important concerns visible, state what information is unavailable, and preserve the full evidence and decision history.</p>'),
+                  ('Validated for the AWS partner motion. Available for customer purchase.', 'Reviewed by AWS. Available for customer purchase.'),
+                  ('DigiTrans has achieved the Validated stage of the AWS Partner Network Software Path, DigiTrust successfully passed an AWS solution review, and the product is publicly listed in AWS Marketplace.',
+                   'DigiTrans completed AWS Partner software validation, DigiTrust passed an AWS solution review, and the product is publicly listed in AWS Marketplace.'),
+                  ('<strong>Validated</strong><p>AWS Software Path milestone supporting technical and sales and marketing credibility.</p>',
+                   '<strong>Partner validation complete</strong><p>DigiTrans completed an AWS Partner software validation milestone.</p>'),
+                  ('<strong>AWS solution review passed</strong><p>DigiTrust completed the AWS Foundational Technical Review.</p>',
+                   '<strong>Solution review passed</strong><p>DigiTrust passed an AWS review of its solution foundation.</p>'),
+                  ('Assurance infrastructure—not another AI dashboard.', 'A complete review record—not another AI dashboard.'),
+                  ('Hard controls remain hard', 'Required checks cannot be bypassed'),
+                  ('Identity, integrity, authority, contradiction, disclosure, and use checks do not become optional because a model is persuasive.',
+                   'Identity, evidence integrity, approval rights, conflicts, safe disclosure, and approved-use checks cannot be skipped because an AI answer sounds persuasive.'),
+                  ('DigiTrust makes consequential AI workflows attributable, verifiable, human-authorized, limitation-aware, and reviewable later.',
+                   'DigiTrust records who or what acted, checks the evidence, captures human approval, states known limits, and preserves a complete review history.'),
+              ],
+              'financial-services/index.html': [
+                  ('<a href="/">Overview</a>', '<a href="/">Home</a>'),
+                  ('<a href="#use-cases">Use Cases</a>', '<a href="#use-cases">Common uses</a>'),
+                  ('>AWS Marketplace</a>', '>Buy on AWS</a>'),
+                  ('>Architecture</a>', '>How it works</a>'),
+                  ('Designed for regulated banking, insurance, payments, risk, fraud, customer intelligence, cybersecurity, and AI-agent workflows.',
+                   'Designed for regulated banking, insurance, payments, risk, fraud, customer service, cybersecurity, AI agents, and automated workflows.'),
+                  ('Connect alerts, evidence, investigation steps, recommended actions, analyst review, approval authority, exceptions, and final disposition.',
+                   'Connect alerts, supporting information, investigation steps, recommended actions, analyst review, approval, exceptions, and final outcomes.'),
+                  ('Preserve source data, model or agent context, repeatable, rule-based checks, human decision points, limitations, and reviewable later recommendations.',
+                   'Preserve source data, AI-system context, repeatable checks, human decision points, known limits, and a complete history of each recommendation.'),
+                  ('Track tools, data access, actions, approval gates, approved-use boundaries, revocation, and the final accountable business outcome.',
+                   'Track tools, data access, actions, approval steps, approved-use boundaries, withdrawn approval, and the final accountable business outcome.'),
+                  ('Bind alert evidence, triage recommendations, verification results, red-team findings, response authority, and incident review history.',
+                   'Connect alert evidence, triage recommendations, check results, security test findings, response approval, and incident review history.'),
+                  ('Make connected-system decisions, identity-verification and anti-money-laundering controls, fraud signals, authorization boundaries, settlement evidence, and exceptions reviewable.',
+                   'Make decisions across connected systems, identity checks, anti-money-laundering controls, fraud signals, approval boundaries, settlement evidence, and exceptions reviewable.'),
+                  ('<h3>Accountable human authority</h3>', '<h3>Accountable human approval</h3>'),
+                  ('<h3>Limitations and history</h3>', '<h3>Known limits and review history</h3>'),
+                  ('AWS-aligned purchasing', 'Buying through AWS Marketplace'),
+                  ('AWS workload relevance', 'How AWS is involved'),
+              ],
+              'healthcare/index.html': [
+                  ('<a href="/">Overview</a>', '<a href="/">Home</a>'),
+                  ('<a href="#use-cases">Use Cases</a>', '<a href="#use-cases">Common uses</a>'),
+                  ('>AWS Marketplace</a>', '>Buy on AWS</a>'),
+                  ('>Architecture</a>', '>How it works</a>'),
+                  ('DigiTrust helps healthcare organizations connect source evidence, verification, clinician or accountable human authority, approved use, limitations, and review history across consequential AI workflows.',
+                   'DigiTrust helps healthcare organizations connect source evidence, repeatable checks, clinician or accountable human approval, approved use, known limits, and a complete review history across consequential AI workflows.'),
+                  ('<h3>Clinician or accountable human control</h3>', '<h3>Clinician or accountable human approval</h3>'),
+                  ('<h3>Limitations and review history</h3>', '<h3>Known limits and review history</h3>'),
+                  ('AWS-aligned purchasing', 'Buying through AWS Marketplace'),
+              ],
+              'aws-marketplace/index.html': [
+                  ('<a href="/">Overview</a>', '<a href="/">Home</a>'),
+                  ('<a href="#purchasing">Purchasing</a>', '<a href="#purchasing">How buying works</a>'),
+                  ('<a href="#pilot">Enterprise Pilot</a>', '<a href="#pilot">Pilot</a>'),
+                  ('>Architecture</a>', '>How it works</a>'),
+                  ('Request purchasing guidance', 'Get buying guidance'),
+                  ('AWS Marketplace Purchasing', 'Buying through AWS Marketplace'),
+                  ('The customer still retains accountability for architecture, data handling, security, legal review, governance, approval, and operational use.',
+                   'The customer still retains accountability for implementation design, data handling, security, legal review, governance, approval, and operational use.'),
+                  ('<strong>Co-sell readiness</strong>', '<strong>Ready for AWS sales collaboration</strong>'),
+                  ('<div class="section-label">Customer purchasing sequence</div>', '<div class="section-label">How buying works</div>'),
+                  ('<strong>Confirm AWS alignment</strong>', '<strong>Confirm how AWS is involved</strong>'),
+                  ('<strong>Choose purchase options</strong>', '<strong>Choose how to buy</strong>'),
+                  ('Private Offer boundary:', 'Custom Marketplace offer:'),
+                  ('whether a Private Offer', 'whether a custom AWS Marketplace offer'),
+                  ('Technical validation, Marketplace availability, and a joint sales operating path.', 'AWS review, Marketplace availability, and a sales collaboration path.'),
+                  ('<strong>Partner validation completed</strong><p>DigiTrans has achieved the Validated stage of the AWS Software Path.</p>',
+                   '<strong>Partner validation complete</strong><p>DigiTrans completed an AWS Partner software validation milestone.</p>'),
+                  ('<strong>AWS solution review passed</strong><p>DigiTrust successfully passed the AWS Foundational Technical Review.</p>',
+                   '<strong>Solution review passed</strong><p>DigiTrust passed an AWS review of its solution foundation.</p>'),
+              ],
+              'get-started.html': [
+                  ('<a href="/">Overview</a>', '<a href="/">Home</a>'),
+                  ('>AWS Marketplace</a>', '>Buy on AWS</a>'),
+                  ('>Architecture</a>', '>How it works</a>'),
+                  ('Review engagements', 'View options'),
+                  ('Define the assurance boundary', 'Define what must be proven'),
+                  ('Primary assurance concern', 'What do you most need to prove or review?'),
+                  ('Verification and quality controls', 'Checks and quality controls'),
+                  ('Human review and authority', 'Human review and approval'),
+                  ('Security, compliance, or purchasing review', 'Security, compliance, or buying review'),
+                  ('AWS workload relevance', 'How is AWS involved?'),
+                  ('Purchasing interest', 'Preferred buying path'),
+                  ('Confirm Private Offer availability', 'Ask about a custom AWS Marketplace offer'),
+                  ('Standard enterprise purchasing', 'Standard enterprise buying process'),
+                  ('Partner-led purchasing', 'Purchase through a consulting or implementation partner'),
+                  ('Current controls or blockers', 'Current review process or blockers'),
+                  ('first-party, Turnstile-protected intake endpoint', 'first-party, spam-protected intake form'),
+              ],
+              'pricing/index.html': [
+                  ('<a href="/">Overview</a>', '<a href="/">Home</a>'),
+                  ('<a href="#enterprise">Enterprise Pilot</a>', '<a href="#enterprise">Pilot</a>'),
+                  ('<a href="#evaluation">Evaluation Paths</a>', '<a href="#evaluation">Other options</a>'),
+                  ('>AWS Marketplace</a>', '>Buy on AWS</a>'),
+                  ('>Architecture</a>', '>How it works</a>'),
+                  ('whether a Private Offer is available', 'whether a custom AWS Marketplace offer is available'),
+              ],
+          }
+
+          for filename, pairs in page_replacements.items():
+              path = Path(filename)
+              text = path.read_text(encoding='utf-8')
+              for old, new in pairs:
+                  text = text.replace(old, new)
+              path.write_text(text, encoding='utf-8')
+
+          validation = Path('.github/workflows/site-validation.yml')
+          text = validation.read_text(encoding='utf-8')
+          anchor = "          prohibited_named_accounts = [\n"
+          guard = """          plain_language_pages = [\n              Path('index.html'), Path('get-started.html'), Path('pricing/index.html'),\n              Path('financial-services/index.html'), Path('healthcare/index.html'),\n              Path('aws-marketplace/index.html'),\n          ]\n          prohibited_plain_language_terms = [\n              'FTR', 'PHI', 'ACV', 'KYC', 'AML', 'API-driven',\n              'deterministic', 'provenance', 'fails closed', 'exact-use',\n              'agentic', 'technical validation',\n          ]\n          for page in plain_language_pages:\n              text = page.read_text(encoding='utf-8')\n              for term in prohibited_plain_language_terms:\n                  if term.lower() in text.lower():\n                      failures.append(f'unexplained technical term in {page}: {term}')\n\n"""
+          if guard not in text:
+              if anchor not in text:
+                  raise SystemExit('VALIDATION_GUARD_ANCHOR_NOT_FOUND')
+              text = text.replace(anchor, guard + anchor)
+          summary_line = "            echo '- Public target-account guard: pass'"
+          if "Plain-language public copy guard" not in text:
+              text = text.replace(summary_line, summary_line + "\n            echo '- Plain-language public copy guard: pass'")
+          validation.write_text(text, encoding='utf-8')
+
+          forbidden = ['FTR', 'PHI', 'ACV', 'KYC', 'AML', 'API-driven', 'deterministic', 'provenance', 'fails closed', 'exact-use', 'agentic', 'technical validation']
+          for page in pages[:-1]:
+              content = page.read_text(encoding='utf-8')
+              hits = [term for term in forbidden if term.lower() in content.lower()]
+              if hits:
+                  raise SystemExit(f'PLAIN_LANGUAGE_REWRITE_INCOMPLETE::{page}::{hits}')
+
+          print('PLAIN_LANGUAGE_REWRITE: PASS')
+          PY
+      - name: Commit revised public copy
+        run: |
+          git config user.name 'DigiTrans Research & Engineering'
+          git config user.email 'johnagj@outlook.com'
+          git add index.html financial-services/index.html healthcare/index.html aws-marketplace/index.html get-started.html pricing/index.html intake-thank-you/index.html .github/workflows/site-validation.yml
+          git commit -m 'Use plain language across category-launch pages'
+          git push origin HEAD:launch/category-launch-v1

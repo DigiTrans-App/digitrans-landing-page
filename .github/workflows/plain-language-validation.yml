@@ -1,0 +1,88 @@
+name: Validate plain-language public copy
+
+on:
+  push:
+    branches:
+      - main
+      - launch/category-launch-v1
+    paths:
+      - index.html
+      - get-started.html
+      - pricing/**
+      - financial-services/**
+      - healthcare/**
+      - aws-marketplace/**
+      - .github/workflows/plain-language-validation.yml
+  pull_request:
+    paths:
+      - index.html
+      - get-started.html
+      - pricing/**
+      - financial-services/**
+      - healthcare/**
+      - aws-marketplace/**
+      - .github/workflows/plain-language-validation.yml
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.13'
+      - name: Reject unexplained acronyms and technical launch labels
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          pages = [
+              Path('index.html'),
+              Path('get-started.html'),
+              Path('pricing/index.html'),
+              Path('financial-services/index.html'),
+              Path('healthcare/index.html'),
+              Path('aws-marketplace/index.html'),
+          ]
+          prohibited = {
+              'FTR': r'\bFTR\b',
+              'PHI': r'\bPHI\b',
+              'ACV': r'\bACV\b',
+              'KYC': r'\bKYC\b',
+              'AML': r'\bAML\b',
+              'API-driven': r'API-driven',
+              'deterministic': r'\bdeterministic\b',
+              'provenance': r'\bprovenance\b',
+              'exact-use': r'\bexact-use\b',
+              'agentic': r'\bagentic\b',
+              'technical validation': r'technical validation',
+          }
+          failures = []
+          for page in pages:
+              text = page.read_text(encoding='utf-8')
+              for label, pattern in prohibited.items():
+                  if re.search(pattern, text, flags=re.IGNORECASE):
+                      failures.append(f'{page}: unexplained term {label}')
+
+          home = Path('index.html').read_text(encoding='utf-8')
+          required_home_phrases = [
+              'AWS Partner validation completed',
+              'AWS solution review',
+              'Why DigiTrust',
+              'Buy on AWS',
+              'How it works',
+          ]
+          for phrase in required_home_phrases:
+              if phrase not in home:
+                  failures.append(f'index.html: missing plain-language phrase {phrase!r}')
+
+          if failures:
+              print('\n'.join(failures))
+              raise SystemExit('PLAIN_LANGUAGE_VALIDATION: FAIL')
+
+          print('PLAIN_LANGUAGE_VALIDATION: PASS')
+          PY

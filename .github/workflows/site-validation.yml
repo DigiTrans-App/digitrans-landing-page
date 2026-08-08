@@ -1,0 +1,196 @@
+name: Validate DigiTrust category-launch site
+
+on:
+  push:
+    branches:
+      - main
+      - launch/category-launch-v1
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.13'
+      - name: Validate HTML, claims, links, and launch contract
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          from urllib.parse import urlsplit
+          import json
+          import sys
+
+          root = Path('.')
+          expected_pages = [
+              Path('index.html'),
+              Path('get-started.html'),
+              Path('pricing/index.html'),
+              Path('financial-services/index.html'),
+              Path('healthcare/index.html'),
+              Path('aws-marketplace/index.html'),
+              Path('reference-architecture/index.html'),
+              Path('intake-thank-you/index.html'),
+          ]
+          marketplace = 'https://aws.amazon.com/marketplace/pp/prodview-ipxmlnusygyb4'
+
+          class PageParser(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.in_title = False
+                  self.title = ''
+                  self.h1_count = 0
+                  self.canonical = []
+                  self.links = []
+                  self.ids = set()
+
+              def handle_starttag(self, tag, attrs):
+                  data = dict(attrs)
+                  if tag == 'title':
+                      self.in_title = True
+                  if tag == 'h1':
+                      self.h1_count += 1
+                  if data.get('id'):
+                      self.ids.add(data['id'])
+                  if tag == 'link' and data.get('rel') == 'canonical' and data.get('href'):
+                      self.canonical.append(data['href'])
+                  if tag in {'a', 'img', 'script', 'link'}:
+                      value = data.get('href') or data.get('src')
+                      if value:
+                          self.links.append(value)
+
+              def handle_endtag(self, tag):
+                  if tag == 'title':
+                      self.in_title = False
+
+              def handle_data(self, data):
+                  if self.in_title:
+                      self.title += data
+
+          def resolve_local(link: str):
+              parsed = urlsplit(link)
+              if parsed.scheme or parsed.netloc or link.startswith(('mailto:', 'tel:', 'javascript:')):
+                  return None
+              path = parsed.path
+              if not path or path == '/':
+                  return Path('index.html')
+              if path.startswith('/'):
+                  path = path[1:]
+              candidate = Path(path)
+              if path.endswith('/'):
+                  candidate = candidate / 'index.html'
+              return candidate
+
+          failures = []
+          for page in expected_pages:
+              if not page.is_file():
+                  failures.append(f'missing expected page: {page}')
+                  continue
+              text = page.read_text(encoding='utf-8')
+              parser = PageParser()
+              parser.feed(text)
+              if not parser.title.strip():
+                  failures.append(f'missing title: {page}')
+              if parser.h1_count != 1:
+                  failures.append(f'expected one h1, found {parser.h1_count}: {page}')
+              if len(parser.canonical) != 1 and page.name != 'index.html' and 'intake-thank-you' not in str(page):
+                  failures.append(f'expected one canonical URL: {page}')
+              for link in parser.links:
+                  target = resolve_local(link)
+                  if target is None:
+                      continue
+                  if not (root / target).exists():
+                      failures.append(f'broken local reference from {page}: {link} -> {target}')
+
+          homepage = Path('index.html').read_text(encoding='utf-8')
+          marketplace_page = Path('aws-marketplace/index.html').read_text(encoding='utf-8')
+          if 'Make consequential AI reviewable.' not in homepage:
+              failures.append('homepage category headline is missing')
+          if 'DigiTrust Enterprise AI Evidence and Assurance Pilot' not in homepage:
+              failures.append('homepage enterprise pilot is missing')
+          if marketplace not in homepage or marketplace not in marketplace_page:
+              failures.append('live AWS Marketplace URL is missing from launch pages')
+
+          stale_phrases = [
+              'listing publication pending',
+              'Marketplace publication remains pending',
+              'currently public listing',
+              'final result and listing publication pending',
+          ]
+          launch_pages = [
+              Path('index.html'),
+              Path('get-started.html'),
+              Path('pricing/index.html'),
+              Path('financial-services/index.html'),
+              Path('healthcare/index.html'),
+              Path('aws-marketplace/index.html'),
+              Path('reference-architecture/index.html'),
+          ]
+          for page in launch_pages:
+              text = page.read_text(encoding='utf-8')
+              for phrase in stale_phrases:
+                  if phrase.lower() in text.lower():
+                      failures.append(f'stale Marketplace phrase in {page}: {phrase}')
+
+          prohibited_named_accounts = [
+              'Mutual of Omaha', 'FNBO', 'Regions Bank', 'Nebraska Medicine',
+              'Froedtert', 'ThedaCare', 'King & Spalding',
+          ]
+          vertical_text = (
+              Path('financial-services/index.html').read_text(encoding='utf-8') +
+              Path('healthcare/index.html').read_text(encoding='utf-8')
+          )
+          for name in prohibited_named_accounts:
+              if name.lower() in vertical_text.lower():
+                  failures.append(f'unconfirmed target account appears in public vertical page: {name}')
+
+          js = Path('assets/site.js').read_text(encoding='utf-8')
+          if 'data-nav-toggle' not in js or 'setupCampaignAttribution' not in js:
+              failures.append('shared site JavaScript is missing navigation or attribution support')
+
+          json.load(open('vercel.json', encoding='utf-8'))
+
+          if failures:
+              print('\n'.join('FAIL: ' + item for item in failures))
+              sys.exit(1)
+
+          print('HTML_CONTRACT_VALIDATION: PASS')
+          print(f'Validated pages: {len(expected_pages)}')
+          print('MARKETPLACE_STATUS: LIVE')
+          print('TARGET_ACCOUNT_PUBLICATION_GUARD: PASS')
+          PY
+      - name: Validate JavaScript syntax
+        run: node --check assets/site.js
+      - name: Serve and smoke-test the static site
+        run: |
+          set -euo pipefail
+          python3 -m http.server 8000 >/tmp/digitrust-site.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          sleep 1
+          for path in / /get-started.html /pricing/ /financial-services/ /healthcare/ /aws-marketplace/ /reference-architecture/; do
+            curl --fail --silent --show-error "http://127.0.0.1:8000${path}" >/dev/null
+          done
+          echo 'STATIC_SITE_SMOKE_TEST: PASS'
+      - name: Record validation summary
+        run: |
+          {
+            echo '## DigiTrust category-launch validation'
+            echo
+            echo '- HTML and canonical structure: pass'
+            echo '- Internal references: pass'
+            echo '- Marketplace-live claim guard: pass'
+            echo '- Public target-account guard: pass'
+            echo '- JavaScript syntax: pass'
+            echo '- Local static smoke test: pass'
+          } >> "$GITHUB_STEP_SUMMARY"

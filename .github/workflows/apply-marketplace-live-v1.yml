@@ -1,0 +1,187 @@
+name: Apply approved Marketplace-live public status correction
+
+on:
+  push:
+    branches: [launch/marketplace-live-v1]
+    paths:
+      - .github/workflows/apply-marketplace-live-v1.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: true
+      - name: Apply exact Marketplace-live corrections
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          MARKETPLACE = "https://aws.amazon.com/marketplace/pp/prodview-ipxmlnusygyb4"
+
+          def replace_once(text: str, old: str, new: str, label: str) -> str:
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{label}: expected 1 match, found {count}")
+              return text.replace(old, new, 1)
+
+          # Homepage: make canonical source accurate and conversion-ready.
+          path = Path("index.html")
+          text = path.read_text(encoding="utf-8")
+          text = replace_once(
+              text,
+              '''      <strong>AWS Marketplace:</strong>\n      <span>FTR process complete; final result and listing publication pending. The draft listing displays “Deployed on AWS.”</span>\n      <a href="#aws">Review the AWS milestone</a>''',
+              f'''      <strong>AWS Marketplace:</strong>\n      <span>DigiTrust is listed and available for customer purchase.</span>\n      <a href="{MARKETPLACE}" target="_blank" rel="noopener">View the listing</a>''',
+              "homepage announcement",
+          )
+          text = replace_once(
+              text,
+              '''          <span class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>Design-partner stage &middot; Deployed on AWS &middot; limited onboarding</span>''',
+              '''          <span class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>AWS Software Path &mdash; Validated &middot; FTR approved &middot; Available in AWS Marketplace</span>''',
+              "homepage eyebrow",
+          )
+          text = replace_once(
+              text,
+              '''          <p class="microcopy">Reference platform through durable approval and remediation. AWS Marketplace publication is pending. The public ChatGPT app remains synthetic and read-only.</p>''',
+              '''          <p class="microcopy">DigiTrust is available through AWS Marketplace. The public ChatGPT app remains a synthetic, read-only evaluation surface. AWS Marketplace availability does not imply AWS endorsement.</p>''',
+              "homepage microcopy",
+          )
+          text = replace_once(
+              text,
+              '''            <span class="chip">Deployed on AWS</span>''',
+              '''            <span class="chip">Available in AWS Marketplace</span>''',
+              "homepage trust chip",
+          )
+          text = replace_once(
+              text,
+              '''            <div class="kicker">AWS deployment and Marketplace progress</div>\n            <h2 id="aws-title">Deployed on AWS</h2>\n            <p>DigiTrust completed AWS partner onboarding, validated its reference architecture through the AWS engagement, and deployed the control plane on AWS through an automated GitHub Actions delivery pipeline.</p>\n            <p class="aws-boundary">The AWS Marketplace Foundational Technical Review process is complete, with final results and listing publication pending. The draft Marketplace listing displays the exact designation “Deployed on AWS.” This does not claim AWS certification, endorsement, or that the listing is already public.</p>\n            <div class="btnrow">\n              <a class="btn secondary" href="/reference-architecture/#aws-pattern" data-campaign-link>Review the AWS architecture</a>\n              <a class="btn primary" href="/get-started.html?intent=aws-reference-pattern" data-campaign-link>Discuss an AWS use case</a>\n            </div>''',
+              f'''            <div class="kicker">AWS validation, procurement, and co-sell readiness</div>\n            <h2 id="aws-title">Validated and available in AWS Marketplace</h2>\n            <p>DigiTrans has achieved the Validated stage of the AWS Partner Network Software Path, DigiTrust has passed the AWS Foundational Technical Review, and DigiTrust is listed for customer purchase in AWS Marketplace.</p>\n            <p class="aws-boundary">These milestones provide technical and procurement credibility for enterprise pilots and AWS co-selling. They do not constitute AWS endorsement, certification of every DigiTrust claim, or a guarantee of customer outcomes.</p>\n            <div class="btnrow">\n              <a class="btn secondary" href="{MARKETPLACE}" target="_blank" rel="noopener">View in AWS Marketplace</a>\n              <a class="btn primary" href="/get-started.html?intent=aws-cosell-pilot" data-campaign-link>Discuss an AWS co-sell pilot</a>\n            </div>''',
+              "homepage AWS section",
+          )
+          text = replace_once(
+              text,
+              '''            <p>Partner onboarding completed, control plane deployed, Marketplace FTR process completed, and listing publication pending.</p>''',
+              '''            <p>AWS Partner Network Software Path — Validated. DigiTrust FTR approved. DigiTrust is available through AWS Marketplace for customer purchase.</p>''',
+              "homepage AWS ecosystem card",
+          )
+          text = replace_once(
+              text,
+              '''            <p>Automated AWS delivery, governed Bedrock routing, AWS data and security services, operational telemetry, and a pending Marketplace listing.</p>''',
+              '''            <p>Automated AWS delivery, governed Bedrock routing, AWS data and security services, operational telemetry, and a live AWS Marketplace procurement path.</p>''',
+              "homepage status card",
+          )
+          text = replace_once(
+              text,
+              '''        "url": "https://www.digitranshq.com/",\n        "description": "DigiTrust is the evidence and authority system of record for enterprise AI.''',
+              f'''        "url": "https://www.digitranshq.com/",\n        "sameAs": "{MARKETPLACE}",\n        "description": "DigiTrust is the evidence and authority system of record for enterprise AI.''',
+              "homepage structured data",
+          )
+          path.write_text(text, encoding="utf-8")
+
+          # Remove stale runtime status rewriting; canonical HTML is now authoritative.
+          path = Path("assets/site.js")
+          text = path.read_text(encoding="utf-8")
+          start_marker = '  var isHomepage = window.location.pathname === "/" || window.location.pathname === "/index.html";\n\n'
+          end_marker = '  updateHomepageForAwsValidated();\n\n'
+          start = text.find(start_marker)
+          end = text.find(end_marker)
+          if start < 0 or end < 0 or end <= start:
+              raise SystemExit("site.js status-rewrite markers not found")
+          end += len(end_marker)
+          text = text[:start] + "  // Public milestone copy lives in canonical HTML; this script handles attribution and forms only.\n\n" + text[end:]
+          path.write_text(text, encoding="utf-8")
+
+          # Reference architecture: correct Marketplace status while retaining maturity boundaries.
+          path = Path("reference-architecture/index.html")
+          text = path.read_text(encoding="utf-8")
+          text = replace_once(text, '"dateModified": "2026-07-17"', '"dateModified": "2026-08-08"', "architecture dateModified")
+          text = replace_once(
+              text,
+              '''      <strong>AWS Marketplace:</strong>\n      <span>FTR process complete; final result and listing publication pending. The draft listing displays “Deployed on AWS.”</span>\n      <a href="#aws-pattern">Review the AWS architecture</a>''',
+              f'''      <strong>AWS Marketplace:</strong>\n      <span>DigiTrust is listed and available for customer purchase.</span>\n      <a href="{MARKETPLACE}" target="_blank" rel="noopener">View the listing</a>''',
+              "architecture announcement",
+          )
+          text = replace_once(
+              text,
+              '''        <p class="microcopy">Reference implementation, deployed AWS pattern, design-partner stage, limited onboarding, and production hardening in progress. This page does not claim general availability, certification, or that the AWS Marketplace listing is already public.</p>''',
+              '''        <p class="microcopy">Reference implementation, deployed AWS pattern, design-partner stage, limited onboarding, and production hardening in progress. DigiTrust is publicly listed in AWS Marketplace; this does not imply AWS endorsement or unrestricted production availability.</p>''',
+              "architecture microcopy",
+          )
+          text = replace_once(
+              text,
+              '''            <h2 id="aws-title">AWS runtime and Marketplace readiness</h2>''',
+              '''            <h2 id="aws-title">AWS runtime and Marketplace availability</h2>''',
+              "architecture AWS heading",
+          )
+          text = replace_once(
+              text,
+              '''              <p><strong>Marketplace status:</strong> the AWS Marketplace Foundational Technical Review process is complete, with final results and listing publication pending. The draft listing displays “Deployed on AWS.” This does not claim AWS certification, endorsement, or a currently public listing.</p>''',
+              f'''              <p><strong>Marketplace status:</strong> DigiTrust passed the AWS Foundational Technical Review and is publicly listed for customer purchase in AWS Marketplace. <a href="{MARKETPLACE}" target="_blank" rel="noopener"><strong>View the listing</strong></a>. Marketplace availability does not imply AWS endorsement or certification of every product claim.</p>''',
+              "architecture Marketplace notice",
+          )
+          path.write_text(text, encoding="utf-8")
+
+          # AWS milestone article: advance the story from readiness to live procurement.
+          path = Path("news/aws-validated-software-path/index.html")
+          text = path.read_text(encoding="utf-8")
+          text = replace_once(
+              text,
+              '''            <li>AWS Marketplace, co-sell, funding, and partner-engagement motions underway</li>''',
+              '''            <li>DigiTrust is publicly listed and purchasable through AWS Marketplace</li>''',
+              "news Marketplace bullet",
+          )
+          text = replace_once(
+              text,
+              '''          <p><strong>Claim boundary:</strong> The AWS Partner Network milestone and FTR approval do not constitute AWS endorsement of every DigiTrust claim, customer outcome, or future capability. AWS Marketplace publication and individual program participation are stated only when independently confirmed.</p>''',
+              '''          <p><strong>Claim boundary:</strong> The AWS Partner Network milestone, FTR approval, and Marketplace availability do not constitute AWS endorsement of every DigiTrust claim, customer outcome, or future capability. Individual AWS program participation is stated only when independently confirmed.</p>''',
+              "news claim boundary",
+          )
+          text = replace_once(
+              text,
+              '''            <a class="btn secondary" href="/reference-architecture/#aws-pattern" data-campaign-link>Review the AWS architecture</a>\n            <a class="btn ghost" href="/pricing/" data-campaign-link>Review pricing</a>''',
+              f'''            <a class="btn secondary" href="{MARKETPLACE}" target="_blank" rel="noopener">View in AWS Marketplace</a>\n            <a class="btn ghost" href="/reference-architecture/#aws-pattern" data-campaign-link>Review the AWS architecture</a>''',
+              "news CTA",
+          )
+          path.write_text(text, encoding="utf-8")
+
+          # Static validation: no public Marketplace-pending claim remains in launch-critical pages.
+          checked = [
+              Path("index.html"),
+              Path("reference-architecture/index.html"),
+              Path("news/aws-validated-software-path/index.html"),
+              Path("assets/site.js"),
+          ]
+          forbidden = [
+              "listing publication pending",
+              "Marketplace publication remains pending",
+              "pending Marketplace listing",
+              "listing is already public",
+              "currently public listing",
+          ]
+          for item in checked:
+              body = item.read_text(encoding="utf-8")
+              for phrase in forbidden:
+                  if phrase in body:
+                      raise SystemExit(f"stale phrase remains in {item}: {phrase}")
+
+          # Lightweight HTML parse validation.
+          from html.parser import HTMLParser
+          class Parser(HTMLParser):
+              pass
+          for item in checked[:3]:
+              Parser().feed(item.read_text(encoding="utf-8"))
+
+          print("MARKETPLACE_LIVE_CORRECTION: PASS")
+          PY
+      - name: Remove one-time workflow and commit reviewed changes
+        run: |
+          rm .github/workflows/apply-marketplace-live-v1.yml
+          git config user.name 'DigiTrans Research & Engineering'
+          git config user.email 'johnagj@outlook.com'
+          git add index.html assets/site.js reference-architecture/index.html news/aws-validated-software-path/index.html .github/workflows/apply-marketplace-live-v1.yml
+          git commit -m 'Correct public site for live AWS Marketplace availability [skip ci]'
+          git push origin HEAD:launch/marketplace-live-v1

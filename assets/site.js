@@ -5,76 +5,7 @@
   var storageKey = "digitrust_campaign";
   var maxValueLength = 200;
 
-  var isHomepage = window.location.pathname === "/" || window.location.pathname === "/index.html";
-
-  function updateHomepageForAwsValidated() {
-    if (!isHomepage) return;
-
-    var announcement = document.querySelector(".announcement-inner");
-    if (announcement) {
-      var announcementLabel = document.createElement("strong");
-      announcementLabel.textContent = "AWS Partner milestone:";
-
-      var announcementMessage = document.createElement("span");
-      announcementMessage.textContent = "DigiTrans has achieved the Validated stage of the AWS Partner Network Software Path, and DigiTrust passed the AWS Foundational Technical Review.";
-
-      var announcementLink = document.createElement("a");
-      announcementLink.href = "/news/aws-validated-software-path/";
-      announcementLink.textContent = "Review the milestone";
-      announcementLink.setAttribute("data-campaign-link", "");
-
-      announcement.replaceChildren(announcementLabel, announcementMessage, announcementLink);
-    }
-
-    var eyebrow = document.querySelector(".hero .eyebrow");
-    if (eyebrow) {
-      eyebrow.innerHTML = '<span class="eyebrow-dot" aria-hidden="true"></span>Design-partner stage &middot; AWS Software Path &mdash; Validated &middot; limited pilot onboarding';
-    }
-
-    var microcopy = document.querySelector(".hero .microcopy");
-    if (microcopy) {
-      microcopy.textContent = "DigiTrust passed the AWS Foundational Technical Review. AWS Marketplace publication remains pending. The public ChatGPT app remains synthetic and read-only.";
-    }
-
-    var trustChips = document.querySelectorAll(".hero .truststrip .chip");
-    if (trustChips.length) {
-      trustChips[trustChips.length - 1].textContent = "AWS Software Path — Validated";
-    }
-
-    var awsSection = document.getElementById("aws");
-    if (awsSection) {
-      var awsKicker = awsSection.querySelector(".kicker");
-      if (awsKicker) awsKicker.textContent = "AWS partner validation and co-sell readiness";
-
-      var awsTitle = awsSection.querySelector("h2");
-      if (awsTitle) awsTitle.textContent = "Validated in the AWS Partner Network Software Path";
-
-      var awsCopy = awsSection.querySelectorAll(".aws-grid > div:first-child > p");
-      if (awsCopy[0]) {
-        awsCopy[0].textContent = "DigiTrans has achieved the Validated stage of the AWS Partner Network Software Path, and DigiTrust has successfully passed the AWS Foundational Technical Review. These milestones support our readiness to engage AWS customers, account teams, and partners through Marketplace and co-selling motions.";
-      }
-      if (awsCopy[1]) {
-        awsCopy[1].textContent = "DigiTrust remains a provider-neutral evidence and assurance layer. AWS participation supports our distribution and co-selling strategy; it does not represent AWS endorsement, certification of every product claim, or dependence on AWS-specific models or infrastructure. Marketplace publication status is stated only when confirmed.";
-      }
-
-      var awsPilotLink = awsSection.querySelector("a.btn.primary");
-      if (awsPilotLink) {
-        awsPilotLink.textContent = "Discuss an AWS co-sell pilot";
-        awsPilotLink.href = "/get-started.html?intent=aws-cosell-pilot";
-      }
-    }
-
-    var ecosystemCards = document.querySelectorAll("#ecosystem .ecosystem-card");
-    ecosystemCards.forEach(function (card) {
-      var heading = card.querySelector("h3");
-      var paragraph = card.querySelector("p");
-      if (heading && paragraph && heading.textContent.trim() === "AWS") {
-        paragraph.textContent = "AWS Partner Network Software Path — Validated. DigiTrust Foundational Technical Review approved. Marketplace and co-sell motions are underway.";
-      }
-    });
-  }
-
-  updateHomepageForAwsValidated();
+  // Public milestone copy lives in canonical HTML; this script handles attribution and forms only.
 
   function clean(value, maxLength) {
     if (!value) return "";

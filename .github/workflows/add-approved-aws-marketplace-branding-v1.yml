@@ -1,0 +1,109 @@
+name: Add approved AWS Marketplace brand treatment
+
+on:
+  push:
+    branches:
+      - launch/private-pricing-and-aws-branding-v1
+    paths:
+      - .github/workflows/add-approved-aws-marketplace-branding-v1.yml
+
+permissions:
+  contents: write
+
+jobs:
+  revise:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.13'
+      - name: Add DigiTrans and AWS Marketplace brand row
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          page = Path('index.html')
+          text = page.read_text(encoding='utf-8')
+          old = '''        <aside class="marketplace-card">
+          <img src="/assets/digitrust-aws-marketplace-logo-640.png" alt="DigiTrust product artwork used for the AWS Marketplace listing" width="280" height="280" />'''
+          new = '''        <aside class="marketplace-card">
+          <div class="aws-brand-lockup" aria-label="DigiTrans and AWS Marketplace">
+            <img class="aws-brand-lockup-digitrans" src="/digitrans-logo.png" alt="DigiTrans" width="156" height="45" />
+            <span class="aws-brand-lockup-divider" aria-hidden="true"></span>
+            <img class="aws-brand-lockup-marketplace" src="https://d1.awsstatic.com/customer-references-case-studies-logos/1200x900_logos/Available-in-Marketplace_1200x900_Logo.f44b6504cba3b98a8202d0d501731f07b85d0656.png" alt="Available in AWS Marketplace" width="160" height="120" />
+          </div>
+          <p class="aws-brand-lockup-note">DigiTrust is sold by DigiTrans and available through AWS Marketplace. The brand treatment does not imply AWS endorsement.</p>
+          <img src="/assets/digitrust-aws-marketplace-logo-640.png" alt="DigiTrust product artwork used for the AWS Marketplace listing" width="280" height="280" />'''
+          if old not in text:
+              raise SystemExit('AWS_BRAND_LOCKUP_ANCHOR_NOT_FOUND')
+          page.write_text(text.replace(old, new), encoding='utf-8')
+
+          css = Path('assets/category-launch.css')
+          style = css.read_text(encoding='utf-8')
+          block = '''
+
+          .aws-brand-lockup {
+            align-items: center;
+            background: #fff;
+            border: 1px solid rgba(15, 23, 42, 0.12);
+            border-radius: 14px;
+            display: flex;
+            gap: 18px;
+            justify-content: center;
+            min-height: 112px;
+            padding: 14px 16px;
+          }
+
+          .aws-brand-lockup-digitrans {
+            height: auto;
+            max-width: 150px;
+            width: 42%;
+          }
+
+          .aws-brand-lockup-divider {
+            background: rgba(15, 23, 42, 0.2);
+            height: 54px;
+            width: 1px;
+          }
+
+          .aws-brand-lockup-marketplace {
+            height: auto;
+            max-width: 150px;
+            width: 42%;
+          }
+
+          .aws-brand-lockup-note {
+            color: var(--muted, #526072);
+            font-size: 0.78rem;
+            line-height: 1.45;
+            margin: 10px 0 4px;
+            text-align: center;
+          }
+
+          @media (max-width: 520px) {
+            .aws-brand-lockup {
+              gap: 12px;
+              padding: 12px;
+            }
+
+            .aws-brand-lockup-divider {
+              height: 44px;
+            }
+          }
+          '''
+          block = '\n'.join(line[10:] if line.startswith('          ') else line for line in block.splitlines())
+          if '.aws-brand-lockup {' not in style:
+              css.write_text(style.rstrip() + block + '\n', encoding='utf-8')
+
+          print('APPROVED_AWS_MARKETPLACE_BRAND_TREATMENT: PASS')
+          PY
+      - name: Commit branding preview
+        run: |
+          git config user.name 'DigiTrans Research & Engineering'
+          git config user.email 'johnagj@outlook.com'
+          git add index.html assets/category-launch.css
+          git commit -m 'Add approved AWS Marketplace brand treatment'
+          git push origin HEAD:launch/private-pricing-and-aws-branding-v1

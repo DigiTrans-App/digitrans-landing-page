@@ -28,13 +28,15 @@ jobs:
 
           page = Path('index.html')
           text = page.read_text(encoding='utf-8')
-          insertion = '''<div class="aws-brand-lockup" aria-label="DigiTrans and AWS Marketplace">
-            <img class="aws-brand-lockup-digitrans" src="/digitrans-logo.png" alt="DigiTrans" width="156" height="45" />
-            <span class="aws-brand-lockup-divider" aria-hidden="true"></span>
-            <img class="aws-brand-lockup-marketplace" src="https://d1.awsstatic.com/customer-references-case-studies-logos/1200x900_logos/Available-in-Marketplace_1200x900_Logo.f44b6504cba3b98a8202d0d501731f07b85d0656.png" alt="Available in AWS Marketplace" width="160" height="120" />
-          </div>
-          <p class="aws-brand-lockup-note">DigiTrust is sold by DigiTrans and available through AWS Marketplace. The brand treatment does not imply AWS endorsement.</p>
-          '''
+          insertion = "\n".join([
+              '<div class="aws-brand-lockup" aria-label="DigiTrans and AWS Marketplace">',
+              '  <img class="aws-brand-lockup-digitrans" src="/digitrans-logo.png" alt="DigiTrans" width="156" height="45" />',
+              '  <span class="aws-brand-lockup-divider" aria-hidden="true"></span>',
+              '  <img class="aws-brand-lockup-marketplace" src="https://d1.awsstatic.com/customer-references-case-studies-logos/1200x900_logos/Available-in-Marketplace_1200x900_Logo.f44b6504cba3b98a8202d0d501731f07b85d0656.png" alt="Available in AWS Marketplace" width="160" height="120" />',
+              '</div>',
+              '<p class="aws-brand-lockup-note">DigiTrust is sold by DigiTrans and available through AWS Marketplace. The brand treatment does not imply AWS endorsement.</p>',
+              '',
+          ])
           if 'class="aws-brand-lockup"' not in text:
               pattern = re.compile(r'(<aside class="marketplace-card">\s*)(<img src="/assets/digitrust-aws-marketplace-logo-640\.png")')
               text, count = pattern.subn(lambda match: match.group(1) + insertion + match.group(2), text, count=1)
@@ -44,57 +46,58 @@ jobs:
 
           css = Path('assets/category-launch.css')
           style = css.read_text(encoding='utf-8')
-          block = '''
-
-.aws-brand-lockup {
-  align-items: center;
-  background: #fff;
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  border-radius: 14px;
-  display: flex;
-  gap: 18px;
-  justify-content: center;
-  min-height: 112px;
-  padding: 14px 16px;
-}
-
-.aws-brand-lockup-digitrans {
-  height: auto;
-  max-width: 150px;
-  width: 42%;
-}
-
-.aws-brand-lockup-divider {
-  background: rgba(15, 23, 42, 0.2);
-  height: 54px;
-  width: 1px;
-}
-
-.aws-brand-lockup-marketplace {
-  height: auto;
-  max-width: 150px;
-  width: 42%;
-}
-
-.aws-brand-lockup-note {
-  color: var(--muted, #526072);
-  font-size: 0.78rem;
-  line-height: 1.45;
-  margin: 10px 0 4px;
-  text-align: center;
-}
-
-@media (max-width: 520px) {
-  .aws-brand-lockup {
-    gap: 12px;
-    padding: 12px;
-  }
-
-  .aws-brand-lockup-divider {
-    height: 44px;
-  }
-}
-'''
+          block = "\n".join([
+              '',
+              '.aws-brand-lockup {',
+              '  align-items: center;',
+              '  background: #fff;',
+              '  border: 1px solid rgba(15, 23, 42, 0.12);',
+              '  border-radius: 14px;',
+              '  display: flex;',
+              '  gap: 18px;',
+              '  justify-content: center;',
+              '  min-height: 112px;',
+              '  padding: 14px 16px;',
+              '}',
+              '',
+              '.aws-brand-lockup-digitrans {',
+              '  height: auto;',
+              '  max-width: 150px;',
+              '  width: 42%;',
+              '}',
+              '',
+              '.aws-brand-lockup-divider {',
+              '  background: rgba(15, 23, 42, 0.2);',
+              '  height: 54px;',
+              '  width: 1px;',
+              '}',
+              '',
+              '.aws-brand-lockup-marketplace {',
+              '  height: auto;',
+              '  max-width: 150px;',
+              '  width: 42%;',
+              '}',
+              '',
+              '.aws-brand-lockup-note {',
+              '  color: var(--muted, #526072);',
+              '  font-size: 0.78rem;',
+              '  line-height: 1.45;',
+              '  margin: 10px 0 4px;',
+              '  text-align: center;',
+              '}',
+              '',
+              '@media (max-width: 520px) {',
+              '  .aws-brand-lockup {',
+              '    gap: 12px;',
+              '    padding: 12px;',
+              '  }',
+              '',
+              '  .aws-brand-lockup-divider {',
+              '    height: 44px;',
+              '  }',
+              '}',
+              '',
+          ])
           if '.aws-brand-lockup {' not in style:
               css.write_text(style.rstrip() + block, encoding='utf-8')
 

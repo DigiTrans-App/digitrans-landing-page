@@ -1,0 +1,61 @@
+name: Validate public commercial-detail boundary
+
+on:
+  push:
+    branches:
+      - main
+      - launch/private-pricing-and-aws-branding-v1
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.13'
+      - name: Confirm public pages do not expose pricing or direct checkout
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          import sys
+
+          checks = {
+              'public currency amount': re.compile(r'\$\s*\d'),
+              'structured price metadata': re.compile(r'"(?:lowPrice|highPrice|priceCurrency)"'),
+              'direct Stripe checkout': re.compile(r'buy\.stripe\.com', re.I),
+          }
+
+          failures = []
+          for page in Path('.').rglob('*.html'):
+              content = page.read_text(encoding='utf-8')
+              for label, pattern in checks.items():
+                  if pattern.search(content):
+                      failures.append(f'{label} found in {page}')
+
+          if failures:
+              print('\n'.join('FAIL: ' + item for item in failures))
+              sys.exit(1)
+
+          print('PUBLIC_COMMERCIAL_DETAIL_BOUNDARY: PASS')
+          print('Pricing remains in controlled AWS, Partner Central, co-selling, and customer-specific sales channels.')
+          PY
+      - name: Record validation summary
+        run: |
+          {
+            echo '## Public commercial-detail boundary'
+            echo
+            echo '- Public currency amounts: absent'
+            echo '- Structured public price metadata: absent'
+            echo '- Direct public checkout links: absent'
+            echo '- Controlled-channel pricing boundary: pass'
+          } >> "$GITHUB_STEP_SUMMARY"

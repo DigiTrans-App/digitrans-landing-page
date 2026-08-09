@@ -475,3 +475,51 @@
   .record-seal { width: 46px; height: 46px; }
   .pilot-panel { padding: 26px 20px; }
 }
+.aws-brand-lockup {
+  align-items: center;
+  background: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 14px;
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  min-height: 112px;
+  padding: 14px 16px;
+}
+
+.aws-brand-lockup-digitrans {
+  height: auto;
+  max-width: 150px;
+  width: 42%;
+}
+
+.aws-brand-lockup-divider {
+  background: rgba(15, 23, 42, 0.2);
+  height: 54px;
+  width: 1px;
+}
+
+.aws-brand-lockup-marketplace {
+  height: auto;
+  max-width: 150px;
+  width: 42%;
+}
+
+.aws-brand-lockup-note {
+  color: var(--muted, #526072);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  margin: 10px 0 4px;
+  text-align: center;
+}
+
+@media (max-width: 520px) {
+  .aws-brand-lockup {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .aws-brand-lockup-divider {
+    height: 44px;
+  }
+}

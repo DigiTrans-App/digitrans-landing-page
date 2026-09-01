@@ -88,7 +88,7 @@
         <a href="#aws">Buy on AWS</a>
         <a href="/reference-architecture/" data-campaign-link>How it works</a>
       </div>
-      <div class="nav-cta"><a class="btn primary" href="/get-started?intent=enterprise-pilot#intake" data-campaign-link>Book a pilot briefing</a></div>
+      <div class="nav-cta"><a class="btn primary" href="/get-started?intent=enterprise-pilot#intake" data-campaign-link data-analytics-placement="navigation">Book a pilot briefing</a></div>
     </div>
   </nav>
 
@@ -101,8 +101,8 @@
           <p class="launch-subtitle"><strong>DigiTrust creates one reviewable Trust Record for consequential enterprise AI.</strong></p>
           <p class="launch-copy">Connect the AI action to its supporting evidence, repeatable checks, accountable human approval, authorized use, known limitations, and complete review history.</p>
           <div class="hero-actions">
-            <a class="btn primary" href="#trust-record-details">Explore the Trust Record</a>
-            <a class="btn marketplace" href="/get-started?intent=enterprise-pilot#intake" data-campaign-link>Book a 30-minute briefing</a>
+            <a class="btn primary" href="#trust-record-details" data-analytics-event="trust_record_clicked" data-analytics-placement="hero">Explore the Trust Record</a>
+            <a class="btn marketplace" href="/get-started?intent=enterprise-pilot#intake" data-campaign-link data-analytics-placement="hero">Book a 30-minute briefing</a>
             <a class="btn text-link" href="https://aws.amazon.com/marketplace/pp/prodview-ipxmlnusygyb4" target="_blank" rel="noopener">View on AWS Marketplace</a>
           </div>
           <div class="credibility-row" aria-label="DigiTrust credibility signals">
@@ -306,5 +306,6 @@
   </footer>
 
   <script src="/assets/site.js" defer></script>
+  <script type="module" src="/assets/analytics.js"></script>
 </body>
 </html>

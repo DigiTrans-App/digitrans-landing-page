@@ -11,7 +11,5 @@
       ]
     }
   ],
-  "redirects": [
-    {"source": "/get-started", "destination": "/get-started.html", "permanent": true}
-  ]
+  "cleanUrls": true
 }

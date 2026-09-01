@@ -70,11 +70,7 @@
               <h3>Request a DigiTrust briefing</h3>
               <p>DigiTrans LLC will use this information to evaluate and respond to your request. Review the <a href="/privacy/"><strong>Website Privacy Notice</strong></a>.</p>
             </div>
-            <form class="intake-form" id="digitrust-intake" action="https://formsubmit.co/info@digitranshq.com" method="POST">
-              <input type="hidden" name="_subject" value="New DigiTrust Enterprise Pilot Request" />
-              <input type="hidden" name="_template" value="table" />
-              <input type="hidden" name="_next" value="https://www.digitranshq.com/intake-thank-you/" />
-              <input type="hidden" name="_autoresponse" value="Thank you for contacting DigiTrans about the DigiTrust Enterprise AI Evidence and Assurance Pilot. We received your request and will follow up using the work email you provided. Please do not reply with secrets, credentials, payment information, regulated data, production customer records, classified information, or confidential legal materials." />
+            <form class="intake-form" id="digitrust-intake" action="/api/intake" method="POST">
               <input type="hidden" name="intent" id="intent" value="enterprise-pilot" />
               <input type="hidden" name="utm_source" id="utm_source" value="" />
               <input type="hidden" name="utm_medium" id="utm_medium" value="" />
@@ -87,16 +83,17 @@
               <div class="bot-field" aria-hidden="true"><label>Leave this field empty<input type="text" name="website_check" id="website_check" tabindex="-1" autocomplete="off" /></label></div>
 
               <div class="form-grid">
-                <div class="field"><label for="full_name">Full name <span class="required">*</span></label><input id="full_name" name="Full Name" type="text" autocomplete="name" required maxlength="120" /></div>
+                <div class="field"><label for="full_name">Full name <span class="required">*</span></label><input id="full_name" name="full_name" type="text" autocomplete="name" required maxlength="120" /></div>
                 <div class="field"><label for="email">Work email <span class="required">*</span></label><input id="email" name="email" type="email" autocomplete="email" required maxlength="180" /></div>
-                <div class="field"><label for="company">Company or organization <span class="required">*</span></label><input id="company" name="Company" type="text" autocomplete="organization" required maxlength="160" /></div>
-                <div class="field"><label for="role">Role or title</label><input id="role" name="Role or Title" type="text" autocomplete="organization-title" maxlength="160" /></div>
-                <div class="field full"><label for="workflow_type">Primary AI use case <span class="required">*</span></label><select id="workflow_type" name="Primary AI Workflow" required><option value="" selected disabled>Select one</option><option>AI assistant or copilot</option><option>AI workflow or automated tool use</option><option>Decision support</option><option>Customer or patient-facing AI</option><option>Fraud, risk, or security analytics</option><option>Clinical or research support</option><option>Operational automation</option><option>Other</option></select></div>
-                <div class="field full"><label for="business_goal">What would you like to review or prove?</label><textarea id="business_goal" name="Business Goal" maxlength="1200" placeholder="Share a high-level goal or review challenge. Do not include sensitive or confidential information."></textarea><p class="field-note">Optional. A sentence or two is enough.</p></div>
-                <div class="field full"><div class="consent"><input id="consent" name="Consent" type="checkbox" value="Agreed" required /><label for="consent">I have read the <a href="/privacy/">Website Privacy Notice</a>. I agree that DigiTrans LLC may use this information to evaluate and respond to my request, and I will not submit secrets, credentials, payment information, regulated data, production customer records, classified or export-controlled data, or confidential legal materials. <span class="required">*</span></label></div></div>
+                <div class="field"><label for="company">Company or organization <span class="required">*</span></label><input id="company" name="company" type="text" autocomplete="organization" required maxlength="160" /></div>
+                <div class="field"><label for="role">Role or title</label><input id="role" name="role" type="text" autocomplete="organization-title" maxlength="160" /></div>
+                <div class="field full"><label for="workflow_type">Primary AI use case <span class="required">*</span></label><select id="workflow_type" name="workflow_type" required><option value="" selected disabled>Select one</option><option>AI assistant or copilot</option><option>AI workflow or automated tool use</option><option>Decision support</option><option>Customer or patient-facing AI</option><option>Fraud, risk, or security analytics</option><option>Clinical or research support</option><option>Operational automation</option><option>Other</option></select></div>
+                <div class="field full"><label for="business_goal">What would you like to review or prove?</label><textarea id="business_goal" name="business_goal" maxlength="1200" placeholder="Share a high-level goal or review challenge. Do not include sensitive or confidential information."></textarea><p class="field-note">Optional. A sentence or two is enough.</p></div>
+                <div class="field full"><div class="consent"><input id="consent" name="consent" type="checkbox" value="Agreed" required /><label for="consent">I have read the <a href="/privacy/">Website Privacy Notice</a>. I agree that DigiTrans LLC may use this information to evaluate and respond to my request, and I will not submit secrets, credentials, payment information, regulated data, production customer records, classified or export-controlled data, or confidential legal materials. <span class="required">*</span></label></div></div>
               </div>
 
-              <div class="form-footer"><p>Form delivery is handled by our current form provider and routes to <strong>info@digitranshq.com</strong>. Do not include sensitive or regulated information.</p><button class="btn primary" type="submit">Request the briefing</button></div>
+              <p class="form-status" id="intake-status" role="alert" hidden></p>
+              <div class="form-footer"><p>The website sends this request directly to <strong>info@digitranshq.com</strong> through Cloudflare. Form values are not written to website logs or analytics. Do not include sensitive or regulated information.</p><button class="btn primary" type="submit">Request the briefing</button></div>
             </form>
           </div>
         </div>

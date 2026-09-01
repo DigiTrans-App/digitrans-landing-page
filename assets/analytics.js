@@ -2,7 +2,6 @@ const EVENT_NAMES = Object.freeze([
   "trust_record_clicked",
   "briefing_cta_clicked",
   "intake_started",
-  "lead_submitted",
 ]);
 
 const EVENT_SET = new Set(EVENT_NAMES);
@@ -24,8 +23,6 @@ const ALLOWED_INTENTS = new Set([
   "quickstart",
 ]);
 const EVENT_ENDPOINT = "/api/events";
-const SUBMISSION_PENDING_KEY = "digitrust_submission_pending";
-const SUBMISSION_PENDING_MAX_AGE_MS = 30 * 60 * 1000;
 const SAFE_SLUG = /^[a-z0-9][a-z0-9_-]{0,63}$/;
 const SAFE_PATH = /^\/[a-zA-Z0-9._~!$&'()*+,;=:@%\/-]*$/;
 
@@ -157,25 +154,6 @@ function isBriefingLink(link, browserWindow) {
   }
 }
 
-function markSubmissionPending(storage, now = Date.now()) {
-  try {
-    storage.setItem(SUBMISSION_PENDING_KEY, String(now));
-    return true;
-  } catch (error) {
-    return false;
-  }
-}
-
-function consumeSubmissionPending(storage, now = Date.now()) {
-  try {
-    const createdAt = Number(storage.getItem(SUBMISSION_PENDING_KEY));
-    storage.removeItem(SUBMISSION_PENDING_KEY);
-    return Number.isFinite(createdAt) && createdAt > 0 && now >= createdAt && now - createdAt <= SUBMISSION_PENDING_MAX_AGE_MS;
-  } catch (error) {
-    return false;
-  }
-}
-
 function setupConversionAnalytics(browserWindow = window, browserDocument = document) {
   const track = createTracker({ window: browserWindow });
   const page = normalizePath(browserWindow.location.pathname);
@@ -219,19 +197,6 @@ function setupConversionAnalytics(browserWindow = window, browserDocument = docu
 
     form.addEventListener("focusin", recordStart);
     form.addEventListener("input", recordStart);
-    form.addEventListener("submit", () => {
-      const trap = browserDocument.getElementById("website_check");
-      if ((trap && trap.value) || !form.checkValidity()) return;
-      markSubmissionPending(browserWindow.sessionStorage);
-    });
-  }
-
-  if (page.replace(/\/$/, "") === "/intake-thank-you" && consumeSubmissionPending(browserWindow.sessionStorage)) {
-    track("lead_submitted", {
-      page,
-      placement: "formsubmit_redirect",
-      intent: "none",
-    });
   }
 }
 
@@ -241,11 +206,8 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
 
 export {
   EVENT_NAMES,
-  SUBMISSION_PENDING_MAX_AGE_MS,
-  consumeSubmissionPending,
   createTracker,
   inferPlacement,
-  markSubmissionPending,
   measurementAllowed,
   normalizeEventPayload,
   normalizeIntent,

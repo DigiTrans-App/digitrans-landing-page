@@ -186,7 +186,7 @@ jobs:
 
           analytics_js = Path('assets/analytics.js').read_text(encoding='utf-8')
           required_events = {
-              'trust_record_clicked', 'briefing_cta_clicked', 'intake_started', 'lead_submitted',
+              'trust_record_clicked', 'briefing_cta_clicked', 'intake_started',
           }
           for event in required_events:
               if event not in analytics_js:
@@ -200,6 +200,20 @@ jobs:
           endpoint = Path('functions/api/events.js').read_text(encoding='utf-8')
           if 'CONVERSION_EVENTS' not in endpoint or 'requestHasSameOrigin' not in endpoint:
               failures.append('conversion endpoint is missing storage or same-origin controls')
+
+          intake_endpoint = Path('functions/api/intake.js').read_text(encoding='utf-8')
+          for required_control in [
+              'INTAKE_EMAIL_TOKEN', 'info@digitranshq.com', 'requestHasSameOrigin',
+              'MAX_BODY_BYTES', 'lead_submitted', 'cloudflare_intake',
+          ]:
+              if required_control not in intake_endpoint:
+                  failures.append(f'intake endpoint is missing required control: {required_control}')
+
+          intake_html = Path('get-started.html').read_text(encoding='utf-8')
+          if 'action="/api/intake"' not in intake_html:
+              failures.append('intake form must use the same-origin Cloudflare endpoint')
+          if 'formsubmit.co' in intake_html.lower() or 'formsubmit' in Path('privacy/index.html').read_text(encoding='utf-8').lower():
+              failures.append('legacy FormSubmit dependency remains in the public intake flow')
 
           intake = PageParser()
           intake.feed(Path('get-started.html').read_text(encoding='utf-8'))
@@ -254,6 +268,7 @@ jobs:
           node --check assets/site.js
           node --check assets/analytics.js
           node --check functions/api/events.js
+          node --check functions/api/intake.js
           node --test tests/*.test.js
       - name: Serve and smoke-test the static site
         run: |

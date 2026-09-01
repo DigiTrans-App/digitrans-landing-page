@@ -53,6 +53,9 @@ jobs:
                   self.canonical = []
                   self.links = []
                   self.ids = set()
+                  self.in_intake = False
+                  self.intake_fields = set()
+                  self.required_intake_fields = set()
 
               def handle_starttag(self, tag, attrs):
                   data = dict(attrs)
@@ -60,6 +63,14 @@ jobs:
                       self.in_title = True
                   if tag == 'h1':
                       self.h1_count += 1
+                  if tag == 'form' and data.get('id') == 'digitrust-intake':
+                      self.in_intake = True
+                  if self.in_intake and tag in {'input', 'select', 'textarea'}:
+                      field_id = data.get('id')
+                      if field_id and data.get('type') != 'hidden' and field_id != 'website_check':
+                          self.intake_fields.add(field_id)
+                          if 'required' in data:
+                              self.required_intake_fields.add(field_id)
                   if data.get('id'):
                       self.ids.add(data['id'])
                   if tag == 'link' and data.get('rel') == 'canonical' and data.get('href'):
@@ -72,6 +83,8 @@ jobs:
               def handle_endtag(self, tag):
                   if tag == 'title':
                       self.in_title = False
+                  if tag == 'form':
+                      self.in_intake = False
 
               def handle_data(self, data):
                   if self.in_title:
@@ -89,6 +102,13 @@ jobs:
               candidate = Path(path)
               if path.endswith('/'):
                   candidate = candidate / 'index.html'
+              elif not candidate.suffix:
+                  directory_index = candidate / 'index.html'
+                  html_file = candidate.with_suffix('.html')
+                  if (root / directory_index).exists():
+                      candidate = directory_index
+                  elif (root / html_file).exists():
+                      candidate = html_file
               return candidate
 
           failures = []
@@ -114,8 +134,12 @@ jobs:
 
           homepage = Path('index.html').read_text(encoding='utf-8')
           marketplace_page = Path('aws-marketplace/index.html').read_text(encoding='utf-8')
-          if 'Make consequential AI reviewable.' not in homepage:
+          if 'Prove the AI decision—and who authorized its use.' not in homepage:
               failures.append('homepage category headline is missing')
+          if 'Explore the Trust Record' not in homepage or 'Book a 30-minute briefing' not in homepage:
+              failures.append('homepage proof and briefing CTA hierarchy is missing')
+          if 'pilot-summary' not in homepage or '30–45 days' not in homepage or '2–3 AI workflows' not in homepage:
+              failures.append('homepage pilot summary is missing')
           if 'DigiTrust Enterprise AI Evidence and Assurance Pilot' not in homepage:
               failures.append('homepage enterprise pilot is missing')
           if marketplace not in homepage or marketplace not in marketplace_page:
@@ -138,6 +162,8 @@ jobs:
           ]
           for page in launch_pages:
               text = page.read_text(encoding='utf-8')
+              if '/get-started.html' in text:
+                  failures.append(f'noncanonical get-started URL in {page}')
               for phrase in stale_phrases:
                   if phrase.lower() in text.lower():
                       failures.append(f'stale Marketplace phrase in {page}: {phrase}')
@@ -158,7 +184,42 @@ jobs:
           if 'data-nav-toggle' not in js or 'setupCampaignAttribution' not in js:
               failures.append('shared site JavaScript is missing navigation or attribution support')
 
-          json.load(open('vercel.json', encoding='utf-8'))
+          intake = PageParser()
+          intake.feed(Path('get-started.html').read_text(encoding='utf-8'))
+          expected_intake_fields = {
+              'full_name', 'email', 'company', 'role', 'workflow_type', 'business_goal', 'consent',
+          }
+          expected_required_fields = {'full_name', 'email', 'company', 'workflow_type', 'consent'}
+          if intake.intake_fields != expected_intake_fields:
+              failures.append(
+                  f'intake field contract changed: expected {sorted(expected_intake_fields)}, '
+                  f'found {sorted(intake.intake_fields)}'
+              )
+          if intake.required_intake_fields != expected_required_fields:
+              failures.append(
+                  f'intake required-field contract changed: expected {sorted(expected_required_fields)}, '
+                  f'found {sorted(intake.required_intake_fields)}'
+              )
+          if intake.canonical != ['https://www.digitranshq.com/get-started']:
+              failures.append('get-started canonical URL must be extensionless')
+
+          cloudflare_headers = Path('_headers').read_text(encoding='utf-8')
+          for header in [
+              'Strict-Transport-Security', 'X-Content-Type-Options', 'X-Frame-Options',
+              'Referrer-Policy', 'Permissions-Policy',
+          ]:
+              if header not in cloudflare_headers:
+                  failures.append(f'missing Cloudflare security header: {header}')
+
+          vercel_config = json.load(open('vercel.json', encoding='utf-8'))
+          if vercel_config.get('cleanUrls') is not True:
+              failures.append('compatibility configuration does not use extensionless canonical URLs')
+
+          sitemap = Path('sitemap.xml').read_text(encoding='utf-8')
+          if 'https://www.digitranshq.com/get-started</loc>' not in sitemap:
+              failures.append('sitemap is missing the extensionless get-started URL')
+          if 'https://www.digitranshq.com/get-started.html</loc>' in sitemap:
+              failures.append('sitemap contains the redirected get-started URL')
 
           if failures:
               print('\n'.join('FAIL: ' + item for item in failures))
@@ -167,6 +228,8 @@ jobs:
           print('HTML_CONTRACT_VALIDATION: PASS')
           print(f'Validated pages: {len(expected_pages)}')
           print('MARKETPLACE_STATUS: LIVE')
+          print('CONVERSION_PATH_CONTRACT: PASS')
+          print('CLOUDFLARE_DEPLOYMENT_CONTRACT: PASS')
           print('TARGET_ACCOUNT_PUBLICATION_GUARD: PASS')
           PY
       - name: Validate JavaScript syntax
@@ -190,6 +253,8 @@ jobs:
             echo '- HTML and canonical structure: pass'
             echo '- Internal references: pass'
             echo '- Marketplace-live claim guard: pass'
+            echo '- Conversion path and intake field contract: pass'
+            echo '- Cloudflare Pages header and canonical URL contract: pass'
             echo '- Public target-account guard: pass'
             echo '- JavaScript syntax: pass'
             echo '- Local static smoke test: pass'

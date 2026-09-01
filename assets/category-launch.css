@@ -174,6 +174,39 @@
   font-weight: 850;
 }
 
+.pilot-summary {
+  position: relative;
+  z-index: 3;
+  border-bottom: 1px solid #d9e3ec;
+  background: #fff;
+  box-shadow: 0 18px 45px rgba(7, 18, 31, .06);
+}
+.pilot-summary-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 24px;
+  display: grid;
+  grid-template-columns: minmax(260px, 1.45fr) repeat(3, minmax(125px, .65fr)) auto;
+  gap: 22px;
+  align-items: center;
+}
+.pilot-summary-heading,
+.pilot-summary-fact { padding-right: 20px; border-right: 1px solid #d9e3ec; }
+.pilot-summary-heading span,
+.pilot-summary-fact span {
+  display: block;
+  margin-bottom: 5px;
+  color: #1d6ca7;
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+.pilot-summary-heading strong,
+.pilot-summary-fact strong { color: var(--launch-ink); font-size: 14px; line-height: 1.4; }
+.pilot-summary-link { color: #1d5fd1; font-size: 14px; font-weight: 950; text-decoration: none; white-space: nowrap; }
+.pilot-summary-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+
 .trust-record {
   position: relative;
   padding: 26px;
@@ -413,6 +446,10 @@
 
 @media (max-width: 1100px) {
   .launch-hero-grid { grid-template-columns: 1fr; }
+  .pilot-summary-inner { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .pilot-summary-heading { grid-column: 1 / -1; padding: 0 0 18px; border-right: 0; border-bottom: 1px solid #d9e3ec; }
+  .pilot-summary-fact:nth-of-type(4) { border-right: 0; }
+  .pilot-summary-link { grid-column: 1 / -1; }
   .trust-record { max-width: 720px; }
   .trust-model-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .trust-model-item { border-bottom: 1px solid #d7e2ec; }
@@ -458,7 +495,12 @@
   .trust-model-item, .trust-model-item:nth-child(2n), .trust-model-item:last-child { grid-column: auto; border-right: 0; border-bottom: 1px solid #d7e2ec; }
   .trust-model-item:last-child { border-bottom: 0; }
   .pilot-facts { grid-template-columns: 1fr; }
-  .industry-card { min-height: 340px; }
+  .pilot-summary-inner { grid-template-columns: 1fr; gap: 0; }
+  .pilot-summary-heading,
+  .pilot-summary-fact { grid-column: auto; padding: 15px 0; border-right: 0; border-bottom: 1px solid #d9e3ec; }
+  .pilot-summary-heading { padding-top: 0; }
+  .pilot-summary-link { grid-column: auto; padding-top: 18px; }
+  .industry-card { min-height: auto; }
   .trust-record-step { grid-template-columns: 1fr; }
   .record-state { display: none; }
   .page-hero { padding: 72px 20px 60px; }

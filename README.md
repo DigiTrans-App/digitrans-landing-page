@@ -67,6 +67,19 @@ GROUP BY event_name, page_path, placement
 ORDER BY events DESC
 ```
 
+### One-click Windows report
+
+Windows operators can double-click `Check-Analytics.bat` to check the production endpoint and display a seven-day aggregate conversion report. On the first run, the launcher opens Cloudflare's API Token page and requests a custom token with only **Account > Account Analytics > Read** permission. The token is verified before it is saved, encrypted with Windows Data Protection API for the current Windows user, and stored under `%LOCALAPPDATA%\DigiTrust` rather than in the repository.
+
+Later runs require no SQL, dashboard navigation, or token entry. Optional command-line controls are:
+
+```powershell
+.\Check-Analytics.bat -Days 30
+.\Check-Analytics.bat -ForgetToken
+```
+
+The report uses a fixed production dataset and aggregate query. It does not accept arbitrary SQL, print the API token, write results to disk, or expose analytics through a public endpoint.
+
 The optional Zaraz mirror activates automatically if Zaraz is later enabled in Cloudflare. Analytics failures never block navigation or intake submission.
 
 Do not add secrets, customer data, deployment credentials, or private commercial terms to the repository.

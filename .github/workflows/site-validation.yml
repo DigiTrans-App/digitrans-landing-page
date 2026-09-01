@@ -280,3 +280,13 @@ jobs:
             echo '- JavaScript syntax and conversion regression tests: pass'
             echo '- Local static smoke test: pass'
           } >> "$GITHUB_STEP_SUMMARY"
+
+  validate-analytics-report:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Validate protected credential storage and fixed analytics query
+        shell: powershell
+        run: .\scripts\check-analytics.ps1 -SelfTest

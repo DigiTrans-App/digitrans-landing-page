@@ -184,6 +184,23 @@ jobs:
           if 'data-nav-toggle' not in js or 'setupCampaignAttribution' not in js:
               failures.append('shared site JavaScript is missing navigation or attribution support')
 
+          analytics_js = Path('assets/analytics.js').read_text(encoding='utf-8')
+          required_events = {
+              'trust_record_clicked', 'briefing_cta_clicked', 'intake_started', 'lead_submitted',
+          }
+          for event in required_events:
+              if event not in analytics_js:
+                  failures.append(f'conversion measurement is missing event: {event}')
+          for forbidden_value in ['full_name', 'business_goal', 'document.cookie', 'navigator.userAgent']:
+              if forbidden_value in analytics_js:
+                  failures.append(f'conversion measurement references prohibited data: {forbidden_value}')
+          if 'data-analytics-event="trust_record_clicked"' not in homepage:
+              failures.append('homepage Trust Record CTA is missing its measurement hook')
+
+          endpoint = Path('functions/api/events.js').read_text(encoding='utf-8')
+          if 'CONVERSION_EVENTS' not in endpoint or 'requestHasSameOrigin' not in endpoint:
+              failures.append('conversion endpoint is missing storage or same-origin controls')
+
           intake = PageParser()
           intake.feed(Path('get-started.html').read_text(encoding='utf-8'))
           expected_intake_fields = {
@@ -232,8 +249,12 @@ jobs:
           print('CLOUDFLARE_DEPLOYMENT_CONTRACT: PASS')
           print('TARGET_ACCOUNT_PUBLICATION_GUARD: PASS')
           PY
-      - name: Validate JavaScript syntax
-        run: node --check assets/site.js
+      - name: Validate JavaScript and conversion measurement
+        run: |
+          node --check assets/site.js
+          node --check assets/analytics.js
+          node --check functions/api/events.js
+          node --test tests/*.test.js
       - name: Serve and smoke-test the static site
         run: |
           set -euo pipefail
@@ -256,6 +277,6 @@ jobs:
             echo '- Conversion path and intake field contract: pass'
             echo '- Cloudflare Pages header and canonical URL contract: pass'
             echo '- Public target-account guard: pass'
-            echo '- JavaScript syntax: pass'
+            echo '- JavaScript syntax and conversion regression tests: pass'
             echo '- Local static smoke test: pass'
           } >> "$GITHUB_STEP_SUMMARY"

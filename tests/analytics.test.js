@@ -189,7 +189,7 @@ test("event endpoint rejects personal-data fields and cross-origin requests", as
   assert.equal(normalizePayload({
     event: "lead_submitted",
     page: "/intake-thank-you/",
-    placement: "cloudflare_intake",
+    placement: "aws_ses_intake",
     intent: "enterprise-pilot",
     schema_version: "1",
   }), null);

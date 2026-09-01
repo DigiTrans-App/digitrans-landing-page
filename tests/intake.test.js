@@ -1,15 +1,61 @@
 import assert from "node:assert/strict";
+import { createHash, createHmac } from "node:crypto";
 import test from "node:test";
 
 import {
-  EMAIL_ENDPOINT,
   INTAKE_RECIPIENT,
   INTAKE_SENDER,
   MAX_BODY_BYTES,
+  SES_PATH,
   normalizeFormBody,
   onRequestGet,
   onRequestPost,
 } from "../functions/api/intake.js";
+
+const FIXED_TIME = new Date("2026-09-01T16:00:00.000Z");
+const SES_ENV = Object.freeze({
+  AWS_SES_REGION: "us-east-1",
+  AWS_SES_ACCESS_KEY_ID: "AKIDEXAMPLE12345678",
+  AWS_SES_SECRET_ACCESS_KEY: "test-secret-access-key-not-used-outside-tests",
+});
+
+function expectedAuthorization(body, configuration, now) {
+  const region = configuration.AWS_SES_REGION;
+  const host = `email.${region}.amazonaws.com`;
+  const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g, "");
+  const dateStamp = amzDate.slice(0, 8);
+  const payloadHash = createHash("sha256").update(body).digest("hex");
+  const signedHeaders = "content-type;host;x-amz-content-sha256;x-amz-date";
+  const canonicalHeaders = [
+    "content-type:application/json",
+    `host:${host}`,
+    `x-amz-content-sha256:${payloadHash}`,
+    `x-amz-date:${amzDate}`,
+    "",
+  ].join("\n");
+  const canonicalRequest = [
+    "POST",
+    SES_PATH,
+    "",
+    canonicalHeaders,
+    signedHeaders,
+    payloadHash,
+  ].join("\n");
+  const credentialScope = `${dateStamp}/${region}/ses/aws4_request`;
+  const stringToSign = [
+    "AWS4-HMAC-SHA256",
+    amzDate,
+    credentialScope,
+    createHash("sha256").update(canonicalRequest).digest("hex"),
+  ].join("\n");
+  const hmac = (key, value) => createHmac("sha256", key).update(value).digest();
+  const dateKey = hmac(`AWS4${configuration.AWS_SES_SECRET_ACCESS_KEY}`, dateStamp);
+  const regionKey = hmac(dateKey, region);
+  const serviceKey = hmac(regionKey, "ses");
+  const signingKey = hmac(serviceKey, "aws4_request");
+  const signature = createHmac("sha256", signingKey).update(stringToSign).digest("hex");
+  return `AWS4-HMAC-SHA256 Credential=${configuration.AWS_SES_ACCESS_KEY_ID}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
+}
 
 function validForm(overrides = {}) {
   return new URLSearchParams({
@@ -61,10 +107,10 @@ test("intake normalization accepts only the documented fields and choices", () =
 });
 
 test("intake health exposes configuration state without sending email", async () => {
-  const configured = await onRequestGet({ env: { INTAKE_EMAIL_TOKEN: "secret" } });
+  const configured = await onRequestGet({ env: SES_ENV });
   assert.deepEqual(await configured.json(), {
     status: "ok",
-    delivery_provider: "cloudflare_email_service",
+    delivery_provider: "aws_ses_v2",
     delivery_configured: true,
     schema_version: "1",
   });
@@ -74,71 +120,69 @@ test("intake health exposes configuration state without sending email", async ()
   assert.equal(missing.headers.get("Cache-Control"), "no-store");
 });
 
-test("accepted Cloudflare delivery redirects and records one aggregate lead", async () => {
+test("accepted SES request is SigV4-signed, redirects, and records one aggregate lead", async () => {
   const calls = [];
   const points = [];
   const response = await onRequestPost({
     request: makeRequest(validForm()),
     env: {
-      INTAKE_EMAIL_TOKEN: "email-token",
+      ...SES_ENV,
       CONVERSION_EVENTS: { writeDataPoint: (point) => points.push(point) },
     },
   }, {
     fetch: async (url, options) => {
       calls.push({ url, options });
-      return Response.json({
-        success: true,
-        errors: [],
-        messages: [],
-        result: { delivered: [INTAKE_RECIPIENT], permanent_bounces: [], queued: [] },
-      });
+      return Response.json({ MessageId: "01000191a2b3c4d5-example" });
     },
+    now: () => FIXED_TIME,
   });
 
   assert.equal(response.status, 303);
   assert.equal(response.headers.get("Location"), "https://www.digitranshq.com/intake-thank-you/");
   assert.equal(calls.length, 1);
-  assert.equal(calls[0].url, EMAIL_ENDPOINT);
-  assert.equal(calls[0].options.headers.Authorization, "Bearer email-token");
+  assert.equal(calls[0].url, `https://email.us-east-1.amazonaws.com${SES_PATH}`);
+  assert.equal(calls[0].options.headers["X-Amz-Date"], "20260901T160000Z");
+  assert.equal(
+    calls[0].options.headers.Authorization,
+    expectedAuthorization(calls[0].options.body, SES_ENV, FIXED_TIME),
+  );
 
   const message = JSON.parse(calls[0].options.body);
-  assert.equal(message.to, INTAKE_RECIPIENT);
-  assert.equal(message.from, INTAKE_SENDER);
-  assert.equal(message.reply_to, "info@digitranshq.com");
-  assert.match(message.text, /Controlled production validation only\./);
-  assert.equal(calls[0].options.body.includes("email-token"), false);
+  assert.deepEqual(message.Destination.ToAddresses, [INTAKE_RECIPIENT]);
+  assert.equal(message.FromEmailAddress, INTAKE_SENDER);
+  assert.deepEqual(message.ReplyToAddresses, ["info@digitranshq.com"]);
+  assert.match(message.Content.Simple.Body.Text.Data, /Controlled production validation only\./);
+  assert.equal(calls[0].options.body.includes(SES_ENV.AWS_SES_SECRET_ACCESS_KEY), false);
 
   assert.equal(points.length, 1);
   assert.deepEqual(points[0].blobs, [
     "lead_submitted",
     "/intake-thank-you/",
-    "cloudflare_intake",
+    "aws_ses_intake",
     "enterprise-pilot",
     "1",
   ]);
 });
 
-test("queued delivery is accepted but a bounce or provider failure fails closed", async () => {
-  const queued = await onRequestPost({
+test("SES acceptance succeeds but provider rejection fails closed", async () => {
+  const accepted = await onRequestPost({
     request: makeRequest(validForm()),
-    env: { INTAKE_EMAIL_TOKEN: "email-token" },
+    env: SES_ENV,
   }, {
-    fetch: async () => Response.json({
-      success: true,
-      result: { delivered: [], permanent_bounces: [], queued: [INTAKE_RECIPIENT] },
-    }),
+    fetch: async () => Response.json({ MessageId: "accepted-message-id" }),
+    now: () => FIXED_TIME,
   });
-  assert.equal(queued.headers.get("Location"), "https://www.digitranshq.com/intake-thank-you/");
+  assert.equal(accepted.headers.get("Location"), "https://www.digitranshq.com/intake-thank-you/");
 
   const rejected = await onRequestPost({
     request: makeRequest(validForm()),
-    env: { INTAKE_EMAIL_TOKEN: "email-token" },
+    env: SES_ENV,
   }, {
     fetch: async () => Response.json({
-      success: false,
-      errors: [{ code: 10102 }],
-      result: null,
+      __type: "com.amazon.coral.service#AccessDeniedException",
+      message: "Access denied",
     }, { status: 403 }),
+    now: () => FIXED_TIME,
   });
   assert.equal(
     rejected.headers.get("Location"),
@@ -171,7 +215,7 @@ test("honeypot submissions receive a neutral redirect without email or analytics
   const response = await onRequestPost({
     request: makeRequest(validForm({ website_check: "automated" })),
     env: {
-      INTAKE_EMAIL_TOKEN: "email-token",
+      ...SES_ENV,
       CONVERSION_EVENTS: { writeDataPoint: (point) => points.push(point) },
     },
   }, {

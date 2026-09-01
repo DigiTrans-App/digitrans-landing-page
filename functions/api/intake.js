@@ -1,10 +1,13 @@
 import { recordEvent } from "./events.js";
 
-const ACCOUNT_ID = "043f551ad8c039a914503318dae50d87";
-const EMAIL_ENDPOINT = `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/email/sending/send`;
+const AWS_SERVICE = "ses";
+const AWS_TERMINATOR = "aws4_request";
+const SES_PATH = "/v2/email/outbound-emails";
 const INTAKE_RECIPIENT = "info@digitranshq.com";
 const INTAKE_SENDER = "forms@notify.digitranshq.com";
 const MAX_BODY_BYTES = 8192;
+const REGION_PATTERN = /^(?:af|ap|ca|cn|eu|il|me|mx|sa|us)(?:-gov)?-[a-z0-9-]+-\d$/;
+const encoder = new TextEncoder();
 
 const ALLOWED_KEYS = new Set([
   "business_goal",
@@ -128,7 +131,7 @@ function normalizeFormBody(rawBody) {
   };
 }
 
-function buildMessage(intake, submissionId, submittedAt) {
+function buildMessageText(intake, submissionId, submittedAt) {
   const lines = [
     "New DigiTrust Enterprise Pilot Request",
     "",
@@ -154,35 +157,149 @@ function buildMessage(intake, submissionId, submittedAt) {
     `Source path: ${intake.attribution.source_path || "Not provided"}`,
   ];
 
+  return lines.join("\n");
+}
+
+function buildMessage(intake, submissionId, submittedAt) {
   return {
-    to: INTAKE_RECIPIENT,
-    from: INTAKE_SENDER,
-    reply_to: intake.email,
-    subject: "New DigiTrust Enterprise Pilot Request",
-    text: lines.join("\n"),
-    headers: {
-      "Auto-Submitted": "auto-generated",
-      "X-DigiTrust-Submission-ID": submissionId,
+    FromEmailAddress: INTAKE_SENDER,
+    Destination: {
+      ToAddresses: [INTAKE_RECIPIENT],
+    },
+    ReplyToAddresses: [intake.email],
+    Content: {
+      Simple: {
+        Subject: {
+          Charset: "UTF-8",
+          Data: "New DigiTrust Enterprise Pilot Request",
+        },
+        Body: {
+          Text: {
+            Charset: "UTF-8",
+            Data: buildMessageText(intake, submissionId, submittedAt),
+          },
+        },
+        Headers: [
+          { Name: "Auto-Submitted", Value: "auto-generated" },
+          { Name: "X-DigiTrust-Submission-ID", Value: submissionId },
+        ],
+      },
     },
   };
 }
 
-function deliveryAccepted(payload) {
-  if (!payload || payload.success !== true || !payload.result) return false;
-  const delivered = Array.isArray(payload.result.delivered) ? payload.result.delivered : [];
-  const queued = Array.isArray(payload.result.queued) ? payload.result.queued : [];
-  const bounced = Array.isArray(payload.result.permanent_bounces) ? payload.result.permanent_bounces : [];
-  return bounced.length === 0 && [...delivered, ...queued].includes(INTAKE_RECIPIENT);
+function bytesToHex(bytes) {
+  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
-async function sendIntakeEmail(intake, token, submissionId, submittedAt, fetchImpl = fetch) {
-  const response = await fetchImpl(EMAIL_ENDPOINT, {
+async function sha256(value) {
+  const bytes = typeof value === "string" ? encoder.encode(value) : value;
+  return bytesToHex(new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)));
+}
+
+async function hmacSha256(key, value) {
+  const keyBytes = typeof key === "string" ? encoder.encode(key) : key;
+  const cryptoKey = await crypto.subtle.importKey(
+    "raw",
+    keyBytes,
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  return new Uint8Array(await crypto.subtle.sign("HMAC", cryptoKey, encoder.encode(value)));
+}
+
+function loadSesConfiguration(env = {}) {
+  const region = typeof env.AWS_SES_REGION === "string" ? env.AWS_SES_REGION.trim() : "";
+  const accessKeyId = typeof env.AWS_SES_ACCESS_KEY_ID === "string"
+    ? env.AWS_SES_ACCESS_KEY_ID.trim()
+    : "";
+  const secretAccessKey = typeof env.AWS_SES_SECRET_ACCESS_KEY === "string"
+    ? env.AWS_SES_SECRET_ACCESS_KEY.trim()
+    : "";
+  const sessionToken = typeof env.AWS_SES_SESSION_TOKEN === "string"
+    ? env.AWS_SES_SESSION_TOKEN.trim()
+    : "";
+
+  if (!REGION_PATTERN.test(region) || !accessKeyId || !secretAccessKey) return null;
+  return { region, accessKeyId, secretAccessKey, sessionToken };
+}
+
+function formatAmzDate(now) {
+  return now.toISOString().replace(/[:-]|\.\d{3}/g, "");
+}
+
+async function signSesRequest(body, configuration, now = new Date()) {
+  const { region, accessKeyId, secretAccessKey, sessionToken } = configuration;
+  const host = `email.${region}.amazonaws.com`;
+  const endpoint = `https://${host}${SES_PATH}`;
+  const amzDate = formatAmzDate(now);
+  const dateStamp = amzDate.slice(0, 8);
+  const payloadHash = await sha256(body);
+  const canonicalHeaderValues = {
+    "content-type": "application/json",
+    host,
+    "x-amz-content-sha256": payloadHash,
+    "x-amz-date": amzDate,
+  };
+  if (sessionToken) canonicalHeaderValues["x-amz-security-token"] = sessionToken;
+
+  const signedHeaders = Object.keys(canonicalHeaderValues).sort();
+  const canonicalHeaders = signedHeaders
+    .map((name) => `${name}:${canonicalHeaderValues[name]}\n`)
+    .join("");
+  const canonicalRequest = [
+    "POST",
+    SES_PATH,
+    "",
+    canonicalHeaders,
+    signedHeaders.join(";"),
+    payloadHash,
+  ].join("\n");
+  const credentialScope = `${dateStamp}/${region}/${AWS_SERVICE}/${AWS_TERMINATOR}`;
+  const stringToSign = [
+    "AWS4-HMAC-SHA256",
+    amzDate,
+    credentialScope,
+    await sha256(canonicalRequest),
+  ].join("\n");
+  const dateKey = await hmacSha256(`AWS4${secretAccessKey}`, dateStamp);
+  const regionKey = await hmacSha256(dateKey, region);
+  const serviceKey = await hmacSha256(regionKey, AWS_SERVICE);
+  const signingKey = await hmacSha256(serviceKey, AWS_TERMINATOR);
+  const signature = bytesToHex(await hmacSha256(signingKey, stringToSign));
+  const headers = {
+    Authorization: `AWS4-HMAC-SHA256 Credential=${accessKeyId}/${credentialScope}, SignedHeaders=${signedHeaders.join(";")}, Signature=${signature}`,
+    "Content-Type": "application/json",
+    "X-Amz-Content-Sha256": payloadHash,
+    "X-Amz-Date": amzDate,
+  };
+  if (sessionToken) headers["X-Amz-Security-Token"] = sessionToken;
+
+  return { endpoint, headers };
+}
+
+function sanitizeProviderErrorCode(payload) {
+  const rawCode = payload && (payload.code || payload.Code || payload.__type);
+  if (typeof rawCode !== "string") return null;
+  const code = rawCode.split("#").pop();
+  return /^[A-Za-z0-9_.-]{1,80}$/.test(code) ? code : null;
+}
+
+async function sendIntakeEmail(
+  intake,
+  configuration,
+  submissionId,
+  submittedAt,
+  fetchImpl = fetch,
+  now = new Date(),
+) {
+  const body = JSON.stringify(buildMessage(intake, submissionId, submittedAt));
+  const signedRequest = await signSesRequest(body, configuration, now);
+  const response = await fetchImpl(signedRequest.endpoint, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(buildMessage(intake, submissionId, submittedAt)),
+    headers: signedRequest.headers,
+    body,
   });
 
   let payload = null;
@@ -193,11 +310,9 @@ async function sendIntakeEmail(intake, token, submissionId, submittedAt, fetchIm
   }
 
   return {
-    accepted: response.ok && deliveryAccepted(payload),
+    accepted: response.ok && payload && typeof payload.MessageId === "string" && payload.MessageId.length > 0,
     status: response.status,
-    errorCode: payload && Array.isArray(payload.errors) && payload.errors[0]
-      ? payload.errors[0].code
-      : null,
+    errorCode: sanitizeProviderErrorCode(payload),
   };
 }
 
@@ -217,10 +332,11 @@ function plainResponse(status, message) {
 }
 
 export function onRequestGet(context) {
+  const configuration = loadSesConfiguration(context.env);
   return Response.json({
-    status: context.env && context.env.INTAKE_EMAIL_TOKEN ? "ok" : "configuration_required",
-    delivery_provider: "cloudflare_email_service",
-    delivery_configured: Boolean(context.env && context.env.INTAKE_EMAIL_TOKEN),
+    status: configuration ? "ok" : "configuration_required",
+    delivery_provider: "aws_ses_v2",
+    delivery_configured: Boolean(configuration),
     schema_version: "1",
   }, {
     headers: {
@@ -234,8 +350,8 @@ export async function onRequestPost(context, runtime = {}) {
   const { request } = context;
   if (!requestHasSameOrigin(request)) return plainResponse(403, "Forbidden");
 
-  const contentType = request.headers.get("Content-Type")?.toLowerCase() || "";
-  if (!contentType.startsWith("application/x-www-form-urlencoded")) {
+  const contentType = request.headers.get("Content-Type")?.toLowerCase().split(";", 1)[0].trim() || "";
+  if (contentType !== "application/x-www-form-urlencoded") {
     return plainResponse(415, "Unsupported media type");
   }
 
@@ -259,22 +375,24 @@ export async function onRequestPost(context, runtime = {}) {
     return redirectTo(request, "/intake-thank-you/");
   }
 
-  const token = context.env && context.env.INTAKE_EMAIL_TOKEN;
-  if (!token) {
-    console.error("INTAKE_EMAIL_CONFIGURATION_MISSING");
+  const sesConfiguration = loadSesConfiguration(context.env);
+  if (!sesConfiguration) {
+    console.error("AWS_SES_CONFIGURATION_MISSING");
     return redirectTo(request, "/get-started?status=delivery-unavailable#intake");
   }
 
   const submissionId = crypto.randomUUID();
-  const submittedAt = new Date().toISOString();
+  const requestTime = runtime.now ? runtime.now() : new Date();
+  const submittedAt = requestTime.toISOString();
   let delivery;
   try {
     delivery = await sendIntakeEmail(
       intake,
-      token,
+      sesConfiguration,
       submissionId,
       submittedAt,
       runtime.fetch || fetch,
+      requestTime,
     );
   } catch (error) {
     console.error("INTAKE_EMAIL_REQUEST_FAILED");
@@ -302,7 +420,7 @@ export async function onRequestPost(context, runtime = {}) {
     recordEvent(context.env && context.env.CONVERSION_EVENTS, {
       event: "lead_submitted",
       page: "/intake-thank-you/",
-      placement: "cloudflare_intake",
+      placement: "aws_ses_intake",
       intent: intake.intent,
       schemaVersion: "1",
     });
@@ -314,13 +432,17 @@ export async function onRequestPost(context, runtime = {}) {
 }
 
 export {
-  EMAIL_ENDPOINT,
+  AWS_SERVICE,
   INTAKE_RECIPIENT,
   INTAKE_SENDER,
   MAX_BODY_BYTES,
+  SES_PATH,
   buildMessage,
-  deliveryAccepted,
+  buildMessageText,
+  loadSesConfiguration,
   normalizeFormBody,
   requestHasSameOrigin,
+  sanitizeProviderErrorCode,
   sendIntakeEmail,
+  signSesRequest,
 };

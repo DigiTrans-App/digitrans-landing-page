@@ -40,6 +40,8 @@ The Function emits a privacy-safe structured log for each accepted event. For du
 
 In the Cloudflare dashboard, select the Pages project, choose the environment, then open **Settings > Bindings > Add > Analytics engine**. Save the binding and redeploy that environment for it to take effect. Configure bindings in the dashboard rather than adding a new Wrangler file, because the existing Pages project settings remain the deployment source of truth.
 
+After deployment, `GET /api/events` returns a non-writing health response. Confirm that it reports `"durable_storage": true` before merging or promoting a deployment. The response exposes no event counts or customer information.
+
 The Analytics Engine columns are fixed:
 
 | Column | Meaning |

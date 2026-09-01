@@ -79,6 +79,25 @@ function recordEvent(dataset, event) {
   return true;
 }
 
+export function onRequestGet(context) {
+  const durableStorage = Boolean(
+    context.env
+    && context.env.CONVERSION_EVENTS
+    && typeof context.env.CONVERSION_EVENTS.writeDataPoint === "function",
+  );
+
+  return Response.json({
+    status: "ok",
+    durable_storage: durableStorage,
+    schema_version: "1",
+  }, {
+    headers: {
+      "Cache-Control": "no-store",
+      "X-Content-Type-Options": "nosniff",
+    },
+  });
+}
+
 export async function onRequestPost(context) {
   const { request } = context;
   if (!requestHasSameOrigin(request)) return jsonResponse(403, "Forbidden");

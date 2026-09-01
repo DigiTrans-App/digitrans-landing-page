@@ -10,7 +10,7 @@ import {
   normalizeEventPayload,
   setupConversionAnalytics,
 } from "../assets/analytics.js";
-import { MAX_BODY_BYTES, normalizePayload, onRequestPost } from "../functions/api/events.js";
+import { MAX_BODY_BYTES, normalizePayload, onRequestGet, onRequestPost } from "../functions/api/events.js";
 
 test("client payloads contain only allowlisted categorical values", () => {
   const payload = normalizeEventPayload("briefing_cta_clicked", {
@@ -183,6 +183,22 @@ function makeRequest(body, options = {}) {
     body,
   });
 }
+
+test("event endpoint health reports whether durable storage is connected", async () => {
+  const connected = await onRequestGet({
+    env: { CONVERSION_EVENTS: { writeDataPoint: () => {} } },
+  });
+  assert.equal(connected.status, 200);
+  assert.deepEqual(await connected.json(), {
+    status: "ok",
+    durable_storage: true,
+    schema_version: "1",
+  });
+  assert.equal(connected.headers.get("Cache-Control"), "no-store");
+
+  const disconnected = await onRequestGet({ env: {} });
+  assert.equal((await disconnected.json()).durable_storage, false);
+});
 
 test("event endpoint writes the documented Analytics Engine schema", async () => {
   const points = [];

@@ -5,14 +5,27 @@ import test from "node:test";
 const scriptUrl = new URL("../scripts/check-analytics.ps1", import.meta.url);
 const launcherUrl = new URL("../Check-Analytics.bat", import.meta.url);
 
-test("one-click analytics reporter keeps its production query fixed and aggregate", async () => {
+test("one-click analytics reporter keeps dataset selection allowlisted and aggregate", async () => {
   const script = await readFile(scriptUrl, "utf8");
   const publicParameters = script.slice(0, script.indexOf("Set-StrictMode"));
 
-  assert.match(script, /\$Dataset = "digitrust_conversion_events"/);
+  assert.match(publicParameters, /\[ValidateSet\("Production", "Preview"\)\]/);
+  assert.match(script, /Production = "digitrust_conversion_events"/);
+  assert.match(script, /Preview = "digitrust_conversion_events_preview"/);
   assert.match(script, /SUM\(_sample_interval \* double1\)/);
   assert.match(script, /\[ValidateRange\(1, 90\)\]/);
   assert.doesNotMatch(publicParameters, /\$Query\b/i);
+  assert.doesNotMatch(publicParameters, /\$Dataset\b/i);
+});
+
+test("preview analytics mode verifies only the server-side SES lead event", async () => {
+  const script = await readFile(scriptUrl, "utf8");
+
+  assert.match(script, /\$Environment -eq "Preview"/);
+  assert.match(script, /\$_.event_name -eq "lead_submitted"/);
+  assert.match(script, /\$_.page_path -eq "\/intake-thank-you\/"/);
+  assert.match(script, /\$_.placement -eq "aws_ses_intake"/);
+  assert.match(script, /Preview SES lead verification event: found/);
 });
 
 test("one-click analytics reporter protects and never prints the Cloudflare token", async () => {

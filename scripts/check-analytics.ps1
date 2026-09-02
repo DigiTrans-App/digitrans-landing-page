@@ -5,6 +5,9 @@ param(
     [ValidateRange(1, 90)]
     [int]$Days = 7,
 
+    [ValidateSet("Production", "Preview")]
+    [string]$Environment = "Production",
+
     [switch]$ForgetToken,
 
     [switch]$SelfTest
@@ -14,12 +17,20 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 $AccountId = "043f551ad8c039a914503318dae50d87"
-$Dataset = "digitrust_conversion_events"
 $ApiEndpoint = "https://api.cloudflare.com/client/v4/accounts/$AccountId/analytics_engine/sql"
-$HealthEndpoint = "https://www.digitranshq.com/api/events"
 $TokenPage = "https://dash.cloudflare.com/profile/api-tokens"
 $CredentialDirectory = Join-Path $env:LOCALAPPDATA "DigiTrust"
 $CredentialPath = Join-Path $CredentialDirectory "cloudflare-analytics-token.txt"
+$DatasetByEnvironment = @{
+    Production = "digitrust_conversion_events"
+    Preview = "digitrust_conversion_events_preview"
+}
+$HealthEndpointByEnvironment = @{
+    Production = "https://www.digitranshq.com/api/events"
+    Preview = "https://codex-cloudflare-native-inta.digitranshq.pages.dev/api/events"
+}
+$Dataset = $DatasetByEnvironment[$Environment]
+$HealthEndpoint = $HealthEndpointByEnvironment[$Environment]
 
 function ConvertFrom-ProtectedValue {
     param([Parameter(Mandatory = $true)][Security.SecureString]$SecureValue)
@@ -57,7 +68,12 @@ function Read-ProtectedToken {
 }
 
 function New-AnalyticsQuery {
-    param([Parameter(Mandatory = $true)][ValidateRange(1, 90)][int]$LookbackDays)
+    param(
+        [Parameter(Mandatory = $true)][ValidateRange(1, 90)][int]$LookbackDays,
+        [Parameter(Mandatory = $true)][ValidateSet("Production", "Preview")][string]$TargetEnvironment
+    )
+
+    $targetDataset = $DatasetByEnvironment[$TargetEnvironment]
 
     return @"
 SELECT
@@ -67,7 +83,7 @@ SELECT
   blob4 AS intent,
   SUM(_sample_interval * double1) AS events,
   MAX(timestamp) AS last_seen
-FROM digitrust_conversion_events
+FROM $targetDataset
 WHERE timestamp > NOW() - INTERVAL '$LookbackDays' DAY
 GROUP BY event_name, page_path, placement, intent
 ORDER BY events DESC, last_seen DESC
@@ -150,14 +166,18 @@ function Get-AnalyticsToken {
 }
 
 function Test-AnalyticsScript {
-    $query = New-AnalyticsQuery -LookbackDays 7
-    if ($query -notmatch "FROM digitrust_conversion_events") {
+    $productionQuery = New-AnalyticsQuery -LookbackDays 7 -TargetEnvironment Production
+    $previewQuery = New-AnalyticsQuery -LookbackDays 7 -TargetEnvironment Preview
+    if ($productionQuery -notmatch "FROM digitrust_conversion_events(?:\r?\n)") {
         throw "Self-test failed: production dataset is not fixed."
     }
-    if ($query -notmatch "INTERVAL '7' DAY") {
+    if ($previewQuery -notmatch "FROM digitrust_conversion_events_preview(?:\r?\n)") {
+        throw "Self-test failed: preview dataset is not fixed."
+    }
+    if ($productionQuery -notmatch "INTERVAL '7' DAY" -or $previewQuery -notmatch "INTERVAL '7' DAY") {
         throw "Self-test failed: lookback is missing."
     }
-    if ($query -notmatch "SUM\(_sample_interval \* double1\)") {
+    if ($productionQuery -notmatch "SUM\(_sample_interval \* double1\)" -or $previewQuery -notmatch "SUM\(_sample_interval \* double1\)") {
         throw "Self-test failed: sampling-aware count is missing."
     }
 
@@ -200,21 +220,22 @@ if ($ForgetToken) {
 }
 
 Write-Host "DigiTrust conversion analytics" -ForegroundColor Cyan
-Write-Host "Production dataset: $Dataset"
+Write-Host "Environment: $Environment"
+Write-Host "Dataset: $Dataset"
 Write-Host "Lookback window: $Days day(s)"
 Write-Host ""
 
 try {
     $health = Invoke-RestMethod -Method Get -Uri $HealthEndpoint
     if ($health.status -eq "ok" -and $health.durable_storage -eq $true) {
-        Write-Host "Production event endpoint: healthy, durable storage connected" -ForegroundColor Green
+        Write-Host "$Environment event endpoint: healthy, durable storage connected" -ForegroundColor Green
     }
     else {
-        Write-Warning "The production endpoint responded, but durable storage was not confirmed."
+        Write-Warning "The $Environment endpoint responded, but durable storage was not confirmed."
     }
 }
 catch {
-    Write-Warning "The production health endpoint could not be checked. The analytics query will still run."
+    Write-Warning "The $Environment health endpoint could not be checked. The analytics query will still run."
 }
 
 $tokenRecord = Get-AnalyticsToken
@@ -227,7 +248,7 @@ try {
         Write-Host "Read-only token verified and saved securely for this Windows user." -ForegroundColor Green
     }
 
-    $query = New-AnalyticsQuery -LookbackDays $Days
+    $query = New-AnalyticsQuery -LookbackDays $Days -TargetEnvironment $Environment
     $response = Invoke-AnalyticsQuery -Token $token -Query $query
     $dataProperty = $response.PSObject.Properties["data"]
     if (-not $dataProperty) {
@@ -237,6 +258,9 @@ try {
 
     Write-Host ""
     if ($rows.Count -eq 0) {
+        if ($Environment -eq "Preview") {
+            throw "Preview SES lead verification event was not found in this window. Wait one minute and run the check again."
+        }
         Write-Host "No conversion events were found in the selected window." -ForegroundColor Yellow
     }
     else {
@@ -246,18 +270,33 @@ try {
             Out-String |
             Write-Host
 
-        $verificationEvent = @($rows | Where-Object {
-            $_.event_name -eq "briefing_cta_clicked" -and
-            $_.page_path -eq "/" -and
-            $_.placement -eq "hero" -and
-            $_.intent -eq "enterprise-pilot"
-        })
+        if ($Environment -eq "Preview") {
+            $verificationEvent = @($rows | Where-Object {
+                $_.event_name -eq "lead_submitted" -and
+                $_.page_path -eq "/intake-thank-you/" -and
+                $_.placement -eq "aws_ses_intake" -and
+                $_.intent -eq "enterprise-pilot"
+            })
 
-        if ($verificationEvent.Count -gt 0) {
-            Write-Host "Production CTA verification event: found" -ForegroundColor Green
+            if ($verificationEvent.Count -eq 0) {
+                throw "Preview SES lead verification event was not found in this window. Wait one minute and run the check again."
+            }
+            Write-Host "Preview SES lead verification event: found" -ForegroundColor Green
         }
         else {
-            Write-Host "Production CTA verification event: not found in this window" -ForegroundColor Yellow
+            $verificationEvent = @($rows | Where-Object {
+                $_.event_name -eq "briefing_cta_clicked" -and
+                $_.page_path -eq "/" -and
+                $_.placement -eq "hero" -and
+                $_.intent -eq "enterprise-pilot"
+            })
+
+            if ($verificationEvent.Count -gt 0) {
+                Write-Host "Production CTA verification event: found" -ForegroundColor Green
+            }
+            else {
+                Write-Host "Production CTA verification event: not found in this window" -ForegroundColor Yellow
+            }
         }
     }
 

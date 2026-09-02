@@ -91,14 +91,17 @@ ORDER BY events DESC
 
 Windows operators can double-click `Check-Analytics.bat` to check the production endpoint and display a seven-day aggregate conversion report. On the first run, the launcher opens Cloudflare's API Token page and requests a custom token with only **Account > Account Analytics > Read** permission. The token is verified before it is saved, encrypted with Windows Data Protection API for the current Windows user, and stored under `%LOCALAPPDATA%\DigiTrust` rather than in the repository.
 
+Preview mode queries only the fixed `digitrust_conversion_events_preview` dataset and verifies that the server-side SES path recorded a `lead_submitted` event. It reuses the same encrypted read-only token:
+
 Later runs require no SQL, dashboard navigation, or token entry. Optional command-line controls are:
 
 ```powershell
+.\Check-Analytics.bat -Environment Preview
 .\Check-Analytics.bat -Days 30
 .\Check-Analytics.bat -ForgetToken
 ```
 
-The report uses a fixed production dataset and aggregate query. It does not accept arbitrary SQL, print the API token, write results to disk, or expose analytics through a public endpoint.
+The report selects between two fixed datasets with an allowlisted environment option and always uses an aggregate query. It does not accept arbitrary dataset names or SQL, print the API token, write results to disk, or expose analytics through a public endpoint.
 
 The optional Zaraz mirror activates automatically if Zaraz is later enabled in Cloudflare. Analytics failures never block navigation or intake submission.
 

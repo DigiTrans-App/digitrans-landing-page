@@ -91,7 +91,7 @@ ORDER BY events DESC
 
 Windows operators can double-click `Check-Analytics.bat` to check the production endpoint and display a seven-day aggregate conversion report. On the first run, the launcher opens Cloudflare's API Token page and requests a custom token with only **Account > Account Analytics > Read** permission. The token is verified before it is saved, encrypted with Windows Data Protection API for the current Windows user, and stored under `%LOCALAPPDATA%\DigiTrust` rather than in the repository.
 
-Preview mode queries only the fixed `digitrust_conversion_events_preview` dataset and verifies that the server-side SES path recorded a `lead_submitted` event. It reuses the same encrypted read-only token:
+Double-click `Check-Preview-Analytics.bat` to query only the fixed `digitrust_conversion_events_preview` dataset and verify that the server-side SES path recorded a `lead_submitted` event. It reuses the same encrypted read-only token. The equivalent command-line invocation is:
 
 Later runs require no SQL, dashboard navigation, or token entry. Optional command-line controls are:
 

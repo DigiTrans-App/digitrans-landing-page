@@ -4,6 +4,7 @@ import test from "node:test";
 
 const scriptUrl = new URL("../scripts/check-analytics.ps1", import.meta.url);
 const launcherUrl = new URL("../Check-Analytics.bat", import.meta.url);
+const previewLauncherUrl = new URL("../Check-Preview-Analytics.bat", import.meta.url);
 
 test("one-click analytics reporter keeps dataset selection allowlisted and aggregate", async () => {
   const script = await readFile(scriptUrl, "utf8");
@@ -42,5 +43,13 @@ test("Windows launcher invokes only the repository analytics script", async () =
   const launcher = await readFile(launcherUrl, "utf8");
 
   assert.match(launcher, /powershell\.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\\check-analytics\.ps1" %\*/i);
+  assert.match(launcher, /exit \/b %report_exit_code%/i);
+});
+
+test("preview launcher fixes the environment without accepting command-line overrides", async () => {
+  const launcher = await readFile(previewLauncherUrl, "utf8");
+
+  assert.match(launcher, /check-analytics\.ps1" -Environment Preview/i);
+  assert.doesNotMatch(launcher, /%\*/);
   assert.match(launcher, /exit \/b %report_exit_code%/i);
 });

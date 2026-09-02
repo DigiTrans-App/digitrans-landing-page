@@ -282,7 +282,7 @@ async function signSesRequest(body, configuration, now = new Date()) {
 function sanitizeProviderErrorCode(payload) {
   const rawCode = payload && (payload.code || payload.Code || payload.__type);
   if (typeof rawCode !== "string") return null;
-  const code = rawCode.split("#").pop();
+  const code = rawCode.split("#").pop().split(":")[0];
   return /^[A-Za-z0-9_.-]{1,80}$/.test(code) ? code : null;
 }
 
@@ -312,7 +312,8 @@ async function sendIntakeEmail(
   return {
     accepted: response.ok && payload && typeof payload.MessageId === "string" && payload.MessageId.length > 0,
     status: response.status,
-    errorCode: sanitizeProviderErrorCode(payload),
+    errorCode: sanitizeProviderErrorCode(payload)
+      || sanitizeProviderErrorCode({ code: response.headers.get("x-amzn-errortype") }),
   };
 }
 

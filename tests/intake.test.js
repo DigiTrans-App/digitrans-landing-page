@@ -195,6 +195,30 @@ test("SES acceptance succeeds but provider rejection fails closed", async () => 
   assert.equal(rejected.headers.get("Cache-Control"), "no-store");
 });
 
+test("SES rejection reads the sanitized AWS error type header when the body omits it", async () => {
+  const rejected = await onRequestPost({
+    request: makeRequest(validForm()),
+    env: SES_ENV,
+  }, {
+    fetch: async () => Response.json({
+      message: "The raw provider message must remain private",
+    }, {
+      status: 403,
+      headers: { "x-amzn-errortype": "AccessDeniedException:client" },
+    }),
+    now: () => FIXED_TIME,
+  });
+
+  assert.equal(
+    rejected.headers.get("X-DigiTrust-Delivery-Diagnostic"),
+    "provider-403-AccessDeniedException",
+  );
+  assert.equal(
+    JSON.stringify([...rejected.headers]).includes("raw provider message"),
+    false,
+  );
+});
+
 test("SES transport failures expose only a categorical diagnostic", async () => {
   const response = await onRequestPost({
     request: makeRequest(validForm()),

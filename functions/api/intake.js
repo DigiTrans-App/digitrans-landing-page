@@ -316,8 +316,26 @@ async function sendIntakeEmail(
   };
 }
 
-function redirectTo(request, path) {
-  return Response.redirect(new URL(path, request.url), 303);
+function redirectTo(request, path, headers = {}) {
+  return new Response(null, {
+    status: 303,
+    headers: {
+      Location: new URL(path, request.url).toString(),
+      ...headers,
+    },
+  });
+}
+
+function deliveryFailureResponse(request, diagnostic) {
+  const safeDiagnostic = typeof diagnostic === "string"
+    && /^[A-Za-z0-9_.:-]{1,120}$/.test(diagnostic)
+    ? diagnostic
+    : "unknown";
+
+  return redirectTo(request, "/get-started?status=delivery-unavailable#intake", {
+    "Cache-Control": "no-store",
+    "X-DigiTrust-Delivery-Diagnostic": safeDiagnostic,
+  });
 }
 
 function plainResponse(status, message) {
@@ -378,7 +396,7 @@ export async function onRequestPost(context, runtime = {}) {
   const sesConfiguration = loadSesConfiguration(context.env);
   if (!sesConfiguration) {
     console.error("AWS_SES_CONFIGURATION_MISSING");
-    return redirectTo(request, "/get-started?status=delivery-unavailable#intake");
+    return deliveryFailureResponse(request, "configuration-missing");
   }
 
   const submissionId = crypto.randomUUID();
@@ -396,7 +414,7 @@ export async function onRequestPost(context, runtime = {}) {
     );
   } catch (error) {
     console.error("INTAKE_EMAIL_REQUEST_FAILED");
-    return redirectTo(request, "/get-started?status=delivery-unavailable#intake");
+    return deliveryFailureResponse(request, "provider-request-failed");
   }
 
   if (!delivery.accepted) {
@@ -407,7 +425,10 @@ export async function onRequestPost(context, runtime = {}) {
       provider_error_code: delivery.errorCode,
       submission_id: submissionId,
     }));
-    return redirectTo(request, "/get-started?status=delivery-unavailable#intake");
+    return deliveryFailureResponse(
+      request,
+      `provider-${delivery.status}-${delivery.errorCode || "unknown"}`,
+    );
   }
 
   console.log(JSON.stringify({

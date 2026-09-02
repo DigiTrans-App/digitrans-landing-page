@@ -188,6 +188,29 @@ test("SES acceptance succeeds but provider rejection fails closed", async () => 
     rejected.headers.get("Location"),
     "https://www.digitranshq.com/get-started?status=delivery-unavailable#intake",
   );
+  assert.equal(
+    rejected.headers.get("X-DigiTrust-Delivery-Diagnostic"),
+    "provider-403-AccessDeniedException",
+  );
+  assert.equal(rejected.headers.get("Cache-Control"), "no-store");
+});
+
+test("SES transport failures expose only a categorical diagnostic", async () => {
+  const response = await onRequestPost({
+    request: makeRequest(validForm()),
+    env: SES_ENV,
+  }, {
+    fetch: async () => {
+      throw new Error("sensitive provider detail");
+    },
+    now: () => FIXED_TIME,
+  });
+
+  assert.equal(
+    response.headers.get("X-DigiTrust-Delivery-Diagnostic"),
+    "provider-request-failed",
+  );
+  assert.equal(JSON.stringify([...response.headers]).includes("sensitive provider detail"), false);
 });
 
 test("missing email configuration fails closed without contacting a provider", async () => {
@@ -206,6 +229,10 @@ test("missing email configuration fails closed without contacting a provider", a
   assert.equal(
     response.headers.get("Location"),
     "https://www.digitranshq.com/get-started?status=delivery-unavailable#intake",
+  );
+  assert.equal(
+    response.headers.get("X-DigiTrust-Delivery-Diagnostic"),
+    "configuration-missing",
   );
 });
 

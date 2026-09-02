@@ -7,9 +7,11 @@ import {
   INTAKE_SENDER,
   MAX_BODY_BYTES,
   SES_PATH,
+  loadSesConfiguration,
   normalizeFormBody,
   onRequestGet,
   onRequestPost,
+  sendIntakeEmail,
 } from "../functions/api/intake.js";
 
 const FIXED_TIME = new Date("2026-09-01T16:00:00.000Z");
@@ -188,38 +190,32 @@ test("SES acceptance succeeds but provider rejection fails closed", async () => 
     rejected.headers.get("Location"),
     "https://www.digitranshq.com/get-started?status=delivery-unavailable#intake",
   );
-  assert.equal(
-    rejected.headers.get("X-DigiTrust-Delivery-Diagnostic"),
-    "provider-403-AccessDeniedException",
-  );
+  assert.equal(rejected.headers.get("X-DigiTrust-Delivery-Diagnostic"), null);
   assert.equal(rejected.headers.get("Cache-Control"), "no-store");
 });
 
-test("SES rejection reads the sanitized AWS error type header when the body omits it", async () => {
-  const rejected = await onRequestPost({
-    request: makeRequest(validForm()),
-    env: SES_ENV,
-  }, {
-    fetch: async () => Response.json({
+test("SES rejection reads the sanitized AWS error type for private server-side logging", async () => {
+  const delivery = await sendIntakeEmail(
+    normalizeFormBody(validForm()),
+    loadSesConfiguration(SES_ENV),
+    "test-submission-id",
+    FIXED_TIME.toISOString(),
+    async () => Response.json({
       message: "The raw provider message must remain private",
     }, {
       status: 403,
       headers: { "x-amzn-errortype": "AccessDeniedException:client" },
     }),
-    now: () => FIXED_TIME,
-  });
+    FIXED_TIME,
+  );
 
-  assert.equal(
-    rejected.headers.get("X-DigiTrust-Delivery-Diagnostic"),
-    "provider-403-AccessDeniedException",
-  );
-  assert.equal(
-    JSON.stringify([...rejected.headers]).includes("raw provider message"),
-    false,
-  );
+  assert.equal(delivery.accepted, false);
+  assert.equal(delivery.status, 403);
+  assert.equal(delivery.errorCode, "AccessDeniedException");
+  assert.equal(JSON.stringify(delivery).includes("raw provider message"), false);
 });
 
-test("SES transport failures expose only a categorical diagnostic", async () => {
+test("SES transport failures do not expose provider details", async () => {
   const response = await onRequestPost({
     request: makeRequest(validForm()),
     env: SES_ENV,
@@ -230,10 +226,7 @@ test("SES transport failures expose only a categorical diagnostic", async () => 
     now: () => FIXED_TIME,
   });
 
-  assert.equal(
-    response.headers.get("X-DigiTrust-Delivery-Diagnostic"),
-    "provider-request-failed",
-  );
+  assert.equal(response.headers.get("X-DigiTrust-Delivery-Diagnostic"), null);
   assert.equal(JSON.stringify([...response.headers]).includes("sensitive provider detail"), false);
 });
 
@@ -254,10 +247,7 @@ test("missing email configuration fails closed without contacting a provider", a
     response.headers.get("Location"),
     "https://www.digitranshq.com/get-started?status=delivery-unavailable#intake",
   );
-  assert.equal(
-    response.headers.get("X-DigiTrust-Delivery-Diagnostic"),
-    "configuration-missing",
-  );
+  assert.equal(response.headers.get("X-DigiTrust-Delivery-Diagnostic"), null);
 });
 
 test("honeypot submissions receive a neutral redirect without email or analytics", async () => {

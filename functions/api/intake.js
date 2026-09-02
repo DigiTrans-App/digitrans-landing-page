@@ -327,15 +327,9 @@ function redirectTo(request, path, headers = {}) {
   });
 }
 
-function deliveryFailureResponse(request, diagnostic) {
-  const safeDiagnostic = typeof diagnostic === "string"
-    && /^[A-Za-z0-9_.:-]{1,120}$/.test(diagnostic)
-    ? diagnostic
-    : "unknown";
-
+function deliveryFailureResponse(request) {
   return redirectTo(request, "/get-started?status=delivery-unavailable#intake", {
     "Cache-Control": "no-store",
-    "X-DigiTrust-Delivery-Diagnostic": safeDiagnostic,
   });
 }
 
@@ -397,7 +391,7 @@ export async function onRequestPost(context, runtime = {}) {
   const sesConfiguration = loadSesConfiguration(context.env);
   if (!sesConfiguration) {
     console.error("AWS_SES_CONFIGURATION_MISSING");
-    return deliveryFailureResponse(request, "configuration-missing");
+    return deliveryFailureResponse(request);
   }
 
   const submissionId = crypto.randomUUID();
@@ -415,7 +409,7 @@ export async function onRequestPost(context, runtime = {}) {
     );
   } catch (error) {
     console.error("INTAKE_EMAIL_REQUEST_FAILED");
-    return deliveryFailureResponse(request, "provider-request-failed");
+    return deliveryFailureResponse(request);
   }
 
   if (!delivery.accepted) {
@@ -426,10 +420,7 @@ export async function onRequestPost(context, runtime = {}) {
       provider_error_code: delivery.errorCode,
       submission_id: submissionId,
     }));
-    return deliveryFailureResponse(
-      request,
-      `provider-${delivery.status}-${delivery.errorCode || "unknown"}`,
-    );
+    return deliveryFailureResponse(request);
   }
 
   console.log(JSON.stringify({

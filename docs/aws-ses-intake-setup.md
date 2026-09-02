@@ -36,7 +36,7 @@ Create a dedicated IAM user without console access, then attach the following in
       "Sid": "SendOnlyLandingPageIntake",
       "Effect": "Allow",
       "Action": "ses:SendEmail",
-      "Resource": "arn:aws:ses:AWS_REGION:AWS_ACCOUNT_ID:identity/notify.digitranshq.com",
+      "Resource": "*",
       "Condition": {
         "StringEquals": {
           "ses:FromAddress": "forms@notify.digitranshq.com"
@@ -50,7 +50,7 @@ Create a dedicated IAM user without console access, then attach the following in
 }
 ```
 
-This policy grants only `ses:SendEmail`; it does not grant raw-email, identity-management, read, or administrative permissions. AWS documents the SES sender and recipient condition keys at <https://docs.aws.amazon.com/service-authorization/latest/reference/list_ses.html>.
+The wildcard resource is intentional and follows AWS's address-restricted SES policy guidance. The policy remains narrowly scoped by the exact `ses:FromAddress` and `ses:Recipients` conditions. It grants only `ses:SendEmail`; it does not grant raw-email, identity-management, read, or administrative permissions. AWS documents the SES sender and recipient condition keys at <https://docs.aws.amazon.com/service-authorization/latest/reference/list_ses.html>.
 
 Create one access key for this IAM user. Never use root credentials, add the key to client-side JavaScript, or commit it to the repository.
 

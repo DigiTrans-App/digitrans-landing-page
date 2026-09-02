@@ -39,6 +39,17 @@ test("one-click analytics reporter protects and never prints the Cloudflare toke
   assert.doesNotMatch(script, /ConvertTo-Json[\s\S]*Authorization/i);
 });
 
+test("Windows PowerShell analytics transport requires TLS 1.2 and reports safe categories", async () => {
+  const script = await readFile(scriptUrl, "utf8");
+
+  assert.match(script, /Net\.SecurityProtocolType\]::Tls12/);
+  assert.match(script, /TrustFailure/);
+  assert.match(script, /NameResolutionFailure/);
+  assert.match(script, /ConnectFailure/);
+  assert.match(script, /Timeout/);
+  assert.doesNotMatch(script, /Write-(Host|Output)[^\n]*Exception/i);
+});
+
 test("Windows launcher invokes only the repository analytics script", async () => {
   const launcher = await readFile(launcherUrl, "utf8");
 

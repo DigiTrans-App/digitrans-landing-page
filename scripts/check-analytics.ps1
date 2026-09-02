@@ -16,6 +16,11 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+# Windows PowerShell 5.1 can default to legacy TLS depending on the local .NET
+# configuration. Cloudflare's API requires a modern TLS connection.
+[Net.ServicePointManager]::SecurityProtocol = `
+    [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+
 $AccountId = "043f551ad8c039a914503318dae50d87"
 $ApiEndpoint = "https://api.cloudflare.com/client/v4/accounts/$AccountId/analytics_engine/sql"
 $TokenPage = "https://dash.cloudflare.com/profile/api-tokens"
@@ -106,6 +111,7 @@ function Invoke-AnalyticsQuery {
     }
     catch {
         $statusCode = $null
+        $webExceptionStatus = $null
         $responseProperty = $_.Exception.PSObject.Properties["Response"]
         if ($responseProperty -and $responseProperty.Value) {
             $statusProperty = $responseProperty.Value.PSObject.Properties["StatusCode"]
@@ -113,12 +119,28 @@ function Invoke-AnalyticsQuery {
                 $statusCode = [int]$statusProperty.Value
             }
         }
+        $exceptionStatusProperty = $_.Exception.PSObject.Properties["Status"]
+        if ($exceptionStatusProperty -and $exceptionStatusProperty.Value) {
+            $webExceptionStatus = [string]$exceptionStatusProperty.Value
+        }
 
         if ($statusCode -eq 401 -or $statusCode -eq 403) {
             throw "Cloudflare rejected the saved read-only token. Run Check-Analytics.bat -ForgetToken, then run it again."
         }
         if ($statusCode) {
             throw "Cloudflare Analytics Engine returned HTTP $statusCode. No credential or query result was printed."
+        }
+        if ($webExceptionStatus -in @("TrustFailure", "SecureChannelFailure")) {
+            throw "Cloudflare Analytics Engine TLS negotiation failed. Confirm that Windows TLS 1.2 is enabled, then try again."
+        }
+        if ($webExceptionStatus -eq "NameResolutionFailure") {
+            throw "Cloudflare's API hostname could not be resolved. Check DNS or VPN settings, then try again."
+        }
+        if ($webExceptionStatus -in @("ConnectFailure", "ProxyNameResolutionFailure")) {
+            throw "Cloudflare's API connection was blocked. Check the firewall, VPN, or proxy, then try again."
+        }
+        if ($webExceptionStatus -eq "Timeout") {
+            throw "Cloudflare's API request timed out. Check the network connection and try again."
         }
         throw "Cloudflare Analytics Engine could not be reached. Check the network connection and try again."
     }

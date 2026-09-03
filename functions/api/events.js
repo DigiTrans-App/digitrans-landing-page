@@ -2,7 +2,6 @@ const ALLOWED_EVENTS = new Set([
   "trust_record_clicked",
   "briefing_cta_clicked",
   "intake_started",
-  "lead_submitted",
 ]);
 
 const ALLOWED_INTENTS = new Set([

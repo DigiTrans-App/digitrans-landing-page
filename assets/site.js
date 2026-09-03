@@ -108,20 +108,28 @@
     var form = document.getElementById("digitrust-intake");
     if (!form) return;
 
-    form.addEventListener("submit", function (event) {
-      var trap = document.getElementById("website_check");
-      if (trap && trap.value) {
-        event.preventDefault();
-        window.location.href = "/intake-thank-you/";
-        return;
-      }
-
+    form.addEventListener("submit", function () {
       var submit = form.querySelector("button[type='submit']");
       if (submit) {
         submit.disabled = true;
         submit.textContent = "Submitting...";
       }
     });
+  }
+
+  function setupIntakeStatus() {
+    var status = document.getElementById("intake-status");
+    if (!status) return;
+
+    var value = new URLSearchParams(window.location.search).get("status");
+    var messages = {
+      invalid: "Please review the required fields and try again.",
+      "delivery-unavailable": "We could not deliver your request. Please try again or email info@digitranshq.com.",
+    };
+    if (!messages[value]) return;
+
+    status.textContent = messages[value];
+    status.hidden = false;
   }
 
   function setCopyrightYear() {
@@ -133,5 +141,6 @@
   setupNavigation();
   setupCampaignAttribution();
   setupIntakeForm();
+  setupIntakeStatus();
   setCopyrightYear();
 })();

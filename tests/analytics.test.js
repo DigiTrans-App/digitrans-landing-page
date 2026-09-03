@@ -2,10 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
-  SUBMISSION_PENDING_MAX_AGE_MS,
-  consumeSubmissionPending,
   createTracker,
-  markSubmissionPending,
   measurementAllowed,
   normalizeEventPayload,
   setupConversionAnalytics,
@@ -73,40 +70,7 @@ test("tracker sends the same privacy-safe payload to the endpoint and Zaraz", as
   }]);
 });
 
-test("submission marker is consumed once", () => {
-  const values = new Map();
-  const storage = {
-    getItem: (key) => values.get(key) || null,
-    setItem: (key, value) => values.set(key, value),
-    removeItem: (key) => values.delete(key),
-  };
-
-  const now = 1_800_000_000_000;
-  assert.equal(markSubmissionPending(storage, now), true);
-  assert.equal(consumeSubmissionPending(storage, now + 1_000), true);
-  assert.equal(consumeSubmissionPending(storage, now + 2_000), false);
-});
-
-test("stale submission markers do not create conversions", () => {
-  const values = new Map();
-  const storage = {
-    getItem: (key) => values.get(key) || null,
-    setItem: (key, value) => values.set(key, value),
-    removeItem: (key) => values.delete(key),
-  };
-  const now = 1_800_000_000_000;
-
-  markSubmissionPending(storage, now);
-  assert.equal(consumeSubmissionPending(storage, now + SUBMISSION_PENDING_MAX_AGE_MS + 1), false);
-});
-
-test("browser wiring records click, start, and confirmed submission without field values", async () => {
-  const values = new Map();
-  const sessionStorage = {
-    getItem: (key) => values.get(key) || null,
-    setItem: (key, value) => values.set(key, value),
-    removeItem: (key) => values.delete(key),
-  };
+test("browser wiring records click and intake start without field values", async () => {
   const beacons = [];
   const browserWindow = {
     Blob,
@@ -124,7 +88,6 @@ test("browser wiring records click, start, and confirmed submission without fiel
         return true;
       },
     },
-    sessionStorage,
   };
   const formListeners = new Map();
   const form = {
@@ -148,26 +111,11 @@ test("browser wiring records click, start, and confirmed submission without fiel
   formListeners.get("focusin")({
     target: { id: "full_name", matches: () => true, value: "Test User" },
   });
-  formListeners.get("submit")();
-
-  assert.ok(sessionStorage.getItem("digitrust_submission_pending"));
   assert.equal(beacons.length, 2);
-
-  const successDocument = {
-    addEventListener: () => {},
-    getElementById: () => null,
-  };
-  browserWindow.location.pathname = "/intake-thank-you/";
-  browserWindow.location.search = "";
-  setupConversionAnalytics(browserWindow, successDocument);
-
-  assert.equal(beacons.length, 3);
-  assert.equal(sessionStorage.getItem("digitrust_submission_pending"), null);
   const payloads = await Promise.all(beacons.map(async ({ body }) => JSON.parse(await body.text())));
   assert.deepEqual(payloads.map(({ event }) => event), [
     "briefing_cta_clicked",
     "intake_started",
-    "lead_submitted",
   ]);
   assert.equal(JSON.stringify(payloads).includes("Test User"), false);
 });
@@ -203,10 +151,10 @@ test("event endpoint health reports whether durable storage is connected", async
 test("event endpoint writes the documented Analytics Engine schema", async () => {
   const points = [];
   const payload = {
-    event: "lead_submitted",
-    page: "/intake-thank-you/",
-    placement: "formsubmit_redirect",
-    intent: "none",
+    event: "intake_started",
+    page: "/get-started",
+    placement: "intake_form",
+    intent: "enterprise-pilot",
     schema_version: "1",
   };
 
@@ -218,10 +166,10 @@ test("event endpoint writes the documented Analytics Engine schema", async () =>
   assert.equal(response.status, 204);
   assert.equal(points.length, 1);
   assert.deepEqual(points[0].blobs, [
-    "lead_submitted",
-    "/intake-thank-you/",
-    "formsubmit_redirect",
-    "none",
+    "intake_started",
+    "/get-started",
+    "intake_form",
+    "enterprise-pilot",
     "1",
   ]);
   assert.deepEqual(points[0].doubles, [1]);
@@ -238,6 +186,13 @@ test("event endpoint rejects personal-data fields and cross-origin requests", as
     email: "person@example.com",
   });
   assert.equal(personalData, null);
+  assert.equal(normalizePayload({
+    event: "lead_submitted",
+    page: "/intake-thank-you/",
+    placement: "aws_ses_intake",
+    intent: "enterprise-pilot",
+    schema_version: "1",
+  }), null);
   assert.equal(normalizePayload({
     event: "intake_started",
     page: "/get-started",

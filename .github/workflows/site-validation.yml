@@ -90,12 +90,14 @@ jobs:
                   if self.in_title:
                       self.title += data
 
-          def resolve_local(link: str):
+          def resolve_local(link: str, source_page: Path):
               parsed = urlsplit(link)
               if parsed.scheme or parsed.netloc or link.startswith(('mailto:', 'tel:', 'javascript:')):
                   return None
               path = parsed.path
-              if not path or path == '/':
+              if not path:
+                  return source_page
+              if path == '/':
                   return Path('index.html')
               if path.startswith('/'):
                   path = path[1:]
@@ -126,15 +128,22 @@ jobs:
               if len(parser.canonical) != 1 and page.name != 'index.html' and 'intake-thank-you' not in str(page):
                   failures.append(f'expected one canonical URL: {page}')
               for link in parser.links:
-                  target = resolve_local(link)
+                  target = resolve_local(link, page)
                   if target is None:
                       continue
                   if not (root / target).exists():
                       failures.append(f'broken local reference from {page}: {link} -> {target}')
+                      continue
+                  fragment = urlsplit(link).fragment
+                  if fragment and target.suffix == '.html':
+                      target_parser = PageParser()
+                      target_parser.feed((root / target).read_text(encoding='utf-8'))
+                      if fragment not in target_parser.ids:
+                          failures.append(f'broken local fragment from {page}: {link}')
 
           homepage = Path('index.html').read_text(encoding='utf-8')
           marketplace_page = Path('aws-marketplace/index.html').read_text(encoding='utf-8')
-          if 'Prove the AI decision—and who authorized its use.' not in homepage:
+          if 'AI Action Assurance' not in homepage or 'Make AI actions reviewable, approved, and accountable.' not in homepage:
               failures.append('homepage category headline is missing')
           if 'Explore the Trust Record' not in homepage or 'Book a 30-minute briefing' not in homepage:
               failures.append('homepage proof and briefing CTA hierarchy is missing')

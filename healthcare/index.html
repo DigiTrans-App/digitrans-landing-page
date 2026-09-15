@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>DigiTrust for Healthcare | Enterprise AI Evidence and Assurance</title>
+  <title>DigiTrust for Healthcare | AI Action Assurance</title>
   <meta name="description" content="DigiTrust helps healthcare organizations preserve the evidence, checks, human approvals, known limits, and review history behind important AI-assisted workflows while protecting clinical responsibility and privacy." />
   <link rel="canonical" href="https://www.digitranshq.com/healthcare/" />
   <meta property="og:type" content="website" />
@@ -16,6 +16,7 @@
   <link rel="icon" href="/digitrans-logo.png" />
   <link rel="stylesheet" href="/assets/site.css" />
   <link rel="stylesheet" href="/assets/category-launch.css" />
+  <link rel="stylesheet" href="/assets/action-assurance.css" />
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"Service","name":"DigiTrust Enterprise AI Evidence and Assurance Pilot for Healthcare","provider":{"@type":"Organization","name":"DigiTrans LLC","url":"https://www.digitranshq.com/"},"url":"https://www.digitranshq.com/healthcare/","areaServed":"US","audience":{"@type":"BusinessAudience","audienceType":"Healthcare digital, clinical informatics, AI governance, privacy, security, compliance, and audit leaders"}}
   </script>
@@ -26,16 +27,16 @@
   <nav class="nav launch-nav" aria-label="Primary navigation">
     <a class="brand" href="/" aria-label="DigiTrans DigiTrust home"><img src="/digitrans-logo.png" alt="DigiTrans logo" width="148" height="43" /><span class="brand-name">DigiTrust</span></a>
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-menu" data-nav-toggle>Menu</button>
-    <div class="nav-menu" id="primary-menu"><div class="navlinks"><a href="/">Home</a><a href="#use-cases">Common uses</a><a href="#pilot">Pilot</a><a href="/financial-services/" data-campaign-link>Financial Services</a><a href="/aws-marketplace/" data-campaign-link>Buy on AWS</a><a href="/reference-architecture/" data-campaign-link>How it works</a></div><div class="nav-cta"><a class="btn primary" href="/get-started?intent=healthcare-pilot#intake" data-campaign-link>Request a healthcare briefing</a></div></div>
+    <div class="nav-menu" id="primary-menu"><div class="navlinks"><a href="/">Home</a><a href="#reference-workflows">Reference workflows</a><a href="#pilot">Pilot</a><a href="/financial-services/" data-campaign-link>Financial Services</a><a href="/aws-marketplace/" data-campaign-link>Buy on AWS</a><a href="/reference-architecture/" data-campaign-link>How it works</a></div><div class="nav-cta"><a class="btn primary" href="/get-started?intent=healthcare-pilot#intake" data-campaign-link>Request a healthcare briefing</a></div></div>
   </nav>
 
   <main id="main">
     <section class="page-hero" aria-labelledby="page-title">
       <div class="page-hero-inner">
-        <div class="launch-kicker">Healthcare AI Evidence and Assurance</div>
+        <div class="launch-kicker">AI Action Assurance for Healthcare</div>
         <h1 id="page-title">Make healthcare AI reviewable.</h1>
         <p class="lead"><strong>DigiTrust helps healthcare organizations connect source evidence, repeatable checks, clinician or accountable human approval, approved use, known limits, and a complete review history across important AI workflows.</strong></p>
-        <p class="sublead">Designed to complement—not replace—clinical judgment, privacy, security, compliance, ethics, and existing AI governance.</p>
+        <p class="sublead">Begin with a defined review workflow, synthetic evidence, and an accountable human owner. Clinical judgment, privacy, security, and existing AI governance remain with the customer.</p>
         <div class="hero-actions"><a class="btn primary" href="/get-started?intent=healthcare-pilot#intake" data-campaign-link>Request a 30-minute briefing</a><a class="btn marketplace" href="https://aws.amazon.com/marketplace/pp/prodview-ipxmlnusygyb4" target="_blank" rel="noopener">View on AWS Marketplace</a></div>
         <div class="credibility-row"><span class="credibility-pill">30–45 day pilot</span><span class="credibility-pill">2–3 AI workflows</span><span class="credibility-pill">No protected health information required for initial discovery</span><span class="credibility-pill">AWS Marketplace purchasing</span></div>
       </div>
@@ -48,10 +49,36 @@
       </div>
     </section>
 
+    <section class="editorial-section blueprint" id="reference-workflows" aria-labelledby="reference-title">
+      <div class="editorial-wrap">
+        <div class="section-label">Two synthetic reference workflows</div>
+        <h2 class="display-heading" id="reference-title">Make the handoff small enough to verify.</h2>
+        <p class="intro-copy">Both references end at a simulated internal review queue. They demonstrate evidence and approval controls without sending a referral, changing a clinical note, or connecting to an electronic health record.</p>
+        <div class="reference-grid">
+          <article class="reference-card" id="referral-reference">
+            <span class="reference-label">01 / REFERRAL INTAKE</span>
+            <h3>Review an administrative handoff</h3>
+            <p>An intake team prepares a summary from synthetic referral evidence. A different authorized reviewer checks the support and approves a defined receiving queue.</p>
+            <ol class="reference-steps"><li>Bind the source references and workflow policy.</li><li>Check required evidence and preserve unresolved gaps.</li><li>Approve the exact result, purpose, and queue.</li><li>Record one handoff and inspect its outcome after a lost response.</li></ol>
+            <dl class="reference-facts"><div><dt>Output</dt><dd>A reviewable evidence and approval record</dd></div><div><dt>Blocked example</dt><dd>A changed destination or missing approval</dd></div><div><dt>Customer decision still needed</dt><dd>Workflow owner, required evidence, receiving system, and data scope</dd></div></dl>
+          </article>
+          <article class="reference-card" id="documentation-reference">
+            <span class="reference-label">02 / DOCUMENTATION EVIDENCE</span>
+            <h3>Review the support behind a draft</h3>
+            <p>A documentation team links a synthetic draft to supporting sources. A separate reviewer evaluates the exact evidence packet and authorizes its handoff to a review queue.</p>
+            <ol class="reference-steps"><li>Identify the draft, sources, policy, and intended use.</li><li>Check support and record corrections without erasing history.</li><li>Require independent approval of the final reviewed version.</li><li>Recover the recorded outcome without repeating the handoff.</li></ol>
+            <dl class="reference-facts"><div><dt>Output</dt><dd>A version-bound documentation review record</dd></div><div><dt>Blocked example</dt><dd>Self-approval or a changed source reference</dd></div><div><dt>Customer decision still needed</dt><dd>Review roles, documentation policy, source access, and retention</dd></div></dl>
+          </article>
+        </div>
+        <div class="reference-note"><strong>Scope of the examples:</strong> Synthetic workflow checks provide engineering evidence. They do not establish clinical validity, customer acceptance, or production readiness. <a href="/reference-architecture/#architecture" data-campaign-link>Review the shared architecture and remaining acceptance work</a>.</div>
+      </div>
+    </section>
+
     <section class="editorial-section soft" id="use-cases" aria-labelledby="use-cases-title">
       <div class="editorial-wrap">
-        <div class="section-label">Priority workflows</div>
-        <h2 class="display-heading" id="use-cases-title">Start where AI already influences care, research, communication, or operations.</h2>
+        <div class="section-label">Further discovery areas</div>
+        <h2 class="display-heading" id="use-cases-title">Assess the wider workflow after the first bounded reference.</h2>
+        <p class="intro-copy">These are candidate discovery areas. Each needs its own workflow assessment, customer authorization, integration design, and acceptance criteria.</p>
         <div class="use-case-grid">
           <article class="use-case-card"><span>01 / DOCUMENTATION</span><h3>Ambient clinical documentation</h3><p>Record where source information came from, provider review, patient choice, corrections, retention rules, known limits, and note history.</p></article>
           <article class="use-case-card"><span>02 / RESEARCH</span><h3>Clinical research and trial matching</h3><p>Connect source evidence, eligibility rules, recommendation context, human review, known limits, approval, and a complete decision history.</p></article>
@@ -84,7 +111,7 @@
         <div class="pilot-panel" style="margin-top:32px">
           <div>
             <h3>DigiTrust Enterprise AI Evidence and Assurance Pilot</h3>
-            <p>Begin with high-level workflow context and synthetic, de-identified, or customer-approved information. Patient-identifiable data, clinical recordings, credentials, and protected health information remain out of the initial discovery path.</p>
+            <p>Begin with high-level workflow context and synthetic examples. Patient-identifiable data, clinical recordings, credentials, and protected health information remain out of the initial discovery path.</p>
             <div class="pilot-facts"><div class="fact-card"><span>Commercial terms</span><strong>Customer-specific</strong></div><div class="fact-card"><span>Scope</span><strong>2–3 workflows</strong></div><div class="fact-card"><span>Purchasing</span><strong>AWS Marketplace</strong></div><div class="fact-card"><span>Expansion</span><strong>Production pathway</strong></div></div>
             <div class="hero-actions"><a class="btn primary" href="/get-started?intent=healthcare-pilot#intake" data-campaign-link>Scope the pilot</a><a class="btn marketplace" href="/aws-marketplace/" data-campaign-link>Review purchasing</a></div>
           </div>
@@ -106,7 +133,7 @@
         <div class="section-label">Data and safety boundaries</div>
         <h2 class="display-heading" id="safety-title">Start with the workflow—not sensitive patient data.</h2>
         <div class="proof-strip">
-          <article class="proof-point"><span>01 / DISCOVERY</span><strong>No protected health information required</strong><p>Initial discovery can use high-level workflows, synthetic examples, de-identified context, or approved metadata.</p></article>
+          <article class="proof-point"><span>01 / DISCOVERY</span><strong>No protected health information required</strong><p>Initial discovery uses high-level workflows and synthetic examples. A later data decision defines any approved customer information.</p></article>
           <article class="proof-point"><span>02 / HUMAN REVIEW</span><strong>Clinical judgment remains human</strong><p>DigiTrust records and supports human approval; it does not replace clinical judgment.</p></article>
           <article class="proof-point"><span>03 / EXISTING CONTROLS</span><strong>Existing controls remain primary</strong><p>Privacy, security, quality, ethics, legal, and compliance teams retain their responsibilities.</p></article>
           <article class="proof-point"><span>04 / EXPANSION</span><strong>Sensitive data requires approval</strong><p>Any later data handling depends on contracts, architecture, access controls, security requirements, and customer authorization.</p></article>

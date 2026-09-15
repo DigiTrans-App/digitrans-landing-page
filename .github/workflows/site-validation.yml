@@ -280,6 +280,7 @@ jobs:
         run: |
           node --check assets/site.js
           node --check assets/analytics.js
+          node --check assets/reference-walkthrough.js
           node --check functions/api/events.js
           node --check functions/api/intake.js
           node --test tests/*.test.js

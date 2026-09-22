@@ -401,7 +401,7 @@
 .marketplace-card .status-line strong { color: var(--launch-ink); }
 .marketplace-card .btn { width: 100%; margin-top: 18px; }
 
-.proof-strip { margin-top: 42px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.proof-strip { margin-top: 42px; display: grid; grid-template-columns: repeat(var(--proof-columns, 4), minmax(0, 1fr)); gap: 14px; }
 .proof-point { padding: 22px; border: 1px solid #d2dee9; border-radius: 20px; background: #fff; }
 .proof-point span { color: #2174b2; font-size: 11px; font-weight: 950; letter-spacing: .13em; }
 .proof-point strong { display: block; margin: 18px 0 8px; color: var(--launch-ink); font-size: 18px; }

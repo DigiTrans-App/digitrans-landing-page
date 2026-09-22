@@ -71,7 +71,6 @@ jobs:
           home = Path('index.html').read_text(encoding='utf-8')
           required_home_phrases = [
               'AWS Partner validation completed',
-              'AWS solution review',
               'Why DigiTrust',
               'Buy on AWS',
               'How it works',

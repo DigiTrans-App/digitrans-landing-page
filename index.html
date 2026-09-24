@@ -204,6 +204,26 @@
             <a href="/healthcare/#documentation-reference" data-campaign-link>Explore the documentation example <span aria-hidden="true">→</span></a>
           </article>
         </div>
+        <section class="walkthrough" id="reference-walkthrough" aria-labelledby="walkthrough-title">
+          <div class="walkthrough-heading"><div><span class="reference-label">TRY A FIXED EXAMPLE</span><h3 id="walkthrough-title">What changes the outcome?</h3></div><span class="walkthrough-badge">Synthetic walkthrough</span></div>
+          <p id="walkthrough-boundary">Explore fixed, fictional examples in your browser. No model runs, customer data is used, or action is sent.</p>
+          <div class="walkthrough-controls" id="walkthrough-controls" hidden>
+            <label for="walkthrough-scenario">Workflow<select id="walkthrough-scenario"><option value="referral">Referral intake</option><option value="documentation">Documentation evidence</option></select></label>
+            <label for="walkthrough-condition">What happens?<select id="walkthrough-condition"><option value="supported">The evidence supports the draft</option><option value="missing">The draft adds an unsupported claim</option><option value="unconfirmed">The handoff response is lost</option></select></label>
+          </div>
+          <div class="walkthrough-evidence">
+            <section aria-labelledby="walkthrough-source-title"><h4 id="walkthrough-source-title">Fictional source note</h4><p id="walkthrough-source">Referral R-104 is ready for administrative intake. No appointment time has been confirmed.</p></section>
+            <section aria-labelledby="walkthrough-draft-title"><h4 id="walkthrough-draft-title">Draft for review</h4><p id="walkthrough-draft">Referral R-104 is ready for intake; an appointment has not been confirmed.</p></section>
+          </div>
+          <ol class="walkthrough-path" aria-label="Illustrative control path">
+            <li><span>01 / CHECK</span><strong id="walkthrough-check">Source support matches</strong><p id="walkthrough-check-detail">The draft preserves what the source says and what remains unknown.</p></li>
+            <li><span>02 / REVIEW</span><strong id="walkthrough-review">Independent approval illustrated</strong><p id="walkthrough-review-detail">A separate reviewer approves this draft for the example intake queue.</p></li>
+            <li><span>03 / USE</span><strong id="walkthrough-use">One specified handoff</strong><p id="walkthrough-use-detail">The approved draft and destination are checked again before the example handoff.</p></li>
+          </ol>
+          <div class="walkthrough-outcome" id="walkthrough-outcome" data-state="recorded" role="status" aria-live="polite" aria-atomic="true"><span>04 / EXAMPLE OUTCOME</span><h4 id="walkthrough-result">A matching receipt records the handoff</h4><p id="walkthrough-next">The example records one handoff. Approval and a recorded outcome are separate facts.</p></div>
+          <div class="walkthrough-actions" id="walkthrough-actions" hidden><button type="button" class="btn secondary" id="walkthrough-inspect" disabled>Inspect example receipt</button><button type="button" class="walkthrough-reset" id="walkthrough-reset">Reset example</button><p id="walkthrough-recovery-note">Choose the lost-response example to explore recovery.</p></div>
+          <noscript><p class="reference-note">This fixed referral example is available without JavaScript. Enable JavaScript to compare the other fictional outcomes.</p></noscript>
+        </section>
         <div class="reference-note"><strong>Synthetic reference examples.</strong> No customer deployment, patient outcome, clinical decision, or external system write is implied. <a href="/reference-architecture/#maturity" data-campaign-link>See implementation and release boundaries</a>.</div>
       </div>
     </section>
@@ -341,6 +361,7 @@
 
   <script src="/assets/site.js" defer></script>
   <script type="module" src="/assets/analytics.js"></script>
+  <script type="module" src="/assets/reference-walkthrough.js"></script>
 </body>
 </html>
 

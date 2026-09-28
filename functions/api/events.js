@@ -1,4 +1,5 @@
 const ALLOWED_EVENTS = new Set([
+  "assistant_directory_clicked",
   "trust_record_clicked",
   "briefing_cta_clicked",
   "intake_started",
@@ -7,6 +8,7 @@ const ALLOWED_EVENTS = new Set([
 const ALLOWED_INTENTS = new Set([
   "architecture-review",
   "assisted-onboarding",
+  "assistant-onboarding",
   "aws-cosell-pilot",
   "aws-marketplace-pilot",
   "aws-marketplace-purchasing",

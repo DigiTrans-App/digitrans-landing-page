@@ -9,6 +9,7 @@ const defaultIntent = intakeHtml.match(/name="intent"[^>]*value="([^"]+)"/)[1];
 
 test("the customer journey carries the selected request type into the intake form", () => {
   for (const [search, storedIntent, expected] of [
+    ["?intent=assistant-onboarding", "enterprise-pilot", "assistant-onboarding"],
     ["?intent=assisted-onboarding", "enterprise-pilot", "assisted-onboarding"],
     ["?intent=enterprise-pilot", "assisted-onboarding", "enterprise-pilot"],
     ["", undefined, "engagement-guidance"],

@@ -1,4 +1,5 @@
 const EVENT_NAMES = Object.freeze([
+  "assistant_directory_clicked",
   "trust_record_clicked",
   "briefing_cta_clicked",
   "intake_started",
@@ -8,6 +9,7 @@ const EVENT_SET = new Set(EVENT_NAMES);
 const ALLOWED_INTENTS = new Set([
   "architecture-review",
   "assisted-onboarding",
+  "assistant-onboarding",
   "aws-cosell-pilot",
   "aws-marketplace-pilot",
   "aws-marketplace-purchasing",

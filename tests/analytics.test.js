@@ -34,6 +34,21 @@ test("global privacy signals suppress measurement", () => {
   assert.equal(measurementAllowed({ globalPrivacyControl: false, doNotTrack: "0" }), true);
 });
 
+test("Assistant directory clicks and assisted leads use aggregate categories only", () => {
+  const payload = normalizeEventPayload("assistant_directory_clicked", {
+    page: "/evidence-assistant/?email=private@example.com",
+    placement: "assistant_guide", intent: "assistant-onboarding",
+    chat: "private conversation", packetId: "private-record",
+  });
+  assert.deepEqual(normalizePayload(payload), {
+    event: "assistant_directory_clicked", page: "/evidence-assistant/",
+    placement: "assistant_guide", intent: "assistant-onboarding", schemaVersion: "1",
+  });
+  assert.equal(JSON.stringify(payload).includes("private"), false);
+  assert.equal(normalizePayload({ ...payload, packetId: "private-record" }), null);
+  assert.equal(normalizeEventPayload("plugin_review_completed", {}), null);
+});
+
 test("assisted onboarding retains its category from browser to event endpoint", () => {
   const payload = normalizeEventPayload("intake_started", {
     page: "/get-started?intent=assisted-onboarding",

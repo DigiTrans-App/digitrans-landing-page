@@ -32,6 +32,7 @@ const ALLOWED_KEYS = new Set([
 const ALLOWED_INTENTS = new Set([
   "architecture-review",
   "assisted-onboarding",
+  "assistant-onboarding",
   "aws-cosell-pilot",
   "aws-marketplace-pilot",
   "aws-marketplace-purchasing",

@@ -40,6 +40,7 @@ jobs:
               Path('healthcare/index.html'),
               Path('aws-marketplace/index.html'),
               Path('reference-architecture/index.html'),
+              Path('evidence-assistant/index.html'),
               Path('intake-thank-you/index.html'),
           ]
           marketplace = 'https://aws.amazon.com/marketplace/pp/prodview-ipxmlnusygyb4'

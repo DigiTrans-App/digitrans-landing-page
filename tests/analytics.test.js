@@ -34,6 +34,22 @@ test("global privacy signals suppress measurement", () => {
   assert.equal(measurementAllowed({ globalPrivacyControl: false, doNotTrack: "0" }), true);
 });
 
+test("assisted onboarding retains its category from browser to event endpoint", () => {
+  const payload = normalizeEventPayload("intake_started", {
+    page: "/get-started?intent=assisted-onboarding",
+    placement: "intake_form",
+    intent: "assisted-onboarding",
+  });
+
+  assert.deepEqual(normalizePayload(payload), {
+    event: "intake_started",
+    page: "/get-started",
+    placement: "intake_form",
+    intent: "assisted-onboarding",
+    schemaVersion: "1",
+  });
+});
+
 test("tracker sends the same privacy-safe payload to the endpoint and Zaraz", async () => {
   const beacons = [];
   const zarazEvents = [];

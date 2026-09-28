@@ -194,6 +194,33 @@ test("SES acceptance succeeds but provider rejection fails closed", async () => 
   assert.equal(rejected.headers.get("Cache-Control"), "no-store");
 });
 
+test("assisted onboarding reaches the notification and aggregate lead without being classified as a pilot", async () => {
+  const messages = [];
+  const points = [];
+  const response = await onRequestPost({
+    request: makeRequest(validForm({ intent: "assisted-onboarding" })),
+    env: {
+      ...SES_ENV,
+      CONVERSION_EVENTS: { writeDataPoint: (point) => points.push(point) },
+    },
+  }, {
+    fetch: async (_url, options) => {
+      messages.push(JSON.parse(options.body));
+      return Response.json({ MessageId: "mock-onboarding-message-id" });
+    },
+    now: () => FIXED_TIME,
+  });
+
+  assert.equal(response.status, 303);
+  assert.equal(response.headers.get("Location"), "https://www.digitranshq.com/intake-thank-you/");
+  assert.equal(messages.length, 1);
+  assert.equal(messages[0].Content.Simple.Subject.Data, "New DigiTrust Onboarding or Engagement Request");
+  assert.match(messages[0].Content.Simple.Body.Text.Data, /Intent: assisted-onboarding/);
+  assert.deepEqual(points.map(({ blobs }) => blobs), [[
+    "lead_submitted", "/intake-thank-you/", "aws_ses_intake", "assisted-onboarding", "1",
+  ]]);
+});
+
 test("SES rejection reads the sanitized AWS error type for private server-side logging", async () => {
   const delivery = await sendIntakeEmail(
     normalizeFormBody(validForm()),

@@ -145,8 +145,8 @@ jobs:
           marketplace_page = Path('aws-marketplace/index.html').read_text(encoding='utf-8')
           if 'AI Action Assurance' not in homepage or 'Make AI actions reviewable, approved, and accountable.' not in homepage:
               failures.append('homepage category headline is missing')
-          if 'Explore the Trust Record' not in homepage or 'Book a 30-minute briefing' not in homepage:
-              failures.append('homepage proof and briefing CTA hierarchy is missing')
+          if 'Explore the Trust Record' not in homepage or 'Request assisted onboarding' not in homepage:
+              failures.append('homepage onboarding and proof CTAs are missing')
           if 'pilot-summary' not in homepage or '30–45 days' not in homepage or '2–3 AI workflows' not in homepage:
               failures.append('homepage pilot summary is missing')
           if 'DigiTrust Enterprise AI Evidence and Assurance Pilot' not in homepage:

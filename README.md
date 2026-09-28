@@ -22,7 +22,7 @@ Open `http://127.0.0.1:8000/`. The plain Python server does not reproduce Cloudf
 
 ## Intake delivery
 
-The enterprise-pilot form posts to the same-origin `/api/intake` Cloudflare Pages Function. The Function validates an allowlisted URL-encoded payload, rejects oversized or cross-origin requests, handles the honeypot without sending mail, and sends a plain-text notification to the fixed `info@digitranshq.com` recipient through the Amazon SES v2 HTTPS API.
+The onboarding and engagement form posts to the same-origin `/api/intake` Cloudflare Pages Function. Setup links use the `assisted-onboarding` intent; pilot links retain their distinct pilot intents. The Function validates an allowlisted URL-encoded payload, rejects oversized or cross-origin requests, handles the honeypot without sending mail, and sends a plain-text notification to the fixed `info@digitranshq.com` recipient through the Amazon SES v2 HTTPS API.
 
 The recipient, sender, subject, SES service, and API path are fixed in source. AWS Signature Version 4 is generated with Web Crypto inside the Function; no AWS SDK or browser credential is used. Configure `AWS_SES_REGION`, `AWS_SES_ACCESS_KEY_ID`, and `AWS_SES_SECRET_ACCESS_KEY` in both the Preview and Production Pages environments under **Settings > Variables and Secrets**. Store both credential values as encrypted secrets. `AWS_SES_SESSION_TOKEN` is supported only when temporary credentials are intentionally used.
 

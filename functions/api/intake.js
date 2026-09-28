@@ -31,6 +31,7 @@ const ALLOWED_KEYS = new Set([
 
 const ALLOWED_INTENTS = new Set([
   "architecture-review",
+  "assisted-onboarding",
   "aws-cosell-pilot",
   "aws-marketplace-pilot",
   "aws-marketplace-purchasing",
@@ -133,7 +134,7 @@ function normalizeFormBody(rawBody) {
 
 function buildMessageText(intake, submissionId, submittedAt) {
   const lines = [
-    "New DigiTrust Enterprise Pilot Request",
+    "New DigiTrust Onboarding or Engagement Request",
     "",
     `Submission ID: ${submissionId}`,
     `Submitted at: ${submittedAt}`,
@@ -171,7 +172,7 @@ function buildMessage(intake, submissionId, submittedAt) {
       Simple: {
         Subject: {
           Charset: "UTF-8",
-          Data: "New DigiTrust Enterprise Pilot Request",
+          Data: "New DigiTrust Onboarding or Engagement Request",
         },
         Body: {
           Text: {

@@ -40,9 +40,10 @@ The Function redirects to `/intake-thank-you/` only after SES accepts the fixed-
 
 ## Conversion measurement
 
-The site records four allowlisted, aggregate funnel events. Browser interactions use the same-origin `/api/events` Cloudflare Pages Function, while the intake Function records the final delivery event directly:
+The site records five allowlisted, aggregate funnel events. Browser interactions use the same-origin `/api/events` Cloudflare Pages Function, while the intake Function records the final delivery event directly:
 
 - `trust_record_clicked`
+- `assistant_directory_clicked` (website outbound clicks, not plugin installs or reviews)
 - `briefing_cta_clicked`
 - `intake_started`
 - `lead_submitted`

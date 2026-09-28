@@ -6,6 +6,7 @@ const ALLOWED_EVENTS = new Set([
 
 const ALLOWED_INTENTS = new Set([
   "architecture-review",
+  "assisted-onboarding",
   "aws-cosell-pilot",
   "aws-marketplace-pilot",
   "aws-marketplace-purchasing",

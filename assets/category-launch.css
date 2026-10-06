@@ -128,7 +128,13 @@
   margin: 0 auto;
   padding: 32px 24px 0;
 }
-.aws-qualification > img {
+.aws-qualification-badges {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 24px;
+}
+.aws-qualification-badges img {
   display: block;
   flex: 0 0 120px;
   width: 120px;
@@ -154,7 +160,7 @@
 }
 .launch-hero--qualified .launch-hero-grid { padding-top: 48px; }
 @media (max-width: 720px) {
-  .aws-qualification { gap: 20px; padding: 28px 20px 0; }
+  .aws-qualification { flex-direction: column; align-items: flex-start; gap: 20px; padding: 28px 20px 0; }
   .aws-qualification-copy p { font-size: 14px; }
   .aws-qualification-copy .aws-qualification-title { font-size: 18px; }
   .launch-hero--qualified .launch-hero-grid { padding-top: 36px; }

@@ -168,6 +168,8 @@
   text-underline-offset: 4px;
 }
 .launch-hero--qualified .launch-hero-grid { padding-top: 48px; }
+.launch-hero--qualified .launch-title { font-size: clamp(44px, 5.1vw, 68px); line-height: 1.02; }
+.trust-record-footer a { color: #b8d5ff; text-underline-offset: 3px; }
 @media (max-width: 720px) {
   .aws-qualification { grid-template-columns: 1fr; align-items: start; gap: 20px; padding: 28px 20px 0; }
   .aws-qualification-copy p { font-size: 14px; }

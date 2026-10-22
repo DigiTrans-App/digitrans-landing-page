@@ -112,11 +112,12 @@
           <article><span>SHARED CONTRACT</span><h3>What must remain true?</h3><p>Preserve tenant scope, independent approval, exact permitted use, minimized evidence, and visible failure or uncertainty across every environment.</p></article>
         </div>
         <p class="portability-boundary"><strong>AWS is the first deployment profile.</strong> Additional clouds and self-hosted production environments remain architecture work until their adapters and operating controls pass acceptance.</p>
+        <p class="portability-boundary">Evidence checks are being separated from provider-specific storage behind a shared contract. A source dependency inventory helps track the remaining work; each deployment still needs its own identity, storage, key, recovery, and failure tests.</p>
       </div>
     </section>
     <section class="editorial-section" id="maturity" aria-labelledby="maturity-title">
       <div class="editorial-wrap">
-        <div class="section-label">Current stage / 14 September 2026</div>
+        <div class="section-label">Current stage / 15 September 2026</div>
         <h2 class="display-heading" id="maturity-title">Reference evidence is available. Production acceptance remains open.</h2>
         <p class="intro-copy">The merged source, installed runtime, and customer deployment are distinct evidence boundaries. Passing source tests or a synthetic simulation does not establish that a deployed workflow is ready for production.</p>
         <div class="acceptance-table-wrap" role="region" aria-label="Current implementation and acceptance boundaries" tabindex="0">
@@ -124,9 +125,9 @@
             <caption>Capability and acceptance boundary</caption>
             <thead><tr><th scope="col">Area</th><th scope="col">Available evidence</th><th scope="col">Required before production use</th></tr></thead>
             <tbody>
-              <tr><th scope="row">Evidence and approval</th><td>Reference checks bind policy, sources, result, reviewer, and permitted use.</td><td>Accepted customer scope, roles, data access, and end-to-end identity and isolation checks.</td></tr>
-              <tr><th scope="row">Execution and recovery</th><td>A local transactional queue demonstrates one-time use, observation, and recovery from a lost response.</td><td>Accepted production effects, durable approval and delivery integration, revocation, and restore evidence.</td></tr>
-              <tr><th scope="row">Cryptographic protection</th><td>Authenticated reference history demonstrates context binding and tamper detection.</td><td>Reviewed protection providers, tenant key custody, durable trust anchors, retention, and deletion controls.</td></tr>
+              <tr><th scope="row">Evidence and approval</th><td>Reference checks bind policy, sources, result, reviewer, and permitted use. A review-workspace update compares saved evidence with a fresh check while keeping the action outcome separate.</td><td>Accepted customer scope, roles, data access, and end-to-end identity and isolation checks in the installed release.</td></tr>
+              <tr><th scope="row">Execution and recovery</th><td>A local transactional queue demonstrates one-time use, observation, and recovery from a lost response. A recurring recovery candidate is available in source and remains disabled by default.</td><td>Accepted production effects, installed recovery integration, revocation, failure alerts, and restore evidence.</td></tr>
+              <tr><th scope="row">Cryptographic protection</th><td>Authenticated reference history demonstrates context binding and tamper detection. A separate protection-provider evaluation is available for review.</td><td>Independent protection-provider review, tenant key custody, durable trust anchors, retention, deletion controls, and applicable patent requirements.</td></tr>
               <tr><th scope="row">Deployment</th><td>An AWS runtime and deployment path exist. Reference source validation is separate.</td><td>Acceptance of the exact release, configuration, provider composition, monitoring, support, and recovery objectives.</td></tr>
               <tr><th scope="row">Customer activation</th><td>Synthetic referral and documentation references support an architecture discussion.</td><td>Named owners, approved integrations, a customer data decision, and a recorded go/no-go decision.</td></tr>
             </tbody>

@@ -216,6 +216,8 @@
   font-size: 17px;
   line-height: 1.7;
 }
+.launch-definition { font-size: 19px; line-height: 1.6; }
+.launch-body .launch-supporting { margin: 20px 0 0; color: #f4f8fc; font-size: 17px; font-weight: 750; line-height: 1.5; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
 .hero-actions .btn { min-height: 52px; padding-left: 22px; padding-right: 22px; }
 .btn.marketplace { color: #071827; background: #fff; border-color: rgba(255,255,255,.72); }
@@ -373,6 +375,14 @@
 .intro-copy { max-width: 800px; color: #5b6f84; font-size: 19px; line-height: 1.7; }
 .dark .intro-copy { color: #b8c8d8; }
 
+.customer-questions { padding-top: 64px; padding-bottom: 64px; }
+.customer-questions-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 64px; align-items: start; }
+.customer-questions .display-heading { max-width: 460px; font-size: clamp(32px, 3.5vw, 48px); line-height: 1.1; }
+.customer-questions .intro-copy { margin-bottom: 0; font-size: 18px; }
+.customer-question-list { margin: 0; padding: 0; list-style: none; border-top: 1px solid #ccd9e5; }
+.customer-question-list li { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 16px; align-items: baseline; padding: 16px 0; border-bottom: 1px solid #ccd9e5; color: var(--launch-ink); font-size: 19px; font-weight: 700; line-height: 1.45; }
+.customer-question-list li > span:first-child { color: #1f6497; font-size: 12px; font-weight: 850; letter-spacing: .08em; }
+
 .question-stack { margin-top: 44px; border-top: 1px solid #ccd9e5; }
 .question-row {
   padding: 20px 0;
@@ -454,7 +464,7 @@
 
 .marketplace-panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, .65fr); gap: 52px; align-items: center; }
 .marketplace-card { padding: 28px; border: 1px solid #d1deea; border-radius: 28px; background: #fff; box-shadow: var(--launch-shadow); }
-.marketplace-card img { max-width: 280px; margin: 0 auto 20px; display: block; border-radius: 18px; }
+.marketplace-card img { width: 100%; max-width: 280px; height: auto; margin: 0 auto 20px; display: block; border-radius: 18px; }
 .marketplace-card .status-line { padding: 15px 0; display: flex; justify-content: space-between; gap: 18px; border-top: 1px solid #e1e8ef; color: #496075; font-size: 13px; }
 .marketplace-card .status-line strong { color: var(--launch-ink); }
 .marketplace-card .btn { width: 100%; margin-top: 18px; }
@@ -514,7 +524,7 @@
   .trust-model-item:nth-child(2n) { border-right: 0; }
   .trust-model-item:last-child { grid-column: 1 / -1; border-bottom: 0; }
   .industry-grid, .proof-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .marketplace-panel { grid-template-columns: 1fr; }
+  .marketplace-panel { grid-template-columns: minmax(0, 1fr); }
   .marketplace-card { max-width: 560px; }
   .procurement-steps { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .procurement-step::after { display: none !important; }
@@ -547,6 +557,8 @@
   .launch-title { font-size: 50px; }
   .hero-actions .btn { width: 100%; }
   .editorial-section { padding: 72px 20px; }
+  .customer-questions { padding-top: 48px; padding-bottom: 48px; }
+  .customer-questions-grid { grid-template-columns: 1fr; gap: 28px; }
   .question-row { grid-template-columns: 46px 1fr; gap: 14px; }
   .question-row span:last-child { display: none; }
   .trust-model-grid, .industry-grid, .proof-strip, .use-case-grid, .stakeholder-grid, .procurement-steps { grid-template-columns: 1fr; }

@@ -144,7 +144,7 @@ jobs:
 
           homepage = Path('index.html').read_text(encoding='utf-8')
           marketplace_page = Path('aws-marketplace/index.html').read_text(encoding='utf-8')
-          if 'AI Action Assurance' not in homepage or 'Put AI results to use with evidence and accountable approval.' not in homepage:
+          if 'AI Evidence &amp; Assurance' not in homepage or 'Adopt AI with Confidence' not in homepage:
               failures.append('homepage category headline is missing')
           if any(phrase not in homepage for phrase in ['Request a pilot briefing', 'See a sample evidence packet', 'Request assisted onboarding']):
               failures.append('homepage pilot, proof, and onboarding CTAs are missing')

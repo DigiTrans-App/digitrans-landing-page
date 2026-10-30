@@ -1,4 +1,9 @@
+import { SCHEMA_VERSION, SESSION_ID, SOURCES, MEDIUMS, CAMPAIGNS, PATHS, PLACEMENTS } from "../../assets/measurement-schema.js";
+import { acceptSessionEvent, requestMeasurementAllowed } from "../_lib/measurement.js";
+
 const ALLOWED_EVENTS = new Set([
+  "session_started",
+  "engaged_session",
   "assistant_directory_clicked",
   "trust_record_clicked",
   "briefing_cta_clicked",
@@ -25,9 +30,7 @@ const ALLOWED_INTENTS = new Set([
   "quickstart",
 ]);
 
-const ALLOWED_KEYS = new Set(["event", "page", "placement", "intent", "schema_version"]);
-const SAFE_SLUG = /^[a-z0-9][a-z0-9_-]{0,63}$/;
-const SAFE_PATH = /^\/[a-zA-Z0-9._~!$&'()*+,;=:@%\/-]*$/;
+const ALLOWED_KEYS = new Set(["event", "page", "placement", "intent", "schema_version", "session_id", "source", "medium", "campaign"]);
 const MAX_BODY_BYTES = 1024;
 
 function jsonResponse(status, message) {
@@ -45,10 +48,11 @@ function normalizePayload(value) {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   if (Object.keys(value).some((key) => !ALLOWED_KEYS.has(key))) return null;
   if (!ALLOWED_EVENTS.has(value.event)) return null;
-  if (value.schema_version !== "1") return null;
-  if (typeof value.page !== "string" || value.page.length > 160 || !SAFE_PATH.test(value.page)) return null;
-  if (typeof value.placement !== "string" || !SAFE_SLUG.test(value.placement)) return null;
+  if (value.schema_version !== SCHEMA_VERSION) return null;
+  if (!PATHS.includes(value.page) || !PLACEMENTS.includes(value.placement)) return null;
   if (typeof value.intent !== "string" || !ALLOWED_INTENTS.has(value.intent)) return null;
+  if (!SESSION_ID.test(value.session_id || "")) return null;
+  if (!SOURCES.includes(value.source) || !MEDIUMS.includes(value.medium) || !CAMPAIGNS.includes(value.campaign)) return null;
 
   return {
     event: value.event,
@@ -56,6 +60,11 @@ function normalizePayload(value) {
     placement: value.placement,
     intent: value.intent,
     schemaVersion: value.schema_version,
+    sessionId: value.session_id,
+    source: value.source,
+    medium: value.medium,
+    campaign: value.campaign,
+    audience: "external",
   };
 }
 
@@ -74,7 +83,9 @@ function recordEvent(dataset, event) {
   if (!dataset || typeof dataset.writeDataPoint !== "function") return false;
 
   dataset.writeDataPoint({
-    blobs: [event.event, event.page, event.placement, event.intent, event.schemaVersion],
+    blobs: [event.event, event.page, event.placement, event.intent, event.schemaVersion,
+      event.source || "direct_or_unknown", event.medium || "unknown", event.campaign || "none",
+      event.audience || "unmeasured"],
     doubles: [1],
     indexes: [crypto.randomUUID()],
   });
@@ -87,11 +98,13 @@ export function onRequestGet(context) {
     && context.env.CONVERSION_EVENTS
     && typeof context.env.CONVERSION_EVENTS.writeDataPoint === "function",
   );
+  const sessionStorage = Boolean(context.env?.MEASUREMENT_DB?.batch);
 
   return Response.json({
-    status: "ok",
+    status: durableStorage && sessionStorage ? "ok" : "configuration_required",
     durable_storage: durableStorage,
-    schema_version: "1",
+    session_deduplication: sessionStorage,
+    schema_version: SCHEMA_VERSION,
   }, {
     headers: {
       "Cache-Control": "no-store",
@@ -100,7 +113,7 @@ export function onRequestGet(context) {
   });
 }
 
-export async function onRequestPost(context) {
+export async function onRequestPost(context, runtime = {}) {
   const { request } = context;
   if (!requestHasSameOrigin(request)) return jsonResponse(403, "Forbidden");
   if (!request.headers.get("Content-Type")?.toLowerCase().startsWith("application/json")) {
@@ -129,13 +142,16 @@ export async function onRequestPost(context) {
 
   const event = normalizePayload(payload);
   if (!event) return jsonResponse(400, "Invalid event");
-
-  console.log(JSON.stringify({ type: "digitrust_conversion", ...event }));
+  if (!requestMeasurementAllowed(request)) return new Response(null, { status: 204 });
+  if (!context.env?.MEASUREMENT_DB || !context.env?.CONVERSION_EVENTS) return jsonResponse(503, "Measurement unavailable");
 
   try {
-    recordEvent(context.env && context.env.CONVERSION_EVENTS, event);
+    const accepted = await acceptSessionEvent(context.env.MEASUREMENT_DB, event, runtime.now?.() ?? Date.now());
+    if (accepted.expired) return jsonResponse(410, "Session expired");
+    for (const item of accepted.events) recordEvent(context.env.CONVERSION_EVENTS, item);
   } catch (error) {
     console.error("CONVERSION_ANALYTICS_WRITE_FAILED");
+    return jsonResponse(503, "Measurement unavailable");
   }
 
   return new Response(null, {

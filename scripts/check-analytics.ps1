@@ -86,11 +86,16 @@ SELECT
   blob2 AS page_path,
   blob3 AS placement,
   blob4 AS intent,
+  blob5 AS schema_version,
+  blob6 AS source,
+  blob7 AS medium,
+  blob8 AS campaign,
+  blob9 AS audience,
   SUM(_sample_interval * double1) AS events,
   MAX(timestamp) AS last_seen
 FROM $targetDataset
 WHERE timestamp > NOW() - INTERVAL '$LookbackDays' DAY
-GROUP BY event_name, page_path, placement, intent
+GROUP BY event_name, page_path, placement, intent, schema_version, source, medium, campaign, audience
 ORDER BY events DESC, last_seen DESC
 "@
 }
@@ -287,7 +292,7 @@ try {
     }
     else {
         $rows |
-            Select-Object event_name, page_path, placement, intent, events, last_seen |
+            Select-Object schema_version, audience, event_name, source, medium, campaign, events, last_seen |
             Format-Table -AutoSize |
             Out-String |
             Write-Host
@@ -306,19 +311,20 @@ try {
             Write-Host "Preview SES lead verification event: found" -ForegroundColor Green
         }
         else {
-            $verificationEvent = @($rows | Where-Object {
-                $_.event_name -eq "briefing_cta_clicked" -and
-                $_.page_path -eq "/" -and
-                $_.placement -eq "hero" -and
-                $_.intent -eq "enterprise-pilot"
-            })
-
-            if ($verificationEvent.Count -gt 0) {
-                Write-Host "Production CTA verification event: found" -ForegroundColor Green
+            Write-Host "New session funnel (schema 2, external traffic only):" -ForegroundColor Cyan
+            $funnel = @($rows | Where-Object { $_.schema_version -eq "2" -and $_.audience -eq "external" })
+            foreach ($eventName in @("session_started", "engaged_session", "briefing_cta_clicked", "assistant_directory_clicked", "trust_record_clicked", "intake_started", "lead_submitted")) {
+                $count = ($funnel | Where-Object { $_.event_name -eq $eventName } | Measure-Object -Property events -Sum).Sum
+                if ($null -eq $count) { $count = 0 }
+                Write-Host ("  {0}: {1}" -f $eventName, $count)
             }
-            else {
-                Write-Host "Production CTA verification event: not found in this window" -ForegroundColor Yellow
-            }
+            $unmeasured = ($rows | Where-Object { $_.schema_version -eq "2" -and $_.audience -eq "unmeasured" -and $_.event_name -eq "lead_submitted" } | Measure-Object -Property events -Sum).Sum
+            if ($null -eq $unmeasured) { $unmeasured = 0 }
+            Write-Host ("Accepted inquiries without a measured session (separate): {0}" -f $unmeasured)
+            Write-Host "Internal rows and legacy schema-1 events above are excluded from this funnel."
+            Write-Host "Counts may be sampled. Sessions are not unique people; bot screening is imperfect."
+            Write-Host "Inquiries are SES acceptances after spam verification, not qualified prospects."
+            Write-Host "Funnel stages are independent session counts; leads are submission counts. No conversion rate is inferred."
         }
     }
 

@@ -125,6 +125,7 @@
     var messages = {
       invalid: "Please review the required fields and try again.",
       "delivery-unavailable": "We could not deliver your request. Please try again or email info@digitranshq.com.",
+      "verification-failed": "Please complete the spam verification and submit again, or email info@digitranshq.com.",
     };
     if (!messages[value]) return;
 

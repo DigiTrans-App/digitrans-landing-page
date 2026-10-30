@@ -10,16 +10,27 @@ import {
   loadSesConfiguration,
   normalizeFormBody,
   onRequestGet,
-  onRequestPost,
+  onRequestPost as handlePost,
   sendIntakeEmail,
 } from "../functions/api/intake.js";
 
 const FIXED_TIME = new Date("2026-09-01T16:00:00.000Z");
 const SES_ENV = Object.freeze({
+  TURNSTILE_SITE_KEY: "test-sitekey",
+  TURNSTILE_SECRET: "test-turnstile-secret",
+  TURNSTILE_HOSTNAMES: "www.digitranshq.com",
   AWS_SES_REGION: "us-east-1",
   AWS_SES_ACCESS_KEY_ID: "AKIDEXAMPLE12345678",
   AWS_SES_SECRET_ACCESS_KEY: "test-secret-access-key-not-used-outside-tests",
 });
+
+function onRequestPost(context, runtime = {}) {
+  return handlePost(context, {
+    now: () => FIXED_TIME,
+    verifyFetch: async () => Response.json({ success: true, action: "intake", hostname: "www.digitranshq.com" }),
+    ...runtime,
+  });
+}
 
 function expectedAuthorization(body, configuration, now) {
   const region = configuration.AWS_SES_REGION;
@@ -78,6 +89,7 @@ function validForm(overrides = {}) {
     landing_page: "https://www.digitranshq.com/get-started",
     source_path: "/get-started",
     website_check: "",
+    "cf-turnstile-response": "test-token",
     ...overrides,
   }).toString();
 }
@@ -114,7 +126,9 @@ test("intake health exposes configuration state without sending email", async ()
     status: "ok",
     delivery_provider: "aws_ses_v2",
     delivery_configured: true,
-    schema_version: "1",
+    verification_configured: true,
+    turnstile_site_key: "test-sitekey",
+    schema_version: "2",
   });
 
   const missing = await onRequestGet({ env: {} });
@@ -162,7 +176,7 @@ test("accepted SES request is SigV4-signed, redirects, and records one aggregate
     "/intake-thank-you/",
     "aws_ses_intake",
     "enterprise-pilot",
-    "1",
+    "2", "other", "other", "other", "unmeasured",
   ]);
 });
 
@@ -217,7 +231,7 @@ test("assisted onboarding reaches the notification and aggregate lead without be
   assert.equal(messages[0].Content.Simple.Subject.Data, "New DigiTrust Onboarding or Engagement Request");
   assert.match(messages[0].Content.Simple.Body.Text.Data, /Intent: assisted-onboarding/);
   assert.deepEqual(points.map(({ blobs }) => blobs), [[
-    "lead_submitted", "/intake-thank-you/", "aws_ses_intake", "assisted-onboarding", "1",
+    "lead_submitted", "/intake-thank-you/", "aws_ses_intake", "assisted-onboarding", "2", "other", "other", "other", "unmeasured",
   ]]);
 });
 
@@ -244,7 +258,7 @@ test("Assistant-assisted onboarding preserves its source through accepted delive
   assert.equal(messages[0].Content.Simple.Subject.Data, "New DigiTrust Onboarding or Engagement Request");
   assert.match(messages[0].Content.Simple.Body.Text.Data, /Intent: assistant-onboarding/);
   assert.deepEqual(points.map(({ blobs }) => blobs), [[
-    "lead_submitted", "/intake-thank-you/", "aws_ses_intake", "assistant-onboarding", "1",
+    "lead_submitted", "/intake-thank-you/", "aws_ses_intake", "assistant-onboarding", "2", "other", "other", "other", "unmeasured",
   ]]);
 });
 
@@ -343,4 +357,62 @@ test("intake endpoint rejects cross-origin, unsupported, and oversized requests"
     env: {},
   });
   assert.equal(oversized.status, 413);
+});
+
+test("missing, failed, expired, wrong-host and wrong-action tokens never reach SES", async () => {
+  for (const result of [{ success: false, "error-codes": ["timeout-or-duplicate"] }, { success: true, hostname: "attacker.example", action: "intake" }, { success: true, hostname: "www.digitranshq.com", action: "other" }, { success: "true", hostname: "www.digitranshq.com", action: "intake" }]) {
+    let sent = 0;
+    const response = await onRequestPost({ request: makeRequest(validForm()), env: SES_ENV }, {
+      verifyFetch: async () => Response.json(result), fetch: async () => { sent++; return Response.json({ MessageId: "bad" }); },
+    });
+    assert.equal(sent, 0); assert.match(response.headers.get("Location"), /status=verification-failed/);
+  }
+  for (const env of [SES_ENV, { ...SES_ENV, TURNSTILE_SECRET: "" }]) {
+    let contacted = 0;
+    const response = await onRequestPost({ request: makeRequest(validForm({ "cf-turnstile-response": "" })), env }, {
+      verifyFetch: async () => { contacted++; throw new Error("must not call"); }, fetch: async () => { contacted++; throw new Error("must not call"); },
+    });
+    assert.equal(contacted, 0); assert.match(response.headers.get("Location"), /status=verification-failed/);
+  }
+});
+
+test("Turnstile network, invalid JSON and HTTP failures fail closed", async () => {
+  for (const verifyFetch of [async () => { throw new Error("offline"); }, async () => new Response("not json"), async () => Response.json({ success: true, action: "intake", hostname: "www.digitranshq.com" }, { status: 503 })]) {
+    let sent = false;
+    await onRequestPost({ request: makeRequest(validForm()), env: SES_ENV }, { verifyFetch, fetch: async () => { sent = true; throw new Error("must not call"); } });
+    assert.equal(sent, false);
+  }
+});
+
+test("a replayed token cannot send a second notification or increment the accepted-inquiry count", async () => {
+  const points = []; let verifications = 0; let sent = 0;
+  const env = { ...SES_ENV, CONVERSION_EVENTS: { writeDataPoint: (p) => points.push(p) } };
+  const runtime = {
+    verifyFetch: async (url, options) => {
+      assert.equal(url, "https://challenges.cloudflare.com/turnstile/v0/siteverify");
+      assert.equal(options.body.get("secret"), SES_ENV.TURNSTILE_SECRET);
+      assert.equal(options.body.has("remoteip"), false);
+      return Response.json({ success: verifications++ === 0, action: "intake", hostname: "www.digitranshq.com" });
+    },
+    fetch: async (_url, options) => {
+      sent++;
+      assert.equal(options.body.includes("test-token"), false);
+      assert.equal(options.body.includes(SES_ENV.TURNSTILE_SECRET), false);
+      return Response.json({ MessageId: "accepted-once" });
+    },
+  };
+  await onRequestPost({ request: makeRequest(validForm()), env }, runtime);
+  await onRequestPost({ request: makeRequest(validForm()), env }, runtime);
+  assert.equal(sent, 1); assert.equal(points.length, 1);
+});
+
+test("internal inquiries stay separate and a session-lookup outage does not lose accepted delivery", async () => {
+  for (const scope of ["internal", "external"]) {
+    const points = [];
+    const env = { ...SES_ENV, MEASUREMENT_DB: { prepare: () => { throw new Error("offline"); } }, CONVERSION_EVENTS: { writeDataPoint: (p) => points.push(p) } };
+    const response = await onRequestPost({ request: makeRequest(validForm({ measurement_scope: scope, measurement_session: "12345678-1234-4123-8123-123456789abc" })), env }, { fetch: async () => Response.json({ MessageId: "accepted" }) });
+    assert.match(response.headers.get("Location"), /intake-thank-you/);
+    assert.equal(points.length, 1); assert.equal(points[0].blobs[8], scope === "internal" ? "internal" : "unmeasured");
+    assert.equal(JSON.stringify(points).includes("12345678"), false);
+  }
 });

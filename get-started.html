@@ -80,6 +80,8 @@
               <input type="hidden" name="referrer" id="referrer" value="" />
               <input type="hidden" name="landing_page" id="landing_page" value="" />
               <input type="hidden" name="source_path" id="source_path" value="" />
+              <input type="hidden" name="measurement_session" id="measurement_session" value="" />
+              <input type="hidden" name="measurement_scope" id="measurement_scope" value="unmeasured" />
               <div class="bot-field" aria-hidden="true"><label>Leave this field empty<input type="text" name="website_check" id="website_check" tabindex="-1" autocomplete="off" /></label></div>
 
               <div class="form-grid">
@@ -93,6 +95,8 @@
               </div>
 
               <p class="form-status" id="intake-status" role="alert" hidden></p>
+              <div id="intake-verification" aria-label="Spam protection"></div>
+              <noscript><p>Please enable JavaScript to complete spam verification, or email <a href="mailto:info@digitranshq.com">info@digitranshq.com</a>.</p></noscript>
               <div class="form-footer"><p>DigiTrans will follow up using your work email. Form values are not written to website logs or analytics. Do not include sensitive or regulated information.</p><button class="btn primary" type="submit">Send request</button></div>
             </form>
           </div>
@@ -146,5 +150,6 @@
 
   <script src="/assets/site.js" defer></script>
   <script type="module" src="/assets/analytics.js"></script>
+  <script type="module" src="/assets/intake-verification.js"></script>
 </body>
 </html>

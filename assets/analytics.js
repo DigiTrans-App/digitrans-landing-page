@@ -1,4 +1,11 @@
+import {
+  SCHEMA_VERSION, SESSION_IDLE_MS, SESSION_MAX_MS, SESSION_ID,
+  PATHS, PLACEMENTS, campaignCategories, category,
+} from "./measurement-schema.js";
+
 const EVENT_NAMES = Object.freeze([
+  "session_started",
+  "engaged_session",
   "assistant_directory_clicked",
   "trust_record_clicked",
   "briefing_cta_clicked",
@@ -27,7 +34,6 @@ const ALLOWED_INTENTS = new Set([
 ]);
 const EVENT_ENDPOINT = "/api/events";
 const SAFE_SLUG = /^[a-z0-9][a-z0-9_-]{0,63}$/;
-const SAFE_PATH = /^\/[a-zA-Z0-9._~!$&'()*+,;=:@%\/-]*$/;
 
 function normalizeSlug(value, fallback = "unknown") {
   const normalized = String(value || "").trim().toLowerCase();
@@ -36,8 +42,9 @@ function normalizeSlug(value, fallback = "unknown") {
 
 function normalizePath(value) {
   try {
-    const path = new URL(String(value || "/"), "https://analytics.invalid").pathname;
-    return path.length <= 160 && SAFE_PATH.test(path) ? path : "/";
+    let path = new URL(String(value || "/"), "https://analytics.invalid").pathname;
+    if (path === "/get-started.html" || path === "/get-started/") path = "/get-started";
+    return PATHS.includes(path) ? path : "/";
   } catch (error) {
     return "/";
   }
@@ -54,15 +61,33 @@ function normalizeEventPayload(eventName, properties = {}) {
   return {
     event: eventName,
     page: normalizePath(properties.page),
-    placement: normalizeSlug(properties.placement),
+    placement: category(properties.placement, PLACEMENTS, "unknown"),
     intent: normalizeIntent(properties.intent),
-    schema_version: "1",
+    schema_version: SCHEMA_VERSION,
   };
 }
 
 function measurementAllowed(browserNavigator) {
   if (!browserNavigator) return true;
-  return browserNavigator.globalPrivacyControl !== true && browserNavigator.doNotTrack !== "1";
+  return browserNavigator.globalPrivacyControl !== true && browserNavigator.doNotTrack !== "1"
+    && browserNavigator.webdriver !== true;
+}
+
+const SESSION_KEY = "digitrust_measurement_session";
+const EXCLUSION_KEY = "digitrust_measurement_excluded";
+
+function internalTraffic(browserWindow) {
+  try {
+    const command = browserWindow.location?.hash;
+    if (command === "#analytics=off" || command === "#analytics=on") {
+      browserWindow.localStorage.setItem(EXCLUSION_KEY, command === "#analytics=off" ? "1" : "0");
+      browserWindow.sessionStorage.removeItem(SESSION_KEY);
+      browserWindow.history?.replaceState(null, "", browserWindow.location.pathname + browserWindow.location.search);
+    }
+    return browserWindow.localStorage.getItem(EXCLUSION_KEY) === "1";
+  } catch {
+    return browserWindow.location?.hash === "#analytics=off";
+  }
 }
 
 function createTracker(runtime = {}) {
@@ -71,11 +96,38 @@ function createTracker(runtime = {}) {
   const browserFetch = runtime.fetch || browserWindow.fetch;
   const browserBlob = runtime.Blob || browserWindow.Blob;
 
-  return function trackConversion(eventName, properties = {}) {
-    if (!measurementAllowed(browserNavigator)) return false;
+  const now = runtime.now || Date.now;
+  const excluded = internalTraffic(browserWindow);
+
+  function getSession() {
+    if (excluded || !measurementAllowed(browserNavigator)) return null;
+    try {
+      const time = now();
+      let session = JSON.parse(browserWindow.sessionStorage.getItem(SESSION_KEY) || "null");
+      if (!session || !SESSION_ID.test(session.id) || !Number.isFinite(session.lastSeen)
+          || !Number.isFinite(session.startedAt) || time < session.lastSeen
+          || time - session.lastSeen >= SESSION_IDLE_MS || time - session.startedAt >= SESSION_MAX_MS) {
+        const params = new URLSearchParams(browserWindow.location.search);
+        const values = Object.fromEntries(["utm_source", "utm_medium", "utm_campaign"].map((key) => [key, params.get(key) || ""]));
+        session = { id: browserWindow.crypto.randomUUID(), startedAt: time, lastSeen: time,
+          ...campaignCategories(values, runtime.document?.referrer || browserWindow.document?.referrer || "") };
+      }
+      session.lastSeen = time;
+      browserWindow.sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+      return session;
+    } catch {
+      // If session storage is blocked, do not inflate counts with a new ID per page.
+      return null;
+    }
+  }
+
+  function trackConversion(eventName, properties = {}) {
+    const session = getSession();
+    if (!session) return false;
 
     const payload = normalizeEventPayload(eventName, properties);
     if (!payload) return false;
+    Object.assign(payload, { session_id: session.id, source: session.source, medium: session.medium, campaign: session.campaign });
 
     const body = JSON.stringify(payload);
     let queued = false;
@@ -102,21 +154,11 @@ function createTracker(runtime = {}) {
       queued = true;
     }
 
-    try {
-      if (browserWindow.zaraz && typeof browserWindow.zaraz.track === "function") {
-        browserWindow.zaraz.track(eventName, {
-          page: payload.page,
-          placement: payload.placement,
-          intent: payload.intent,
-          schema_version: payload.schema_version,
-        });
-      }
-    } catch (error) {
-      // Zaraz is an optional mirror; the same-origin endpoint remains primary.
-    }
-
     return queued;
-  };
+  }
+  trackConversion.session = getSession;
+  trackConversion.scope = () => excluded ? "internal" : measurementAllowed(browserNavigator) ? "external" : "unmeasured";
+  return trackConversion;
 }
 
 function getLinkIntent(link, browserWindow) {
@@ -158,10 +200,36 @@ function isBriefingLink(link, browserWindow) {
 }
 
 function setupConversionAnalytics(browserWindow = window, browserDocument = document) {
-  const track = createTracker({ window: browserWindow });
+  const track = createTracker({ window: browserWindow, document: browserDocument });
   const page = normalizePath(browserWindow.location.pathname);
+  const pageProperties = { page, placement: "page", intent: getPageIntent(browserWindow) };
+  let started = false;
+  const start = () => {
+    if (!started && browserDocument.visibilityState !== "hidden") {
+      started = true;
+      track("session_started", pageProperties);
+    }
+  };
+  start();
+  browserDocument.addEventListener("visibilitychange", start);
+
+  // Only foreground, focused viewing contributes. Background time does not count.
+  let activeMs = 0;
+  let lastTick = Date.now();
+  function engage() {
+    track("engaged_session", pageProperties);
+  }
+  const timer = browserWindow.setInterval(() => {
+    const time = Date.now();
+    if (browserDocument.visibilityState === "visible" && browserDocument.hasFocus()) {
+      activeMs += Math.min(Math.max(time - lastTick, 0), 1500);
+    }
+    lastTick = time;
+    if (activeMs >= 15000) { engage(); browserWindow.clearInterval(timer); }
+  }, 1000);
 
   browserDocument.addEventListener("click", (event) => {
+    if (event.isTrusted === false) return;
     const link = event.target && typeof event.target.closest === "function"
       ? event.target.closest("a[href]")
       : null;
@@ -169,6 +237,8 @@ function setupConversionAnalytics(browserWindow = window, browserDocument = docu
 
     const explicitEvent = link.getAttribute("data-analytics-event");
     if (explicitEvent) {
+      if (!EVENT_SET.has(explicitEvent)) return;
+      engage();
       track(explicitEvent, {
         page,
         placement: inferPlacement(link),
@@ -178,6 +248,7 @@ function setupConversionAnalytics(browserWindow = window, browserDocument = docu
     }
 
     if (isBriefingLink(link, browserWindow)) {
+      engage();
       track("briefing_cta_clicked", {
         page,
         placement: inferPlacement(link),
@@ -190,16 +261,25 @@ function setupConversionAnalytics(browserWindow = window, browserDocument = docu
   if (form) {
     let intakeStarted = false;
     const recordStart = (event) => {
+      if (event.isTrusted === false) return;
       const field = event.target;
       if (intakeStarted || !field || typeof field.matches !== "function") return;
       if (!field.matches("input:not([type='hidden']), select, textarea")) return;
       if (field.id === "website_check") return;
       intakeStarted = true;
+      engage();
       track("intake_started", { page, placement: "intake_form", intent: getPageIntent(browserWindow) });
     };
 
     form.addEventListener("focusin", recordStart);
     form.addEventListener("input", recordStart);
+    form.addEventListener("submit", () => {
+      const session = track.session();
+      const id = browserDocument.getElementById("measurement_session");
+      const scope = browserDocument.getElementById("measurement_scope");
+      if (id) id.value = session?.id || "";
+      if (scope) scope.value = track.scope() === "internal" ? "internal" : session ? "external" : "unmeasured";
+    });
   }
 }
 
@@ -217,4 +297,7 @@ export {
   normalizePath,
   normalizeSlug,
   setupConversionAnalytics,
+  internalTraffic,
+  SESSION_KEY,
+  EXCLUSION_KEY,
 };

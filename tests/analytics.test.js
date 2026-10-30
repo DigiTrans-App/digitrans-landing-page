@@ -1,256 +1,165 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-
-import {
-  createTracker,
-  measurementAllowed,
-  normalizeEventPayload,
-  setupConversionAnalytics,
-} from "../assets/analytics.js";
+import { createTracker, measurementAllowed, normalizeEventPayload, setupConversionAnalytics, SESSION_KEY, EXCLUSION_KEY } from "../assets/analytics.js";
+import { SESSION_IDLE_MS, SESSION_MAX_MS, campaignCategories } from "../assets/measurement-schema.js";
 import { MAX_BODY_BYTES, normalizePayload, onRequestGet, onRequestPost } from "../functions/api/events.js";
+import { readSession } from "../functions/_lib/measurement.js";
+import { testDatabase } from "./d1-helper.js";
 
-test("client payloads contain only allowlisted categorical values", () => {
-  const payload = normalizeEventPayload("briefing_cta_clicked", {
-    page: "/get-started?email=person@example.com",
-    placement: "Hero",
-    intent: "enterprise-pilot",
-    email: "person@example.com",
-  });
-
-  assert.deepEqual(payload, {
-    event: "briefing_cta_clicked",
-    page: "/get-started",
-    placement: "hero",
-    intent: "enterprise-pilot",
-    schema_version: "1",
-  });
-  assert.equal(normalizeEventPayload("email_captured", {}), null);
-  assert.equal(normalizeEventPayload("intake_started", { intent: "person-name" }).intent, "none");
-});
-
-test("global privacy signals suppress measurement", () => {
-  assert.equal(measurementAllowed({ globalPrivacyControl: true, doNotTrack: "0" }), false);
-  assert.equal(measurementAllowed({ globalPrivacyControl: false, doNotTrack: "1" }), false);
-  assert.equal(measurementAllowed({ globalPrivacyControl: false, doNotTrack: "0" }), true);
-});
-
-test("Assistant directory clicks and assisted leads use aggregate categories only", () => {
-  const payload = normalizeEventPayload("assistant_directory_clicked", {
-    page: "/evidence-assistant/?email=private@example.com",
-    placement: "assistant_guide", intent: "assistant-onboarding",
-    chat: "private conversation", packetId: "private-record",
-  });
-  assert.deepEqual(normalizePayload(payload), {
-    event: "assistant_directory_clicked", page: "/evidence-assistant/",
-    placement: "assistant_guide", intent: "assistant-onboarding", schemaVersion: "1",
-  });
-  assert.equal(JSON.stringify(payload).includes("private"), false);
-  assert.equal(normalizePayload({ ...payload, packetId: "private-record" }), null);
-  assert.equal(normalizeEventPayload("plugin_review_completed", {}), null);
-});
-
-test("assisted onboarding retains its category from browser to event endpoint", () => {
-  const payload = normalizeEventPayload("intake_started", {
-    page: "/get-started?intent=assisted-onboarding",
-    placement: "intake_form",
-    intent: "assisted-onboarding",
-  });
-
-  assert.deepEqual(normalizePayload(payload), {
-    event: "intake_started",
-    page: "/get-started",
-    placement: "intake_form",
-    intent: "assisted-onboarding",
-    schemaVersion: "1",
-  });
-});
-
-test("tracker sends the same privacy-safe payload to the endpoint and Zaraz", async () => {
+const ID = "12345678-1234-4123-8123-123456789abc";
+const NOW = 1793400000000;
+const base = { event: "intake_started", page: "/get-started", placement: "intake_form", intent: "enterprise-pilot", schema_version: "2", session_id: ID, source: "aws", medium: "email", campaign: "aws-cosell" };
+const storage = () => { const values = new Map(); return { getItem: (k) => values.get(k) || null, setItem: (k,v) => values.set(k,v), removeItem: (k) => values.delete(k) }; };
+function browser() {
   const beacons = [];
-  const zarazEvents = [];
-  const fakeWindow = {
-    Blob,
-    fetch: () => Promise.resolve(),
-    navigator: {
-      doNotTrack: "0",
-      globalPrivacyControl: false,
-      sendBeacon: (url, body) => {
-        beacons.push({ url, body });
-        return true;
-      },
-    },
-    zaraz: {
-      track: (event, properties) => zarazEvents.push({ event, properties }),
-    },
+  const win = { Blob, crypto, fetch: async () => new Response(null, { status: 204 }),
+    location: new URL("https://www.digitranshq.com/?utm_source=aws&utm_medium=email&utm_campaign=aws-cosell"),
+    sessionStorage: storage(), localStorage: storage(), history: { replaceState: () => {} },
+    navigator: { sendBeacon: (url,body) => { beacons.push({ url,body }); return true; } },
+    setInterval: () => 1, clearInterval: () => {},
   };
-
-  const track = createTracker({ window: fakeWindow });
-  assert.equal(track("trust_record_clicked", { page: "/", placement: "hero", intent: "none" }), true);
-  assert.equal(beacons.length, 1);
-  assert.equal(beacons[0].url, "/api/events");
-  assert.deepEqual(JSON.parse(await beacons[0].body.text()), {
-    event: "trust_record_clicked",
-    page: "/",
-    placement: "hero",
-    intent: "none",
-    schema_version: "1",
-  });
-  assert.deepEqual(zarazEvents, [{
-    event: "trust_record_clicked",
-    properties: { page: "/", placement: "hero", intent: "none", schema_version: "1" },
-  }]);
-});
-
-test("browser wiring records click and intake start without field values", async () => {
-  const beacons = [];
-  const browserWindow = {
-    Blob,
-    fetch: () => Promise.resolve(),
-    location: {
-      origin: "https://www.digitranshq.com",
-      pathname: "/get-started",
-      search: "?intent=enterprise-pilot",
-    },
-    navigator: {
-      doNotTrack: "0",
-      globalPrivacyControl: false,
-      sendBeacon: (url, body) => {
-        beacons.push({ url, body });
-        return true;
-      },
-    },
-  };
-  const formListeners = new Map();
-  const form = {
-    addEventListener: (name, listener) => formListeners.set(name, listener),
-    checkValidity: () => true,
-  };
-  const trap = { value: "" };
-  const documentListeners = new Map();
-  const browserDocument = {
-    addEventListener: (name, listener) => documentListeners.set(name, listener),
-    getElementById: (id) => ({ "digitrust-intake": form, website_check: trap })[id] || null,
-  };
-
-  setupConversionAnalytics(browserWindow, browserDocument);
-
-  const briefingLink = {
-    getAttribute: (name) => ({ href: "/get-started?intent=enterprise-pilot#intake" })[name] || null,
-    closest: (selector) => selector === ".launch-hero, .page-hero" ? {} : null,
-  };
-  documentListeners.get("click")({ target: { closest: () => briefingLink } });
-  formListeners.get("focusin")({
-    target: { id: "full_name", matches: () => true, value: "Test User" },
-  });
-  assert.equal(beacons.length, 2);
-  const payloads = await Promise.all(beacons.map(async ({ body }) => JSON.parse(await body.text())));
-  assert.deepEqual(payloads.map(({ event }) => event), [
-    "briefing_cta_clicked",
-    "intake_started",
-  ]);
-  assert.equal(JSON.stringify(payloads).includes("Test User"), false);
-});
-
-function makeRequest(body, options = {}) {
-  return new Request("https://www.digitranshq.com/api/events", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Origin: options.origin || "https://www.digitranshq.com",
-      ...(options.headers || {}),
-    },
-    body,
-  });
+  return { win, beacons };
+}
+function request(payload = base, options = {}) {
+  const req = new Request("https://www.digitranshq.com/api/events", { method: "POST", headers: { Origin: "https://www.digitranshq.com", "Content-Type": "application/json", ...options.headers }, body: typeof payload === "string" ? payload : JSON.stringify(payload) });
+  if (options.cf) Object.defineProperty(req, "cf", { value: options.cf });
+  return req;
+}
+function environment() {
+  const points = [];
+  return { points, env: { MEASUREMENT_DB: testDatabase(), CONVERSION_EVENTS: { writeDataPoint: (p) => points.push(p) } } };
 }
 
-test("event endpoint health reports whether durable storage is connected", async () => {
-  const connected = await onRequestGet({
-    env: { CONVERSION_EVENTS: { writeDataPoint: () => {} } },
-  });
-  assert.equal(connected.status, 200);
-  assert.deepEqual(await connected.json(), {
-    status: "ok",
-    durable_storage: true,
-    schema_version: "1",
-  });
-  assert.equal(connected.headers.get("Cache-Control"), "no-store");
-
-  const disconnected = await onRequestGet({ env: {} });
-  assert.equal((await disconnected.json()).durable_storage, false);
+test("only fixed paths, placements, intent and campaign categories leave the browser", () => {
+  const payload = normalizeEventPayload("briefing_cta_clicked", { page: "/get-started?email=private@example.com", placement: "Hero", intent: "enterprise-pilot", email: "private@example.com" });
+  assert.deepEqual(payload, { event: "briefing_cta_clicked", page: "/get-started", placement: "hero", intent: "enterprise-pilot", schema_version: "2" });
+  assert.equal(normalizeEventPayload("lead_submitted"), null);
+  assert.equal(normalizeEventPayload("intake_started", { page: "/private-person", placement: "private-person", intent: "private-person" }).page, "/");
+  assert.deepEqual(campaignCategories({ utm_source: "private@example.com", utm_campaign: "John", utm_medium: "recipient-123" }), { source: "other", medium: "other", campaign: "other" });
+  assert.equal(campaignCategories({}, "https://www.linkedin.com/feed/").source, "linkedin");
+  assert.equal(campaignCategories({}, "https://linkedin.com.attacker.example/").source, "other");
 });
 
-test("event endpoint writes the documented Analytics Engine schema", async () => {
-  const points = [];
-  const payload = {
-    event: "intake_started",
-    page: "/get-started",
-    placement: "intake_form",
-    intent: "enterprise-pilot",
-    schema_version: "1",
-  };
-
-  const response = await onRequestPost({
-    request: makeRequest(JSON.stringify(payload)),
-    env: { CONVERSION_EVENTS: { writeDataPoint: (point) => points.push(point) } },
-  });
-
-  assert.equal(response.status, 204);
-  assert.equal(points.length, 1);
-  assert.deepEqual(points[0].blobs, [
-    "intake_started",
-    "/get-started",
-    "intake_form",
-    "enterprise-pilot",
-    "1",
-  ]);
-  assert.deepEqual(points[0].doubles, [1]);
-  assert.equal(points[0].indexes.length, 1);
+test("GPC, DNT, webdriver and internal opt-out suppress all browser events", () => {
+  for (const nav of [{ globalPrivacyControl: true }, { doNotTrack: "1" }, { webdriver: true }]) {
+    const { win, beacons } = browser(); Object.assign(win.navigator, nav);
+    assert.equal(measurementAllowed(win.navigator), false);
+    assert.equal(createTracker({ window: win })("session_started"), false);
+    assert.equal(beacons.length, 0); assert.equal(win.sessionStorage.getItem(SESSION_KEY), null);
+  }
+  const { win, beacons } = browser(); win.location.hash = "#analytics=off";
+  const track = createTracker({ window: win });
+  assert.equal(track.scope(), "internal"); assert.equal(track("session_started"), false);
+  assert.equal(beacons.length, 0); assert.equal(win.localStorage.getItem(EXCLUSION_KEY), "1");
+  win.location.hash = "#analytics=on";
+  const restored = createTracker({ window: win });
+  assert.equal(restored.scope(), "external");
+  win.location.hash = "#analytics=off";
+  assert.equal(restored("session_started"), false);
+  assert.equal(restored.scope(), "internal");
 });
 
-test("event endpoint rejects personal-data fields and cross-origin requests", async () => {
-  const personalData = normalizePayload({
-    event: "intake_started",
-    page: "/get-started",
-    placement: "intake_form",
-    intent: "enterprise-pilot",
-    schema_version: "1",
-    email: "person@example.com",
-  });
-  assert.equal(personalData, null);
-  assert.equal(normalizePayload({
-    event: "lead_submitted",
-    page: "/intake-thank-you/",
-    placement: "aws_ses_intake",
-    intent: "enterprise-pilot",
-    schema_version: "1",
-  }), null);
-  assert.equal(normalizePayload({
-    event: "intake_started",
-    page: "/get-started",
-    placement: "intake_form",
-    intent: "person-name",
-    schema_version: "1",
-  }), null);
-
-  const crossOrigin = await onRequestPost({
-    request: makeRequest("{}", { origin: "https://attacker.example" }),
-    env: {},
-  });
-  assert.equal(crossOrigin.status, 403);
+test("session survives reload, keeps first attribution, expires after inactivity and has a 24h maximum", async () => {
+  const { win, beacons } = browser(); let time = NOW;
+  let track = createTracker({ window: win, now: () => time });
+  track("session_started", { page: "/" }); const first = track.session().id;
+  win.location = new URL("https://www.digitranshq.com/pricing/?utm_source=linkedin");
+  track = createTracker({ window: win, now: () => time });
+  assert.equal(track.session().id, first); assert.equal(track.session().source, "aws");
+  time += SESSION_IDLE_MS;
+  assert.notEqual(track.session().id, first);
+  const second = track.session().id;
+  for (let i = 0; i < 49; i++) { time += SESSION_IDLE_MS - 1; track.session(); }
+  assert.notEqual(track.session().id, second);
+  const payload = JSON.parse(await beacons[0].body.text());
+  assert.equal(payload.session_id, first); assert.equal(payload.source, "aws");
+  assert.equal(payload.schema_version, "2");
 });
 
-test("event endpoint accepts JSON only", async () => {
-  const response = await onRequestPost({
-    request: makeRequest("{}", { headers: { "Content-Type": "text/plain" } }),
-    env: {},
-  });
-  assert.equal(response.status, 415);
+test("unavailable session storage drops measurement without blocking the page", () => {
+  const { win, beacons } = browser(); win.sessionStorage.getItem = () => { throw new Error("blocked"); };
+  assert.equal(createTracker({ window: win })("session_started"), false);
+  assert.equal(beacons.length, 0);
 });
 
-test("event endpoint rejects oversized bodies", async () => {
-  const response = await onRequestPost({
-    request: makeRequest("x".repeat(MAX_BODY_BYTES + 1)),
-    env: {},
-  });
-  assert.equal(response.status, 413);
+test("concurrent reloads, clicks and retries count once per session and stage", async () => {
+  const { env, points } = environment();
+  const responses = await Promise.all(Array.from({ length: 8 }, () => onRequestPost({ request: request(), env }, { now: () => NOW })));
+  assert.ok(responses.every((r) => r.status === 204));
+  assert.deepEqual(points.map((p) => p.blobs[0]), ["session_started", "intake_started"]);
+  assert.equal(points[0].blobs[5], "aws");
+  await onRequestPost({ request: request({ ...base, event: "engaged_session", source: "linkedin" }), env }, { now: () => NOW + 10 });
+  assert.equal(points[2].blobs[0], "engaged_session"); assert.equal(points[2].blobs[5], "aws");
+  assert.equal(JSON.stringify(points).includes(ID), false);
+  assert.deepEqual(Object.keys(await readSession(env.MEASUREMENT_DB, ID, NOW + 20)).sort(), ["campaign", "medium", "source"]);
+});
+
+test("expired IDs cannot extend a session and old dedup records are cleaned with cascading deletes", async () => {
+  const { env, points } = environment();
+  await onRequestPost({ request: request(), env }, { now: () => NOW });
+  const expired = await onRequestPost({ request: request(), env }, { now: () => NOW + SESSION_IDLE_MS });
+  assert.equal(expired.status, 410); assert.equal(points.length, 2);
+  assert.equal(await readSession(env.MEASUREMENT_DB, ID, NOW + SESSION_IDLE_MS), null);
+  const newID = crypto.randomUUID();
+  await onRequestPost({ request: request({ ...base, session_id: newID }), env }, { now: () => NOW + SESSION_MAX_MS + 1 });
+  assert.equal(env.MEASUREMENT_DB.sqlite.prepare("SELECT count(*) AS n FROM measurement_sessions").get().n, 1);
+  assert.equal(env.MEASUREMENT_DB.sqlite.prepare("SELECT count(*) AS n FROM measurement_events").get().n, 2);
+});
+
+test("server also suppresses privacy signals, EU measurement and available bot signals", async () => {
+  for (const options of [{ headers: { "Sec-GPC": "1" } }, { headers: { DNT: "1" } }, { cf: { country: "DE" } }, { cf: { botManagement: { verifiedBot: true } } }, { cf: { botManagement: { score: 20 } } }]) {
+    const { env, points } = environment();
+    assert.equal((await onRequestPost({ request: request(base, options), env })).status, 204);
+    assert.equal(points.length, 0);
+    assert.equal(env.MEASUREMENT_DB.sqlite.prepare("SELECT count(*) AS n FROM measurement_sessions").get().n, 0);
+  }
+});
+
+test("server rejects fabricated stages, extra fields, arbitrary dimensions, old schemas and cross-origin payloads", async () => {
+  for (const overrides of [{ event: "lead_submitted" }, { email: "private@example.com" }, { source: "person" }, { page: "/person" }, { placement: "person" }, { intent: "person" }, { schema_version: "1" }, { session_id: "not-a-uuid" }, { session_id: [ID] }]) assert.equal(normalizePayload({ ...base, ...overrides }), null);
+  assert.equal((await onRequestPost({ request: request(base, { headers: { Origin: "https://attacker.example" } }), env: {} })).status, 403);
+  assert.equal((await onRequestPost({ request: request(base, { headers: { "Content-Type": "text/plain" } }), env: {} })).status, 415);
+  assert.equal((await onRequestPost({ request: request("x".repeat(MAX_BODY_BYTES + 1)), env: {} })).status, 413);
+});
+
+test("health requires both bindings; a database failure does not silently inflate counts", async () => {
+  const { env, points } = environment();
+  assert.deepEqual(await (await onRequestGet({ env })).json(), { status: "ok", durable_storage: true, session_deduplication: true, schema_version: "2" });
+  assert.equal((await (await onRequestGet({ env: {} })).json()).status, "configuration_required");
+  assert.equal((await onRequestPost({ request: request(), env: {} })).status, 503);
+  env.MEASUREMENT_DB.batch = async () => { throw new Error("database unavailable"); };
+  assert.equal((await onRequestPost({ request: request(), env })).status, 503);
+  assert.equal(points.length, 0);
+});
+
+test("foreground time and meaningful clicks cause engagement; hidden time and synthetic events do not", async () => {
+  const { win, beacons } = browser(); const listeners = new Map(); let tick;
+  win.setInterval = (callback) => { tick = callback; return 1; };
+  const doc = { visibilityState: "hidden", hasFocus: () => true, addEventListener: (k,v) => listeners.set(k,v), getElementById: () => null };
+  setupConversionAnalytics(win, doc);
+  tick(); assert.equal(beacons.length, 0);
+  doc.visibilityState = "visible"; listeners.get("visibilitychange")();
+  const link = { getAttribute: (name) => name === "href" ? "/get-started?intent=enterprise-pilot" : null, closest: () => null };
+  listeners.get("click")({ isTrusted: false, target: { closest: () => link } });
+  assert.equal(beacons.length, 1);
+  listeners.get("click")({ isTrusted: true, target: { closest: () => link } });
+  const payloads = await Promise.all(beacons.map(async ({ body }) => JSON.parse(await body.text())));
+  assert.deepEqual(payloads.map((p) => p.event), ["session_started", "engaged_session", "briefing_cta_clicked"]);
+});
+
+test("15 seconds of focused foreground viewing emits engagement once", async (t) => {
+  let time = NOW; t.mock.method(Date, "now", () => time);
+  const { win, beacons } = browser(); let tick; let focused = true; let clears = 0;
+  win.setInterval = (callback) => { tick = callback; return 1; };
+  win.clearInterval = () => { clears++; };
+  const doc = { visibilityState: "visible", hasFocus: () => focused, addEventListener: () => {}, getElementById: () => null };
+  setupConversionAnalytics(win, doc);
+  for (let i = 0; i < 10; i++) { time += 1000; tick(); }
+  focused = false;
+  for (let i = 0; i < 30; i++) { time += 1000; tick(); }
+  assert.equal(beacons.length, 1);
+  focused = true;
+  for (let i = 0; i < 5; i++) { time += 1000; tick(); }
+  assert.equal(beacons.length, 2); assert.equal(clears, 1);
+  assert.equal(JSON.parse(await beacons[1].body.text()).event, "engaged_session");
 });

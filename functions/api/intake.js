@@ -1,4 +1,7 @@
 import { recordEvent } from "./events.js";
+import { campaignCategories, SESSION_ID } from "../../assets/measurement-schema.js";
+import { readSession, requestMeasurementAllowed } from "../_lib/measurement.js";
+import { turnstileConfigured, verifyTurnstile } from "../_lib/turnstile.js";
 
 const AWS_SERVICE = "ses";
 const AWS_TERMINATOR = "aws4_request";
@@ -27,6 +30,9 @@ const ALLOWED_KEYS = new Set([
   "utm_term",
   "website_check",
   "workflow_type",
+  "cf-turnstile-response",
+  "measurement_session",
+  "measurement_scope",
 ]);
 
 const ALLOWED_INTENTS = new Set([
@@ -97,6 +103,11 @@ function normalizeFormBody(rawBody) {
   const businessGoal = cleanText(values.business_goal || "", 1200);
   const intent = cleanText(values.intent || "none", 64)?.toLowerCase();
   const websiteCheck = cleanText(values.website_check || "", 200);
+  const turnstileToken = values["cf-turnstile-response"] || "";
+  const measurementSession = values.measurement_session || "";
+  const measurementScope = values.measurement_scope || "unmeasured";
+  if (turnstileToken.length > 2048 || (measurementSession && !SESSION_ID.test(measurementSession))) return null;
+  if (!["external", "internal", "unmeasured"].includes(measurementScope)) return null;
 
   if (!fullName || !email || !EMAIL_PATTERN.test(email) || !company) return null;
   if (role === null || businessGoal === null || websiteCheck === null) return null;
@@ -130,6 +141,9 @@ function normalizeFormBody(rawBody) {
     intent,
     websiteCheck,
     attribution,
+    turnstileToken,
+    measurementSession,
+    measurementScope,
   };
 }
 
@@ -348,11 +362,14 @@ function plainResponse(status, message) {
 
 export function onRequestGet(context) {
   const configuration = loadSesConfiguration(context.env);
+  const verification = turnstileConfigured(context.env);
   return Response.json({
-    status: configuration ? "ok" : "configuration_required",
+    status: configuration && verification ? "ok" : "configuration_required",
     delivery_provider: "aws_ses_v2",
     delivery_configured: Boolean(configuration),
-    schema_version: "1",
+    verification_configured: verification,
+    turnstile_site_key: context.env?.TURNSTILE_SITE_KEY || null,
+    schema_version: "2",
   }, {
     headers: {
       "Cache-Control": "no-store",
@@ -396,6 +413,10 @@ export async function onRequestPost(context, runtime = {}) {
     return deliveryFailureResponse(request);
   }
 
+  if (!await verifyTurnstile(intake.turnstileToken, request, context.env, runtime.verifyFetch || fetch)) {
+    return redirectTo(request, "/get-started?status=verification-failed#intake", { "Cache-Control": "no-store" });
+  }
+
   const submissionId = crypto.randomUUID();
   const requestTime = runtime.now ? runtime.now() : new Date();
   const submittedAt = requestTime.toISOString();
@@ -432,12 +453,20 @@ export async function onRequestPost(context, runtime = {}) {
   }));
 
   try {
+    let session = null;
+    if (intake.measurementScope === "external" && requestMeasurementAllowed(request)) {
+      try { session = await readSession(context.env?.MEASUREMENT_DB, intake.measurementSession, requestTime.getTime()); }
+      catch { console.error("INTAKE_MEASUREMENT_SESSION_UNAVAILABLE"); }
+    }
+    const audience = intake.measurementScope === "internal" ? "internal" : session ? "external" : "unmeasured";
     recordEvent(context.env && context.env.CONVERSION_EVENTS, {
       event: "lead_submitted",
       page: "/intake-thank-you/",
       placement: "aws_ses_intake",
       intent: intake.intent,
-      schemaVersion: "1",
+      schemaVersion: "2",
+      ...(session || campaignCategories(intake.attribution)),
+      audience,
     });
   } catch (error) {
     console.error("CONVERSION_ANALYTICS_WRITE_FAILED");

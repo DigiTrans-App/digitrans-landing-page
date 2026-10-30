@@ -22,6 +22,9 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.13'
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
       - name: Validate HTML, claims, links, and launch contract
         run: |
           python3 - <<'PY'
@@ -281,6 +284,10 @@ jobs:
         run: |
           node --check assets/site.js
           node --check assets/analytics.js
+          node --check assets/measurement-schema.js
+          node --check assets/intake-verification.js
+          node --check functions/_lib/measurement.js
+          node --check functions/_lib/turnstile.js
           node --check functions/api/events.js
           node --check functions/api/intake.js
           node --test tests/*.test.js

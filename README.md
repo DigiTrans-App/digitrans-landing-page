@@ -33,77 +33,55 @@ Follow [`docs/aws-ses-intake-setup.md`](docs/aws-ses-intake-setup.md) for the ex
 After changing the secret or email configuration, redeploy the relevant Pages environment. `GET /api/intake` is a non-writing health check and must report:
 
 ```json
-{"status":"ok","delivery_provider":"aws_ses_v2","delivery_configured":true,"schema_version":"1"}
+{"status":"ok","delivery_provider":"aws_ses_v2","delivery_configured":true,"verification_configured":true,"turnstile_site_key":"<public sitekey>","schema_version":"2"}
 ```
 
-The Function redirects to `/intake-thank-you/` only after SES accepts the fixed-recipient message and returns a message ID. Configuration, signing, and provider failures return the visitor to the form with a visible retry message. Submitted field values appear only in the SES delivery request and resulting DigiTrans mailbox message; the Function never logs or stores them.
+Configure `TURNSTILE_SITE_KEY`, encrypted `TURNSTILE_SECRET`, and `TURNSTILE_HOSTNAMES` in each environment. Production accepts only `digitranshq.com,www.digitranshq.com`; preview uses a separate widget and `digitranshq.pages.dev,*.digitranshq.pages.dev`. The server requires a successful, single-use token with action `intake` and the exact request hostname.
 
-## Conversion measurement
+The Function redirects to `/intake-thank-you/` only after Turnstile verification and SES acceptance of the fixed-recipient message with a message ID. Configuration, signing, and provider failures return the visitor to the form with a visible retry message. Submitted field values appear only in the SES delivery request and resulting DigiTrans mailbox message; the Function never logs or stores them.
 
-The site records five allowlisted, aggregate funnel events. Browser interactions use the same-origin `/api/events` Cloudflare Pages Function, while the intake Function records the final delivery event directly:
+## Visitor and conversion measurement
 
-- `trust_record_clicked`
-- `assistant_directory_clicked` (website outbound clicks, not plugin installs or reviews)
-- `briefing_cta_clicked`
-- `intake_started`
-- `lead_submitted`
+See [the measurement guide](docs/visitor-analytics.md) for definitions, configuration, internal exclusions, and campaign links.
 
-Browser event payloads contain only the event name, page path, categorical placement, categorical intent, and schema version. They never contain field values, email addresses, query strings, cookies, referrers, user-agent strings, IP addresses, or persistent visitor identifiers. Global Privacy Control and Do Not Track signals disable browser measurement.
+Schema 2 measures short-lived browser sessions and engaged sessions, followed by the existing CTA, Assistant, sample-record and inquiry stages. Each browser stage counts at most once per session in a transactional D1 deduplication store. Session identifiers and hashes do not enter Analytics Engine. Schema-1 history remains available separately and must not be combined with the new session funnel.
 
-`lead_submitted` is not accepted from browser analytics. The intake Function records it directly only after Amazon SES accepts the notification for delivery. This keeps the lead count tied to successful backend acceptance without exposing inquiry contents to analytics.
+Browser measurement honors GPC/DNT, suppresses webdriver and internally excluded browsers, and starts only on a visible page. The server also excludes EU countries and bot classifications when supplied by Cloudflare. The Free plan does not provide full Enterprise bot scoring. These are screened browser sessions, not verified unique people.
 
-The Function emits a privacy-safe structured log for each accepted event. For durable aggregate reporting, add the following Cloudflare Pages Analytics Engine bindings. Keeping preview data separate prevents synthetic verification events from polluting production conversion counts.
+The existing Analytics Engine bindings remain:
 
-| Pages environment | Variable name | Dataset |
+| Environment | Binding | Dataset |
 | --- | --- | --- |
 | Production | `CONVERSION_EVENTS` | `digitrust_conversion_events` |
 | Preview | `CONVERSION_EVENTS` | `digitrust_conversion_events_preview` |
 
-In the Cloudflare dashboard, select the Pages project, choose the environment, then open **Settings > Bindings > Add > Analytics engine**. Save the binding and redeploy that environment for it to take effect. Configure bindings in the dashboard rather than adding a new Wrangler file, because the existing Pages project settings remain the deployment source of truth.
+Add a separate `MEASUREMENT_DB` D1 binding for each environment and apply [visitor-sessions.sql](docs/sql/visitor-sessions.sql). Configure bindings in the Cloudflare Pages dashboard/API; do not add Wrangler configuration that replaces the existing project settings. `GET /api/events` must report `status: ok`, `durable_storage: true`, `session_deduplication: true`, and `schema_version: "2"`.
 
-After deployment, `GET /api/events` returns a non-writing health response. Confirm that it reports `"durable_storage": true` before merging or promoting a deployment. The response exposes no event counts or customer information.
-
-The Analytics Engine columns are fixed:
-
-| Column | Meaning |
+| Analytics Engine column | Meaning |
 | --- | --- |
 | `blob1` | Event name |
-| `blob2` | Page path |
-| `blob3` | Placement |
-| `blob4` | Intent |
+| `blob2` | Approved page path |
+| `blob3` | Fixed placement |
+| `blob4` | Fixed intent |
 | `blob5` | Schema version |
-| `double1` | Event count (`1`) |
+| `blob6`, `blob7`, `blob8` | Fixed source, medium, campaign categories |
+| `blob9` | `external`, `internal`, or `unmeasured` |
+| `double1` | Count (`1`) |
 
-Example seven-day aggregate query:
-
-```sql
-SELECT
-  blob1 AS event_name,
-  blob2 AS page_path,
-  blob3 AS placement,
-  SUM(_sample_interval * double1) AS events
-FROM digitrust_conversion_events
-WHERE timestamp > NOW() - INTERVAL '7' DAY
-GROUP BY event_name, page_path, placement
-ORDER BY events DESC
-```
+`lead_submitted` remains server-only and occurs only after Turnstile verification and SES acceptance. An accepted inquiry is not a qualified prospect. Its audience is `external` only when an active measured session is present; other inquiries appear separately as `unmeasured` or `internal`. Personal form fields and verification tokens never enter analytics.
 
 ### One-click Windows report
 
-Windows operators can double-click `Check-Analytics.bat` to check the production endpoint and display a seven-day aggregate conversion report. On the first run, the launcher opens Cloudflare's API Token page and requests a custom token with only **Account > Account Analytics > Read** permission. The token is verified before it is saved, encrypted with Windows Data Protection API for the current Windows user, and stored under `%LOCALAPPDATA%\DigiTrust` rather than in the repository.
-
-Double-click `Check-Preview-Analytics.bat` to query only the fixed `digitrust_conversion_events_preview` dataset and verify that the server-side SES path recorded a `lead_submitted` event. It reuses the same encrypted read-only token. The equivalent command-line invocation is:
-
-Later runs require no SQL, dashboard navigation, or token entry. Optional command-line controls are:
+Double-click `Check-Analytics.bat` for a seven-day report, or run:
 
 ```powershell
-.\Check-Analytics.bat -Environment Preview
 .\Check-Analytics.bat -Days 30
+.\Check-Analytics.bat -Environment Preview
 .\Check-Analytics.bat -ForgetToken
 ```
 
-The report selects between two fixed datasets with an allowlisted environment option and always uses an aggregate query. It does not accept arbitrary dataset names or SQL, print the API token, write results to disk, or expose analytics through a public endpoint.
+The script uses a fixed aggregate query and only **Account > Account Analytics > Read** permission. Tokens stay encrypted with Windows DPAPI in `%LOCALAPPDATA%\DigiTrust`, outside the repository. No token is printed. The report separates schema-2 external sessions, unmeasured inquiries, internal traffic and legacy events. Sample-adjusted counts remain estimates; it does not calculate conversion rates across incompatible cohorts or count unique people. Qualification remains in the sales process.
 
-The optional Zaraz mirror activates automatically if Zaraz is later enabled in Cloudflare. Analytics failures never block navigation or intake submission.
+`Check-Preview-Analytics.bat` checks only the preview dataset. Analytics Engine is the aggregate sink; write failures can undercount, and D1 deduplication does not make the two services an atomic transaction. Measurement failures do not block browsing or inquiry delivery. The optional browser Zaraz mirror has been removed so it cannot bypass server-side exclusions or deduplication.
 
 Do not add secrets, customer data, deployment credentials, or private commercial terms to the repository.

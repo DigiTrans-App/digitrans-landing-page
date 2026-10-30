@@ -51,7 +51,7 @@ function normalizePayload(value) {
   if (value.schema_version !== SCHEMA_VERSION) return null;
   if (!PATHS.includes(value.page) || !PLACEMENTS.includes(value.placement)) return null;
   if (typeof value.intent !== "string" || !ALLOWED_INTENTS.has(value.intent)) return null;
-  if (!SESSION_ID.test(value.session_id || "")) return null;
+  if (typeof value.session_id !== "string" || !SESSION_ID.test(value.session_id)) return null;
   if (!SOURCES.includes(value.source) || !MEDIUMS.includes(value.medium) || !CAMPAIGNS.includes(value.campaign)) return null;
 
   return {

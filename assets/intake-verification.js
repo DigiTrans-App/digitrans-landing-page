@@ -7,13 +7,16 @@ export async function setupIntakeVerification(win = window, doc = document) {
   const status = doc.getElementById("intake-status");
   let widgetId;
   let ready = false;
+  let verificationError = false;
   const setReady = (value) => {
     ready = value;
     button.disabled = !value;
     button.textContent = value ? "Send request" : "Complete verification";
+    if (value && verificationError) { status.hidden = true; verificationError = false; }
   };
   const showFailure = () => {
     setReady(false);
+    verificationError = true;
     status.textContent = "Verification could not finish. Please reload this page or email info@digitranshq.com.";
     status.hidden = false;
   };

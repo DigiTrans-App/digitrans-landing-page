@@ -52,7 +52,11 @@ test("GPC, DNT, webdriver and internal opt-out suppress all browser events", () 
   assert.equal(track.scope(), "internal"); assert.equal(track("session_started"), false);
   assert.equal(beacons.length, 0); assert.equal(win.localStorage.getItem(EXCLUSION_KEY), "1");
   win.location.hash = "#analytics=on";
-  assert.equal(createTracker({ window: win }).scope(), "external");
+  const restored = createTracker({ window: win });
+  assert.equal(restored.scope(), "external");
+  win.location.hash = "#analytics=off";
+  assert.equal(restored("session_started"), false);
+  assert.equal(restored.scope(), "internal");
 });
 
 test("session survives reload, keeps first attribution, expires after inactivity and has a 24h maximum", async () => {
@@ -112,7 +116,7 @@ test("server also suppresses privacy signals, EU measurement and available bot s
 });
 
 test("server rejects fabricated stages, extra fields, arbitrary dimensions, old schemas and cross-origin payloads", async () => {
-  for (const overrides of [{ event: "lead_submitted" }, { email: "private@example.com" }, { source: "person" }, { page: "/person" }, { placement: "person" }, { intent: "person" }, { schema_version: "1" }, { session_id: "not-a-uuid" }]) assert.equal(normalizePayload({ ...base, ...overrides }), null);
+  for (const overrides of [{ event: "lead_submitted" }, { email: "private@example.com" }, { source: "person" }, { page: "/person" }, { placement: "person" }, { intent: "person" }, { schema_version: "1" }, { session_id: "not-a-uuid" }, { session_id: [ID] }]) assert.equal(normalizePayload({ ...base, ...overrides }), null);
   assert.equal((await onRequestPost({ request: request(base, { headers: { Origin: "https://attacker.example" } }), env: {} })).status, 403);
   assert.equal((await onRequestPost({ request: request(base, { headers: { "Content-Type": "text/plain" } }), env: {} })).status, 415);
   assert.equal((await onRequestPost({ request: request("x".repeat(MAX_BODY_BYTES + 1)), env: {} })).status, 413);

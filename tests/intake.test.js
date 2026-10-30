@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { createHash, createHmac } from "node:crypto";
 import test from "node:test";
+import { testDatabase } from "./d1-helper.js";
+import { acceptSessionEvent } from "../functions/_lib/measurement.js";
 
 import {
   INTAKE_RECIPIENT,
@@ -415,4 +417,15 @@ test("internal inquiries stay separate and a session-lookup outage does not lose
     assert.equal(points.length, 1); assert.equal(points[0].blobs[8], scope === "internal" ? "internal" : "unmeasured");
     assert.equal(JSON.stringify(points).includes("12345678"), false);
   }
+});
+
+
+test("accepted inquiries link only to active measured sessions and retain first-session categories", async () => {
+  const db = testDatabase(); const points = [];
+  const id = "12345678-1234-4123-8123-123456789abc";
+  await acceptSessionEvent(db, { sessionId: id, event: "intake_started", source: "aws", medium: "referral", campaign: "aws-cosell" }, FIXED_TIME.getTime());
+  const env = { ...SES_ENV, MEASUREMENT_DB: db, CONVERSION_EVENTS: { writeDataPoint: (p) => points.push(p) } };
+  await onRequestPost({ request: makeRequest(validForm({ measurement_scope: "external", measurement_session: id })), env }, { fetch: async () => Response.json({ MessageId: "accepted" }) });
+  assert.deepEqual(points[0].blobs.slice(5), ["aws", "referral", "aws-cosell", "external"]);
+  assert.equal(JSON.stringify(points).includes(id), false);
 });

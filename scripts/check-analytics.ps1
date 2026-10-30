@@ -32,7 +32,7 @@ $DatasetByEnvironment = @{
 }
 $HealthEndpointByEnvironment = @{
     Production = "https://www.digitranshq.com/api/events"
-    Preview = "https://codex-cloudflare-native-inta.digitranshq.pages.dev/api/events"
+    Preview = "https://codex-focused-visitor-analyt.digitranshq.pages.dev/api/events"
 }
 $Dataset = $DatasetByEnvironment[$Environment]
 $HealthEndpoint = $HealthEndpointByEnvironment[$Environment]

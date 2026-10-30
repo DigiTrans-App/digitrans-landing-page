@@ -97,10 +97,14 @@ function createTracker(runtime = {}) {
   const browserBlob = runtime.Blob || browserWindow.Blob;
 
   const now = runtime.now || Date.now;
-  const excluded = internalTraffic(browserWindow);
+  internalTraffic(browserWindow);
+  browserWindow.addEventListener?.("hashchange", () => internalTraffic(browserWindow));
 
   function getSession() {
-    if (excluded || !measurementAllowed(browserNavigator)) return null;
+    if (internalTraffic(browserWindow) || !measurementAllowed(browserNavigator)) {
+      try { browserWindow.sessionStorage.removeItem(SESSION_KEY); } catch { /* Storage may be blocked. */ }
+      return null;
+    }
     try {
       const time = now();
       let session = JSON.parse(browserWindow.sessionStorage.getItem(SESSION_KEY) || "null");
@@ -157,7 +161,7 @@ function createTracker(runtime = {}) {
     return queued;
   }
   trackConversion.session = getSession;
-  trackConversion.scope = () => excluded ? "internal" : measurementAllowed(browserNavigator) ? "external" : "unmeasured";
+  trackConversion.scope = () => internalTraffic(browserWindow) ? "internal" : measurementAllowed(browserNavigator) ? "external" : "unmeasured";
   return trackConversion;
 }
 

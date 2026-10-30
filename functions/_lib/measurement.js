@@ -17,7 +17,7 @@ async function sessionHash(id) {
 }
 
 export async function readSession(db, id, now = Date.now()) {
-  if (!db || !SESSION_ID.test(id || "")) return null;
+  if (!db || typeof id !== "string" || !SESSION_ID.test(id)) return null;
   return db.prepare(`SELECT source, medium, campaign FROM measurement_sessions
     WHERE id_hash = ? AND last_seen > ? AND started_at > ?`)
     .bind(await sessionHash(id), now - SESSION_IDLE_MS, now - SESSION_MAX_MS).first();

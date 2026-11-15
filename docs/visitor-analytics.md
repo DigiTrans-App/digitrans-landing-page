@@ -59,4 +59,28 @@ GPC and DNT disable browser measurement and are also checked at the endpoint whe
 
 Run `Check-Analytics.bat -Days 30`. Read schema-2 external counts as the new funnel; keep legacy schema-1 totals and unmeasured/internal inquiries separate. New measurement begins at deployment, with no historical backfill. An inquiry without a measured session can be genuine and should still receive follow-up. Review qualified status in the sales process.
 
+## Readiness-check offer and ChatGPT inquiries
+
+The homepage's primary offer leads to `/readiness-check/`: a complimentary initial review of one or two AI workflows and a short written summary of evidence gaps, review responsibilities, and recommended next steps. Paid implementation, expanded assessment, and software are scoped separately. The form fixes its request type to `readiness-check`, even if a visitor previously explored another engagement.
+
+The current ad keeps its destination and budget. Its link uses the fixed categories `utm_source=chatgpt`, `utm_medium=paid`, and `utm_campaign=digitrust_evidence_assurance`. Same-origin campaign links carry these parameters to the offer. Session attribution keeps the first measured source; raw attribution remains only with the inquiry email. These tags identify the campaign link, not independently verified ad delivery.
+
+The report adds a ChatGPT ad readiness section. Read each row separately:
+
+| Event | Meaning |
+| --- | --- |
+| `session_started` | A screened session tagged with the current ChatGPT ad campaign, anywhere on the site. |
+| `readiness_cta_clicked` | A trusted click on a link to the readiness offer or its form; once per session. |
+| `readiness_check_viewed` | The readiness page became visible; once per session, including a direct visit. |
+| `readiness_intake_started` | A trusted interaction with a real form field on the readiness page; once per session. |
+| `lead_submitted`, intent `readiness-check` | Server-side spam verification passed and SES accepted the inquiry notification. Submission count, not a count of unique people, bookings, or qualified prospects. |
+
+Dedicated readiness stages are separate from generic site stages so an earlier visit to the general intake does not hide later interest in this offer. They must not be summed with their generic counterparts. Reloading a thank-you page never records an accepted inquiry. Failures remain on the appropriate intake page and record no accepted inquiry. Unmeasured/internal submissions remain separate in the detailed table; an inquiry can still be valid without browser measurement.
+
+Readiness requests arrive at the existing business inbox with subject `New DigiTrust Readiness Check Request`. Use the submission ID to reconcile an inquiry privately. Record qualification, a scheduled conversation, and any paid engagement in the existing private sales record after human follow-up. Do not put prospect names, emails, workflow descriptions, or these sales outcomes into browser events or public reports.
+
+For the US$50 test, compare Ads Manager's actual spend and clicks with these first-party inquiry counts over the same reporting dates. Cost per accepted inquiry is spend divided by campaign-attributed accepted inquiries; if there are none, report it as unavailable. Do not call it cost per qualified lead. Allow for reporting delay, sampling, blocked measurement, and differing session/click definitions. Older `other` categories cannot be reconstructed, and no native Ads Manager conversion source/event is configured by this change.
+
+Validation uses local simulated Turnstile and SES responses plus the isolated preview. Production verification uses GET health checks and opt-out browsing, not synthetic lead submissions. A live mailbox receipt and real visitor attribution require a genuine or explicitly authorized test inquiry.
+
 If rollback is needed, revert the PR and redeploy the prior application commit. Retain the new bindings and secrets until the rollback is verified; the old application ignores them. Do not delete datasets or rewrite historical events. The full pre-update Pages configuration should be compared by non-secret metadata, never by exposing encrypted values.

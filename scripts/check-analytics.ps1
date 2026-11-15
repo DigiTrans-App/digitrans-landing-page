@@ -292,7 +292,7 @@ try {
     }
     else {
         $rows |
-            Select-Object schema_version, audience, event_name, source, medium, campaign, events, last_seen |
+            Select-Object schema_version, audience, event_name, intent, source, medium, campaign, events, last_seen |
             Format-Table -AutoSize |
             Out-String |
             Write-Host
@@ -321,6 +321,19 @@ try {
             $unmeasured = ($rows | Where-Object { $_.schema_version -eq "2" -and $_.audience -eq "unmeasured" -and $_.event_name -eq "lead_submitted" } | Measure-Object -Property events -Sum).Sum
             if ($null -eq $unmeasured) { $unmeasured = 0 }
             Write-Host ("Accepted inquiries without a measured session (separate): {0}" -f $unmeasured)
+            Write-Host "ChatGPT ad readiness check (schema 2, external traffic only):" -ForegroundColor Cyan
+            $chatgpt = @($funnel | Where-Object {
+                $_.source -eq "chatgpt" -and $_.medium -eq "paid" -and $_.campaign -eq "digitrust_evidence_assurance"
+            })
+            foreach ($eventName in @("session_started", "readiness_cta_clicked", "readiness_check_viewed", "readiness_intake_started", "lead_submitted")) {
+                $count = ($chatgpt | Where-Object {
+                    $_.event_name -eq $eventName -and ($eventName -ne "lead_submitted" -or $_.intent -eq "readiness-check")
+                } | Measure-Object -Property events -Sum).Sum
+                if ($null -eq $count) { $count = 0 }
+                Write-Host ("  {0}: {1}" -f $eventName, $count)
+            }
+            Write-Host "Readiness lead count includes only accepted readiness-check inquiries from measured ChatGPT ad sessions."
+            Write-Host "Campaign measurement begins with deployment; historical other values cannot be reattributed."
             Write-Host "Internal rows and legacy schema-1 events above are excluded from this funnel."
             Write-Host "Counts may be sampled. Sessions are not unique people; bot screening is imperfect."
             Write-Host "Inquiries are SES acceptances after spam verification, not qualified prospects."

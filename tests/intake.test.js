@@ -429,3 +429,36 @@ test("accepted inquiries link only to active measured sessions and retain first-
   assert.deepEqual(points[0].blobs.slice(5), ["aws", "referral", "aws-cosell", "external"]);
   assert.equal(JSON.stringify(points).includes(id), false);
 });
+
+test("accepted readiness inquiry binds the campaign to its email and measured submission", async () => {
+  const db = testDatabase(); const points = []; const messages = [];
+  const id = crypto.randomUUID();
+  await acceptSessionEvent(db, { sessionId: id, event: "readiness_intake_started", source: "chatgpt", medium: "paid", campaign: "digitrust_evidence_assurance" }, FIXED_TIME.getTime());
+  const response = await onRequestPost({
+    request: makeRequest(validForm({ intent: "readiness-check", utm_source: "chatgpt", utm_medium: "paid", utm_campaign: "digitrust_evidence_assurance", measurement_scope: "external", measurement_session: id, source_path: "/readiness-check/" })),
+    env: { ...SES_ENV, MEASUREMENT_DB: db, CONVERSION_EVENTS: { writeDataPoint: (p) => points.push(p) } },
+  }, { fetch: async (_url, options) => { messages.push(JSON.parse(options.body)); return Response.json({ MessageId: "readiness-accepted" }); } });
+  assert.equal(response.headers.get("Location"), "https://www.digitranshq.com/intake-thank-you/");
+  assert.equal(messages.length, 1);
+  assert.equal(messages[0].Content.Simple.Subject.Data, "New DigiTrust Readiness Check Request");
+  assert.match(messages[0].Content.Simple.Body.Text.Data, /Intent: readiness-check/);
+  assert.match(messages[0].Content.Simple.Body.Text.Data, /UTM campaign: digitrust_evidence_assurance/);
+  assert.match(messages[0].Content.Simple.Body.Text.Data, /Submission ID: [a-f0-9-]+/);
+  assert.deepEqual(points.map((p) => p.blobs), [["lead_submitted", "/intake-thank-you/", "aws_ses_intake", "readiness-check", "2", "chatgpt", "paid", "digitrust_evidence_assurance", "external"]]);
+  assert.equal(JSON.stringify(points).includes(id), false);
+});
+
+test("readiness failures return to the offer and never count as accepted inquiries", async () => {
+  for (const [status, overrides, runtime] of [
+    ["invalid", { email: "invalid" }, {}],
+    ["verification-failed", {}, { verifyFetch: async () => Response.json({ success: false }) }],
+    ["delivery-unavailable", {}, { fetch: async () => Response.json({ code: "MessageRejected" }, { status: 400 }) }],
+    ["delivery-unavailable", {}, { fetch: async () => { throw new Error("unavailable"); } }],
+  ]) {
+    const points = [];
+    const response = await onRequestPost({ request: makeRequest(validForm({ intent: "readiness-check", ...overrides })), env: { ...SES_ENV, CONVERSION_EVENTS: { writeDataPoint: (p) => points.push(p) } } }, runtime);
+    assert.equal(response.headers.get("Location"), `https://www.digitranshq.com/readiness-check/?status=${status}#intake`);
+    assert.equal(response.headers.get("Cache-Control"), "no-store");
+    assert.equal(points.length, 0);
+  }
+});

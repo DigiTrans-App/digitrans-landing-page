@@ -90,6 +90,8 @@
     campaignKeys.concat(["intent"]).forEach(function (key) {
       var field = document.getElementById(key);
       if (!field) return;
+      // A dedicated offer must keep its request type even after another journey.
+      if (key === "intent" && field.getAttribute && field.getAttribute("data-fixed-intent")) return;
       var value = params.get(key) || campaign[key] || "";
       field.value = clean(value || field.value);
     });

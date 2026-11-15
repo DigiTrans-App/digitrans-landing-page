@@ -10,6 +10,9 @@ const EVENT_NAMES = Object.freeze([
   "trust_record_clicked",
   "briefing_cta_clicked",
   "intake_started",
+  "readiness_check_viewed",
+  "readiness_cta_clicked",
+  "readiness_intake_started",
 ]);
 
 const EVENT_SET = new Set(EVENT_NAMES);
@@ -31,6 +34,7 @@ const ALLOWED_INTENTS = new Set([
   "press-release",
   "production-expansion",
   "quickstart",
+  "readiness-check",
 ]);
 const EVENT_ENDPOINT = "/api/events";
 const SAFE_SLUG = /^[a-z0-9][a-z0-9_-]{0,63}$/;
@@ -44,6 +48,7 @@ function normalizePath(value) {
   try {
     let path = new URL(String(value || "/"), "https://analytics.invalid").pathname;
     if (path === "/get-started.html" || path === "/get-started/") path = "/get-started";
+    if (path === "/readiness-check" || path === "/readiness-check/index.html") path = "/readiness-check/";
     return PATHS.includes(path) ? path : "/";
   } catch (error) {
     return "/";
@@ -167,7 +172,9 @@ function createTracker(runtime = {}) {
 
 function getLinkIntent(link, browserWindow) {
   try {
-    return new URL(link.getAttribute("href"), browserWindow.location.origin).searchParams.get("intent") || "none";
+    const url = new URL(link.getAttribute("href"), browserWindow.location.href);
+    if (url.origin === browserWindow.location.origin && normalizePath(url.pathname) === "/readiness-check/") return "readiness-check";
+    return url.searchParams.get("intent") || "none";
   } catch (error) {
     return "none";
   }
@@ -175,6 +182,7 @@ function getLinkIntent(link, browserWindow) {
 
 function getPageIntent(browserWindow) {
   try {
+    if (normalizePath(browserWindow.location.pathname) === "/readiness-check/") return "readiness-check";
     return new URLSearchParams(browserWindow.location.search).get("intent") || "none";
   } catch (error) {
     return "none";
@@ -196,8 +204,9 @@ function inferPlacement(link) {
 
 function isBriefingLink(link, browserWindow) {
   try {
-    const path = new URL(link.getAttribute("href"), browserWindow.location.origin).pathname.replace(/\.html$/, "");
-    return path.replace(/\/$/, "") === "/get-started";
+    const url = new URL(link.getAttribute("href"), browserWindow.location.href);
+    if (url.origin !== browserWindow.location.origin) return false;
+    return ["/get-started", "/readiness-check/"].includes(normalizePath(url.pathname));
   } catch (error) {
     return false;
   }
@@ -212,6 +221,7 @@ function setupConversionAnalytics(browserWindow = window, browserDocument = docu
     if (!started && browserDocument.visibilityState !== "hidden") {
       started = true;
       track("session_started", pageProperties);
+      if (page === "/readiness-check/") track("readiness_check_viewed", pageProperties);
     }
   };
   start();
@@ -253,11 +263,13 @@ function setupConversionAnalytics(browserWindow = window, browserDocument = docu
 
     if (isBriefingLink(link, browserWindow)) {
       engage();
-      track("briefing_cta_clicked", {
+      const properties = {
         page,
         placement: inferPlacement(link),
         intent: getLinkIntent(link, browserWindow),
-      });
+      };
+      track("briefing_cta_clicked", properties);
+      if (properties.intent === "readiness-check") track("readiness_cta_clicked", properties);
     }
   });
 
@@ -273,6 +285,7 @@ function setupConversionAnalytics(browserWindow = window, browserDocument = docu
       intakeStarted = true;
       engage();
       track("intake_started", { page, placement: "intake_form", intent: getPageIntent(browserWindow) });
+      if (page === "/readiness-check/") track("readiness_intake_started", { page, placement: "intake_form", intent: "readiness-check" });
     };
 
     form.addEventListener("focusin", recordStart);

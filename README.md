@@ -68,7 +68,17 @@ Add a separate `MEASUREMENT_DB` D1 binding for each environment and apply [visit
 | `blob9` | `external`, `internal`, or `unmeasured` |
 | `double1` | Count (`1`) |
 
-`lead_submitted` remains server-only and occurs only after Turnstile verification and SES acceptance. An accepted inquiry is not a qualified prospect. Its audience is `external` only when an active measured session is present; other inquiries appear separately as `unmeasured` or `internal`. Personal form fields and verification tokens never enter analytics.
+`lead_submitted` remains server-only and occurs only after Turnstile verification and SES acceptance. An accepted inquiry is not a qualified prospect. Its audience is `external` only when an active measured session is present; other inquiries appear separately as `unmeasured` or `internal`. Raw personal form fields and verification tokens never enter aggregate analytics.
+
+### OpenAI Ads readiness-check conversion
+
+The **DigiTrans Website** Web source and **Readiness Check Submitted** conversion use the standard `lead_created` event. The public Pixel ID is in `assets/ad-conversions.js`; no conversion API secret is stored in the browser or repository.
+
+The readiness form offers a separate, optional ad-measurement choice, remembered only for the tab. Until granted, no OpenAI SDK is loaded. Existing GPC/DNT, internal, automation, preview-host and server-side regional/bot exclusions apply. Same-origin campaign links forward an existing `oppref` without adding it to campaign storage or aggregate analytics. The Pixel manages attribution cookies after consent; its automatic advanced matching is explained beside the checkbox and in the privacy notice.
+
+Only a readiness-check inquiry with explicit ad consent, an active external measured session, successful Turnstile verification and accepted SES delivery receives a two-minute confirmation cookie. DigiTrans work-email submissions are excluded. The thank-you page consumes the receipt once and sends `lead_created` with the submission ID for deduplication and `opt_out: true`. Direct visits, reloads, failed requests, internal tests and other inquiry intents do not create leads. Transport is best effort; no event receipt or ad attribution is claimed from local tests alone. Do not send fabricated production leads to test reporting.
+
+Run `npm test` for receipt issuance, privacy exclusions, SDK queuing and duplicate prevention. Preview hosts intentionally do not send OpenAI events. Production verification should check the deployed asset and settings, then await a genuine eligible inquiry before claiming received or attributed conversions.
 
 ### One-click Windows report
 

@@ -92,12 +92,13 @@
                 <div class="field full"><label for="workflow_type">Primary AI use case or area of interest <span class="required">*</span></label><select id="workflow_type" name="workflow_type" required><option value="" selected disabled>Select one</option><option>AI assistant or copilot</option><option>AI workflow or automated tool use</option><option>Decision support</option><option>Customer or patient-facing AI</option><option>Fraud, risk, or security analytics</option><option>Clinical or research support</option><option>Operational automation</option><option value="Other">Still exploring or other</option></select></div>
                 <div class="field full"><label for="business_goal">Which workflow would you like to review?</label><textarea id="business_goal" name="business_goal" maxlength="1200" placeholder="Briefly describe the workflow, the AI tool or model if known, and what you need a reviewer to understand. Do not include sensitive or confidential information."></textarea><p class="field-note">Optional. A sentence or two is enough.</p></div>
                 <div class="field full"><div class="consent"><input id="consent" name="consent" type="checkbox" value="Agreed" required /><label for="consent">I have read the <a href="/privacy/">Website Privacy Notice</a>. I agree that DigiTrans LLC may use this information to evaluate and respond to my request, and I will not submit secrets, credentials, payment information, regulated data, production customer records, classified or export-controlled data, or confidential legal materials. <span class="required">*</span></label></div></div>
+                <div class="field full"><div class="consent"><input id="ad_measurement_consent" name="ad_measurement_consent" type="checkbox" value="Agreed" /><label for="ad_measurement_consent">Optional: allow OpenAI ad measurement using cookies, ad click information, and hashed contact information to connect this request to our ads. <a href="/privacy/#ad-measurement">Details and choices</a>.</label></div><p class="field-note" id="ad-measurement-status" aria-live="polite">Your request works whether or not you allow ad measurement.</p></div>
               </div>
 
               <p class="form-status" id="intake-status" role="alert" hidden></p>
               <div id="intake-verification" aria-label="Spam protection"></div>
               <noscript><p>Please enable JavaScript to complete spam verification, or email <a href="mailto:info@digitranshq.com">info@digitranshq.com</a>.</p></noscript>
-              <div class="form-footer"><p>DigiTrans will follow up using your work email. Form values are not written to website logs or analytics. Do not include sensitive or regulated information.</p><button class="btn primary" type="submit">Request my readiness check</button></div>
+              <div class="form-footer"><p>DigiTrans will follow up using your work email. Raw form values are not written to website logs or aggregate analytics. Optional ad measurement is described above. Do not include sensitive or regulated information.</p><button class="btn primary" type="submit">Request my readiness check</button></div>
             </form>
           </div>
         </div>
@@ -110,5 +111,6 @@
   <script src="/assets/site.js" defer></script>
   <script type="module" src="/assets/analytics.js"></script>
   <script type="module" src="/assets/intake-verification.js"></script>
+  <script type="module" src="/assets/ad-conversions.js"></script>
 </body>
 </html>

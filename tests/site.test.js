@@ -85,3 +85,17 @@ test("readiness offer keeps the verified intake contract and makes its scope cle
   const requiredFields = [...html.matchAll(/<(?:input|select)[^>]+\brequired\b[^>]*>/g)].map(([tag]) => tag.match(/name="([^"]+)"/)[1]);
   assert.deepEqual(requiredFields.sort(), ["company", "consent", "email", "full_name", "workflow_type"]);
 });
+
+test("OpenAI click references pass only to same-site links without entering campaign storage", () => {
+  const stored = new Map();
+  const links = ["/readiness-check/", "https://elsewhere.example/", "/pricing/?oppref=existing"].map((href) => ({ href, getAttribute() { return this.href; }, setAttribute(_name, value) { this.href = value; } }));
+  runInNewContext(siteScript, {
+    URL, URLSearchParams,
+    window: { location: new URL("https://www.digitranshq.com/?oppref=fictional-reference"), sessionStorage: { getItem: (key) => stored.get(key) || null, setItem: (key, value) => stored.set(key, value) } },
+    document: { querySelector: () => null, querySelectorAll: (selector) => selector === "[data-campaign-link]" ? links : [], getElementById: () => null },
+  });
+  assert.equal(links[0].href, "/readiness-check/?oppref=fictional-reference");
+  assert.equal(links[1].href, "https://elsewhere.example/");
+  assert.equal(links[2].href, "/pricing/?oppref=existing");
+  assert.equal(stored.get("digitrust_campaign").includes("fictional-reference"), false);
+});

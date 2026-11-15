@@ -9,6 +9,8 @@ const SES_PATH = "/v2/email/outbound-emails";
 const INTAKE_RECIPIENT = "info@digitranshq.com";
 const INTAKE_SENDER = "forms@notify.digitranshq.com";
 const MAX_BODY_BYTES = 8192;
+const AD_RECEIPT_COOKIE = "__Host-digitrust_readiness_conversion";
+const CLEAR_AD_RECEIPT = `${AD_RECEIPT_COOKIE}=; Path=/; Max-Age=0; Secure; SameSite=Lax`;
 const REGION_PATTERN = /^(?:af|ap|ca|cn|eu|il|me|mx|sa|us)(?:-gov)?-[a-z0-9-]+-\d$/;
 const encoder = new TextEncoder();
 
@@ -33,6 +35,7 @@ const ALLOWED_KEYS = new Set([
   "cf-turnstile-response",
   "measurement_session",
   "measurement_scope",
+  "ad_measurement_consent",
 ]);
 
 const ALLOWED_INTENTS = new Set([
@@ -107,6 +110,8 @@ function normalizeFormBody(rawBody) {
   const turnstileToken = values["cf-turnstile-response"] || "";
   const measurementSession = values.measurement_session || "";
   const measurementScope = values.measurement_scope || "unmeasured";
+  if (values.ad_measurement_consent !== undefined && values.ad_measurement_consent !== "Agreed") return null;
+  const adMeasurementConsent = values.ad_measurement_consent === "Agreed";
   if (turnstileToken.length > 2048 || (measurementSession && !SESSION_ID.test(measurementSession))) return null;
   if (!["external", "internal", "unmeasured"].includes(measurementScope)) return null;
 
@@ -145,6 +150,7 @@ function normalizeFormBody(rawBody) {
     turnstileToken,
     measurementSession,
     measurementScope,
+    adMeasurementConsent,
   };
 }
 
@@ -162,6 +168,7 @@ function buildMessageText(intake, submissionId, submittedAt) {
     `Business goal: ${intake.businessGoal || "Not provided"}`,
     `Intent: ${intake.intent}`,
     "Consent: Agreed",
+    `Ad measurement: ${intake.adMeasurementConsent ? "Opted in" : "Not opted in"}`,
     "",
     "Campaign attribution",
     `UTM source: ${intake.attribution.utm_source || "Not provided"}`,
@@ -345,6 +352,8 @@ function redirectTo(request, path, headers = {}) {
     status: 303,
     headers: {
       Location: new URL(path, request.url).toString(),
+      "Cache-Control": "no-store",
+      "Set-Cookie": CLEAR_AD_RECEIPT,
       ...headers,
     },
   });
@@ -378,6 +387,7 @@ export function onRequestGet(context) {
     verification_configured: verification,
     turnstile_site_key: context.env?.TURNSTILE_SITE_KEY || null,
     schema_version: "2",
+    ad_measurement_allowed: Boolean(context.request && requestMeasurementAllowed(context.request)),
   }, {
     headers: {
       "Cache-Control": "no-store",
@@ -463,6 +473,7 @@ export async function onRequestPost(context, runtime = {}) {
     submission_id: submissionId,
   }));
 
+  let adReceipt = CLEAR_AD_RECEIPT;
   try {
     let session = null;
     if (intake.measurementScope === "external" && requestMeasurementAllowed(request)) {
@@ -470,6 +481,10 @@ export async function onRequestPost(context, runtime = {}) {
       catch { console.error("INTAKE_MEASUREMENT_SESSION_UNAVAILABLE"); }
     }
     const audience = intake.measurementScope === "internal" ? "internal" : session ? "external" : "unmeasured";
+    if (intake.adMeasurementConsent && intake.intent === "readiness-check" && audience === "external"
+        && !intake.email.toLowerCase().endsWith("@digitranshq.com")) {
+      adReceipt = `${AD_RECEIPT_COOKIE}=${submissionId}.${requestTime.getTime()}; Path=/; Max-Age=120; Secure; SameSite=Lax`;
+    }
     recordEvent(context.env && context.env.CONVERSION_EVENTS, {
       event: "lead_submitted",
       page: "/intake-thank-you/",
@@ -483,7 +498,7 @@ export async function onRequestPost(context, runtime = {}) {
     console.error("CONVERSION_ANALYTICS_WRITE_FAILED");
   }
 
-  return redirectTo(request, "/intake-thank-you/");
+  return redirectTo(request, "/intake-thank-you/", { "Set-Cookie": adReceipt });
 }
 
 export {

@@ -26,6 +26,46 @@ const SES_ENV = Object.freeze({
   AWS_SES_SECRET_ACCESS_KEY: "test-secret-access-key-not-used-outside-tests",
 });
 
+test("ad conversion receipts require an accepted, opted-in, measured readiness inquiry", async () => {
+  const id = "12345678-1234-4123-8123-123456789abc";
+  const makeEnvironment = async () => {
+    const db = testDatabase();
+    await acceptSessionEvent(db, { sessionId: id, event: "session_started", source: "chatgpt", medium: "paid", campaign: "digitrust_evidence_assurance" }, FIXED_TIME.getTime());
+    return { ...SES_ENV, MEASUREMENT_DB: db };
+  };
+  const input = { intent: "readiness-check", email: "reviewer@example.com", ad_measurement_consent: "Agreed", measurement_scope: "external", measurement_session: id };
+  const success = async () => Response.json({ MessageId: "accepted" });
+  const response = await onRequestPost({ request: makeRequest(validForm(input)), env: await makeEnvironment() }, { fetch: success });
+  assert.match(response.headers.get("Set-Cookie"), /^__Host-digitrust_readiness_conversion=[0-9a-f-]{36}\.1788278400000; Path=\/; Max-Age=120; Secure; SameSite=Lax$/);
+  assert.equal(response.headers.get("Cache-Control"), "no-store");
+  assert.equal(response.headers.get("Location"), "https://www.digitranshq.com/intake-thank-you/");
+  const withoutConsent = new URLSearchParams(validForm(input));
+  withoutConsent.delete("ad_measurement_consent");
+  const unmeasured = await onRequestPost({ request: makeRequest(withoutConsent), env: await makeEnvironment() }, { fetch: success });
+  assert.equal(unmeasured.headers.get("Location"), "https://www.digitranshq.com/intake-thank-you/");
+  assert.match(unmeasured.headers.get("Set-Cookie"), /Max-Age=0/);
+  for (const overrides of [
+    { ad_measurement_consent: "" }, { intent: "enterprise-pilot" }, { measurement_scope: "internal" },
+    { measurement_scope: "unmeasured" }, { measurement_session: "" }, { email: "info@digitranshq.com" },
+    { website_check: "bot" },
+  ]) {
+    const result = await onRequestPost({ request: makeRequest(validForm({ ...input, ...overrides })), env: await makeEnvironment() }, { fetch: success });
+    assert.match(result.headers.get("Set-Cookie") || "", /Max-Age=0/);
+  }
+  for (const privacy of [{ header: "Sec-GPC" }, { header: "DNT" }, { cf: { country: "DE" } }, { cf: { botManagement: { verifiedBot: true } } }]) {
+    const request = makeRequest(validForm(input), { headers: privacy.header ? { [privacy.header]: "1" } : {} });
+    if (privacy.cf) Object.defineProperty(request, "cf", { value: privacy.cf });
+    const result = await onRequestPost({ request, env: await makeEnvironment() }, { fetch: success });
+    assert.match(result.headers.get("Set-Cookie"), /Max-Age=0/);
+    assert.equal((await onRequestGet({ request, env: SES_ENV }).json()).ad_measurement_allowed, false);
+  }
+  for (const runtime of [{ fetch: async () => Response.json({}, { status: 403 }) }, { fetch: success, verifyFetch: async () => Response.json({ success: false }) }]) {
+    const result = await onRequestPost({ request: makeRequest(validForm(input)), env: await makeEnvironment() }, runtime);
+    assert.match(result.headers.get("Set-Cookie"), /Max-Age=0/);
+    assert.notEqual(result.headers.get("Location"), "https://www.digitranshq.com/intake-thank-you/");
+  }
+});
+
 function onRequestPost(context, runtime = {}) {
   return handlePost(context, {
     now: () => FIXED_TIME,
@@ -131,6 +171,7 @@ test("intake health exposes configuration state without sending email", async ()
     verification_configured: true,
     turnstile_site_key: "test-sitekey",
     schema_version: "2",
+    ad_measurement_allowed: false,
   });
 
   const missing = await onRequestGet({ env: {} });

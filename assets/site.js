@@ -63,6 +63,10 @@
 
   function setupCampaignAttribution() {
     var params = new URLSearchParams(window.location.search);
+    // Forward OpenAI's opaque click reference only through same-site navigation.
+    // It is not added to campaign storage or aggregate analytics.
+    var clickRef = params.get("oppref") || "";
+    if (!/^[A-Za-z0-9_.~=-]{1,4096}$/.test(clickRef)) clickRef = "";
     var campaign = readStored();
 
     campaignKeys.forEach(function (key) {
@@ -75,6 +79,7 @@
       try {
         var url = new URL(link.getAttribute("href"), window.location.origin);
         if (url.origin !== window.location.origin) return;
+        if (clickRef && !url.searchParams.has("oppref")) url.searchParams.set("oppref", clickRef);
         campaignKeys.forEach(function (key) {
           if (campaign[key] && !url.searchParams.get(key)) url.searchParams.set(key, campaign[key]);
         });

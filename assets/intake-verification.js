@@ -4,6 +4,7 @@ export async function setupIntakeVerification(win = window, doc = document) {
   const container = doc.getElementById("intake-verification");
   if (!form || !container) return;
   const button = form.querySelector("button[type='submit']");
+  const submitLabel = button.textContent || "Send request";
   const status = doc.getElementById("intake-status");
   let widgetId;
   let ready = false;
@@ -11,7 +12,7 @@ export async function setupIntakeVerification(win = window, doc = document) {
   const setReady = (value) => {
     ready = value;
     button.disabled = !value;
-    button.textContent = value ? "Send request" : "Complete verification";
+    button.textContent = value ? submitLabel : "Complete verification";
     if (value && verificationError) { status.hidden = true; verificationError = false; }
   };
   const showFailure = () => {

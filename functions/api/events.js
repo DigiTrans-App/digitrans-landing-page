@@ -8,6 +8,9 @@ const ALLOWED_EVENTS = new Set([
   "trust_record_clicked",
   "briefing_cta_clicked",
   "intake_started",
+  "readiness_check_viewed",
+  "readiness_cta_clicked",
+  "readiness_intake_started",
 ]);
 
 const ALLOWED_INTENTS = new Set([
@@ -28,6 +31,7 @@ const ALLOWED_INTENTS = new Set([
   "press-release",
   "production-expansion",
   "quickstart",
+  "readiness-check",
 ]);
 
 const ALLOWED_KEYS = new Set(["event", "page", "placement", "intent", "schema_version", "session_id", "source", "medium", "campaign"]);

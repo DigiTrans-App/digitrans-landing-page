@@ -3,11 +3,11 @@ export const SCHEMA_VERSION = "2";
 export const SESSION_IDLE_MS = 30 * 60 * 1000;
 export const SESSION_MAX_MS = 24 * 60 * 60 * 1000;
 export const SESSION_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
-export const SOURCES = ["direct_or_unknown", "linkedin", "aws", "google", "bing", "email", "partner", "other"];
-export const MEDIUMS = ["unknown", "social", "email", "referral", "organic", "other"];
-export const CAMPAIGNS = ["none", "aws-cosell", "readiness-review", "healthcare", "financial-services", "evidence-assistant", "general", "other"];
+export const SOURCES = ["direct_or_unknown", "chatgpt", "linkedin", "aws", "google", "bing", "email", "partner", "other"];
+export const MEDIUMS = ["unknown", "paid", "social", "email", "referral", "organic", "other"];
+export const CAMPAIGNS = ["none", "digitrust_evidence_assurance", "aws-cosell", "readiness-review", "healthcare", "financial-services", "evidence-assistant", "general", "other"];
 export const PLACEMENTS = ["unknown", "page", "navigation", "hero", "pilot_summary", "pilot", "closing", "marketplace", "industry", "assistant_guide", "synthetic_demo", "assistant_news", "content", "homepage_assistant", "decision_review", "intake_form", "aws_ses_intake"];
-export const PATHS = ["/", "/get-started", "/pricing/", "/healthcare/", "/financial-services/", "/aws-marketplace/", "/reference-architecture/", "/evidence-assistant/", "/privacy/", "/privacy/digitrust-evidence-assistant/", "/terms/", "/intake-thank-you/", "/thank-you/", "/news/aws-validated-software-path/", "/news/digitrust-evidence-assistant-chatgpt/"];
+export const PATHS = ["/", "/readiness-check/", "/get-started", "/pricing/", "/healthcare/", "/financial-services/", "/aws-marketplace/", "/reference-architecture/", "/evidence-assistant/", "/privacy/", "/privacy/digitrust-evidence-assistant/", "/terms/", "/intake-thank-you/", "/thank-you/", "/news/aws-validated-software-path/", "/news/digitrust-evidence-assistant-chatgpt/"];
 
 export function category(value, allowed, fallback) {
   const normalized = typeof value === "string" ? value.toLowerCase().trim() : "";

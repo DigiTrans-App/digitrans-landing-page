@@ -38,6 +38,7 @@ jobs:
           expected_pages = [
               Path('index.html'),
               Path('get-started.html'),
+              Path('readiness-check/index.html'),
               Path('pricing/index.html'),
               Path('financial-services/index.html'),
               Path('healthcare/index.html'),
@@ -312,7 +313,7 @@ jobs:
             cat /tmp/digitrust-site.log
             exit 1
           fi
-          for path in / /get-started.html /pricing/ /financial-services/ /healthcare/ /aws-marketplace/ /reference-architecture/; do
+          for path in / /readiness-check/ /get-started.html /pricing/ /financial-services/ /healthcare/ /aws-marketplace/ /reference-architecture/; do
             curl --fail --silent --show-error "http://127.0.0.1:8000${path}" >/dev/null
           done
           echo 'STATIC_SITE_SMOKE_TEST: PASS'

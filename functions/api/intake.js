@@ -53,6 +53,7 @@ const ALLOWED_INTENTS = new Set([
   "press-release",
   "production-expansion",
   "quickstart",
+  "readiness-check",
 ]);
 
 const ALLOWED_WORKFLOWS = new Set([
@@ -149,7 +150,7 @@ function normalizeFormBody(rawBody) {
 
 function buildMessageText(intake, submissionId, submittedAt) {
   const lines = [
-    "New DigiTrust Onboarding or Engagement Request",
+    messageSubject(intake),
     "",
     `Submission ID: ${submissionId}`,
     `Submitted at: ${submittedAt}`,
@@ -176,6 +177,12 @@ function buildMessageText(intake, submissionId, submittedAt) {
   return lines.join("\n");
 }
 
+function messageSubject(intake) {
+  return intake.intent === "readiness-check"
+    ? "New DigiTrust Readiness Check Request"
+    : "New DigiTrust Onboarding or Engagement Request";
+}
+
 function buildMessage(intake, submissionId, submittedAt) {
   return {
     FromEmailAddress: INTAKE_SENDER,
@@ -187,7 +194,7 @@ function buildMessage(intake, submissionId, submittedAt) {
       Simple: {
         Subject: {
           Charset: "UTF-8",
-          Data: "New DigiTrust Onboarding or Engagement Request",
+          Data: messageSubject(intake),
         },
         Body: {
           Text: {
@@ -343,8 +350,9 @@ function redirectTo(request, path, headers = {}) {
   });
 }
 
-function deliveryFailureResponse(request) {
-  return redirectTo(request, "/get-started?status=delivery-unavailable#intake", {
+function intakeFailureResponse(request, status, intent) {
+  const path = intent === "readiness-check" ? "/readiness-check/" : "/get-started";
+  return redirectTo(request, `${path}?status=${status}#intake`, {
     "Cache-Control": "no-store",
   });
 }
@@ -401,7 +409,10 @@ export async function onRequestPost(context, runtime = {}) {
   }
 
   const intake = normalizeFormBody(rawBody);
-  if (!intake) return redirectTo(request, "/get-started?status=invalid#intake");
+  if (!intake) {
+    const intents = new URLSearchParams(rawBody).getAll("intent");
+    return intakeFailureResponse(request, "invalid", intents.length === 1 ? intents[0] : null);
+  }
 
   if (intake.websiteCheck) {
     return redirectTo(request, "/intake-thank-you/");
@@ -410,11 +421,11 @@ export async function onRequestPost(context, runtime = {}) {
   const sesConfiguration = loadSesConfiguration(context.env);
   if (!sesConfiguration) {
     console.error("AWS_SES_CONFIGURATION_MISSING");
-    return deliveryFailureResponse(request);
+    return intakeFailureResponse(request, "delivery-unavailable", intake.intent);
   }
 
   if (!await verifyTurnstile(intake.turnstileToken, request, context.env, runtime.verifyFetch || fetch)) {
-    return redirectTo(request, "/get-started?status=verification-failed#intake", { "Cache-Control": "no-store" });
+    return intakeFailureResponse(request, "verification-failed", intake.intent);
   }
 
   const submissionId = crypto.randomUUID();
@@ -432,7 +443,7 @@ export async function onRequestPost(context, runtime = {}) {
     );
   } catch (error) {
     console.error("INTAKE_EMAIL_REQUEST_FAILED");
-    return deliveryFailureResponse(request);
+    return intakeFailureResponse(request, "delivery-unavailable", intake.intent);
   }
 
   if (!delivery.accepted) {
@@ -443,7 +454,7 @@ export async function onRequestPost(context, runtime = {}) {
       provider_error_code: delivery.errorCode,
       submission_id: submissionId,
     }));
-    return deliveryFailureResponse(request);
+    return intakeFailureResponse(request, "delivery-unavailable", intake.intent);
   }
 
   console.log(JSON.stringify({

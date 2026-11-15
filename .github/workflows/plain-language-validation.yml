@@ -8,6 +8,7 @@ on:
     paths:
       - index.html
       - get-started.html
+      - readiness-check/**
       - pricing/**
       - financial-services/**
       - healthcare/**
@@ -17,6 +18,7 @@ on:
     paths:
       - index.html
       - get-started.html
+      - readiness-check/**
       - pricing/**
       - financial-services/**
       - healthcare/**
@@ -43,6 +45,7 @@ jobs:
           pages = [
               Path('index.html'),
               Path('get-started.html'),
+              Path('readiness-check/index.html'),
               Path('pricing/index.html'),
               Path('financial-services/index.html'),
               Path('healthcare/index.html'),

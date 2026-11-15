@@ -40,6 +40,48 @@ test("only fixed paths, placements, intent and campaign categories leave the bro
   assert.equal(campaignCategories({}, "https://linkedin.com.attacker.example/").source, "other");
 });
 
+test("readiness stages remain distinct after a general inquiry and retain ChatGPT attribution", async () => {
+  const { win, beacons } = browser();
+  win.location = new URL("https://www.digitranshq.com/?utm_source=chatgpt&utm_medium=paid&utm_campaign=digitrust_evidence_assurance");
+  const track = createTracker({ window: win });
+  track("intake_started", { page: "/get-started", placement: "intake_form", intent: "enterprise-pilot" });
+  win.location = new URL("https://www.digitranshq.com/readiness-check/?intent=enterprise-pilot");
+  const listeners = new Map(); const formListeners = new Map();
+  const form = { addEventListener: (name, callback) => formListeners.set(name, callback) };
+  const fields = { "digitrust-intake": form, measurement_session: { value: "" }, measurement_scope: { value: "" } };
+  const doc = { visibilityState: "visible", hasFocus: () => true, addEventListener: (name, callback) => listeners.set(name, callback), getElementById: (id) => fields[id] || null };
+  setupConversionAnalytics(win, doc);
+  const link = { getAttribute: (name) => name === "href" ? "#intake" : null, closest: () => null };
+  listeners.get("click")({ isTrusted: true, target: { closest: () => link } });
+  formListeners.get("input")({ isTrusted: true, target: { id: "company", matches: () => true } });
+  formListeners.get("submit")();
+  assert.equal(fields.measurement_scope.value, "external");
+  const payloads = await Promise.all(beacons.map(async ({ body }) => JSON.parse(await body.text())));
+  const { env, points } = environment();
+  // Feed the complete browser journey and retries through the real dedup endpoint.
+  for (const payload of [...payloads, ...payloads]) {
+    assert.equal((await onRequestPost({ request: request(payload), env }, { now: () => NOW })).status, 204);
+  }
+  for (const event of ["readiness_check_viewed", "readiness_cta_clicked", "readiness_intake_started"]) {
+    const rows = points.filter((p) => p.blobs[0] === event);
+    assert.equal(rows.length, 1);
+    assert.equal(rows[0].blobs[1], "/readiness-check/");
+    assert.equal(rows[0].blobs[3], "readiness-check");
+    assert.deepEqual(rows[0].blobs.slice(5), ["chatgpt", "paid", "digitrust_evidence_assurance", "external"]);
+  }
+  assert.equal(points.filter((p) => p.blobs[0] === "intake_started").length, 1);
+  assert.equal(points.filter((p) => p.blobs[0] === "lead_submitted").length, 0);
+  assert.equal(fields.measurement_session.value, payloads[0].session_id);
+});
+
+test("a direct thank-you view never becomes a submitted inquiry", async () => {
+  const { win, beacons } = browser();
+  win.location = new URL("https://www.digitranshq.com/intake-thank-you/");
+  setupConversionAnalytics(win, { visibilityState: "visible", addEventListener: () => {}, getElementById: () => null });
+  const payloads = await Promise.all(beacons.map(async ({ body }) => JSON.parse(await body.text())));
+  assert.deepEqual(payloads.map((p) => p.event), ["session_started"]);
+});
+
 test("GPC, DNT, webdriver and internal opt-out suppress all browser events", () => {
   for (const nav of [{ globalPrivacyControl: true }, { doNotTrack: "1" }, { webdriver: true }]) {
     const { win, beacons } = browser(); Object.assign(win.navigator, nav);
